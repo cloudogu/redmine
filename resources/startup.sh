@@ -58,7 +58,8 @@ function install_plugin(){
     rm -rf "${DIRECTORY}"  
   fi
 
-  tar xvfz "${PLUGIN_STORE}/${PACKAGE}" -C "${PLUGIN_DIRECTORY}" > /dev/null 2>&1
+  mkdir -p "${DIRECTORY}"
+  tar xfz "${PLUGIN_STORE}/${PACKAGE}" --strip-components=1 -C "${DIRECTORY}" > /dev/null 2>&1
 }
 
 # adjust redmine database.yml
@@ -87,6 +88,8 @@ sleep 10
 if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
   echo "Redmine (database) has been installed already."
   # update FQDN in settings
+  # we need to update the fqdn on every start, bacause of possible changes
+  sql "UPDATE settings SET value='${FQDN}/redmine' WHERE name='host_name';"
   sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \nenabled: 1 \ncas_url: https://${FQDN}/cas \nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
 else
 
@@ -108,19 +111,27 @@ else
   # Insert auth_sources record for AuthSourceCas authentication source
   sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
 
-  # Write base url to database
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','https://${FQDN}/redmine/', now());"
+  # write url settings to database
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${FQDN}/redmine', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\r\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
+
+  # set default email address
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','redmine@${DOMAIN}', now());"
 
   # set theme to cloudogu, do this only on installation not on a upgrade
   # because the user should be able to change the theme
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('ui_theme','Cloudogu', now());"
 
-  # set default email address
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','redmine@${DOMAIN}', now());"
+  # enable gravatar
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_enabled', 1, now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_default', 'identicon', now());"
+
+  # we use markdown as default format, however it can be changed
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'markdown', now());"
 
   # Remove default admin account
   sql "DELETE FROM users WHERE login='admin';"
-
 fi
 
 # Install base plugins for cloudogu
