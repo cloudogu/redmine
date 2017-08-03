@@ -3,7 +3,7 @@ FROM registry.cloudogu.com/official/base:3.5-2
 MAINTAINER Robert Auer <robert.auer@cloudogu.com>
 
 # set environment variables
-ENV REDMINE_VERSION=3.3.2 \
+ENV REDMINE_VERSION=3.4.2 \
     CAS_PLUGIN_VERSION=1.2.11 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.0.1 \
     RUBYCASVERSION=2.3.13 \
@@ -66,23 +66,24 @@ RUN set -x \
     DATABASE_USER_PASSWORD=redmine \
     eval "echo \"$(cat  ${WORKDIR}/config/database.yml.tpl)\"" > ${WORKDIR}/config/database.yml \
 
- # install redmine required gems
- && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
- && echo 'gem "activerecord-deprecated_finders", require: "active_record/deprecated_finders"' >> ${WORKDIR}/Gemfile \
- && cd ${WORKDIR}; RAILS_ENV="production" bundle install \
-
- # Generate secret session token
- && rake generate_secret_token --trace -f ${WORKDIR}/Rakefile \
-
- # override environment to run redmine with a context path "/redmine"
- && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
-
  # Install (available) rubycas-client version
  && git clone https://github.com/cloudogu/rubycas-client.git \
  && cd rubycas-client \
  && gem build rubycas-client.gemspec \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
  && cd ..; rm -rf rubycas-client \
+
+ # install redmine required gems
+ && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
+ && echo 'gem "activerecord-deprecated_finders", require: "active_record/deprecated_finders"' >> ${WORKDIR}/Gemfile \
+ # json gem missing in default installation?
+ && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
+
+ # install required gems
+ && cd ${WORKDIR}; RAILS_ENV="production" bundle install \
+
+ # override environment to run redmine with a context path "/redmine"
+ && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
 
  # install core plugins to a temporary location
  # besure plugin name does not contain a minus or dots,

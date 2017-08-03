@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "3.3.2-4",
+  "Version": "3.4.2-1",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -32,5 +32,9 @@
   "HealthCheck": {
     "Type": "tcp",
     "Port": 3000
-  }
+  },
+  "ExposedCommands": [{
+    "Name": "post-upgrade",
+    "Command": "/post-upgrade.sh"
+  }]
 }

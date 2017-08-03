@@ -66,8 +66,12 @@ function install_plugin(){
 render_template "${WORKDIR}/config/database.yml.tpl" > "${WORKDIR}/config/database.yml"
 
 # insert secret_key_base into secrets.yml
-SECRETKEYBASE=$(grep secret_key_base ${WORKDIR}/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-render_template "${WORKDIR}/config/secrets.yml.tpl" > "${WORKDIR}/config/secrets.yml"
+if [ ! -f "${WORKDIR}/config/initializers/secret_token.rb" ]; then
+  exec_rake generate_secret_token
+  # TODO do we need the step below?
+  SECRETKEYBASE=$(grep secret_key_base ${WORKDIR}/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
+  render_template "${WORKDIR}/config/secrets.yml.tpl" > "${WORKDIR}/config/secrets.yml"
+fi
 
 # export variables for auth_source_cas.rb
 export FQDN
@@ -156,4 +160,4 @@ fi
 
 # Start redmine
 echo "Starting redmine..."
-exec bundle exec ruby bin/rails server webrick -e production -b 0.0.0.0
+exec bundle exec ruby bin/rails server webrick -e "${RAILS_ENV}" -b 0.0.0.0
