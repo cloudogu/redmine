@@ -20,8 +20,8 @@ ADD packages/cloudogu.tar.gz ${WORKDIR}/public/themes
 
 RUN set -x \
  # add user and group
- && addgroup -S "${USER}" \
- && adduser -S -G "${USER}" -u 1000 "${USER}" \
+ && addgroup -S "${USER}" -g 1000 \
+ && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
 
  # install runtime packages
  && apk --no-cache add --virtual /.run-deps \
@@ -80,7 +80,7 @@ RUN set -x \
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
 
  # install required gems
- && cd ${WORKDIR}; RAILS_ENV="production" bundle install \
+ && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
 
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
@@ -96,20 +96,10 @@ RUN set -x \
     https://github.com/pencil/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
     -o /var/tmp/redmine/plugins/redmine_activerecord_session_store-${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
 
- # fix permissions
- && chown -R ${USER}:${USER} ${BASEDIR} \
- && mkdir -m 755 /etc/redmine \
- && chown ${USER}:${USER} /etc/redmine \
-
  # cleanup
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
- && rm -rf /var/cache/apk/* \
-
- && ln -s /dev/stdout /usr/share/webapps/redmine/log/production.log
-
-# switch to redmine user
-USER ${USER}
+ && rm -rf /var/cache/apk/*
 
 # set workdir
 WORKDIR ${WORKDIR}

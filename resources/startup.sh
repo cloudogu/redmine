@@ -40,7 +40,10 @@ function install_plugins(){
     install_plugin "${PLUGIN_PACKAGE}"
   done
 
-  # Install Plugins
+  echo "install missing gems ..."
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install
+  echo "missing gems ... installed"
+
   echo "running plugin migrations..."
   exec_rake redmine:plugins:migrate
   echo "plugin migrations... done"
@@ -138,7 +141,8 @@ else
   sql "DELETE FROM users WHERE login='admin';"
 fi
 
-# Install base plugins for cloudogu
+
+# install core plugins and manual installed plugins
 install_plugins
 
 # Create links
@@ -158,6 +162,12 @@ if [ -f "${RPID}" ]; then
   rm -f "${RPID}"
 fi
 
+# besure temp, file and log folders are writable
+# TODO should tmp a volume, because of performance?
+mkdir -p tmp tmp/pdf public/plugin_assets
+chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
+chmod -R 755 files log tmp public/plugin_assets
+
 # Start redmine
 echo "Starting redmine..."
-exec bundle exec ruby bin/rails server webrick -e "${RAILS_ENV}" -b 0.0.0.0
+exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} bundle exec ruby bin/rails server webrick -e ${RAILS_ENV} -b 0.0.0.0"
