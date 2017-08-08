@@ -36,14 +36,20 @@ function exec_rake() {
 
 function install_plugins(){
   echo "installing plugins"
-  for PLUGIN_PACKAGE in $(ls "${PLUGIN_STORE}"); do
+
+  PLUGINS=$(ls "${PLUGIN_STORE}")
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
     install_plugin "${PLUGIN_PACKAGE}"
   done
 
-  echo "install missing gems ..."
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install
-  echo "missing gems ... installed"
+  # install missing gems only if external plugins are going to install
+  if [ "x${PLUGINS}" != "x" ]; then
+    echo "install missing gems ..."
+    RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install
+    echo "missing gems ... installed"
+  fi
 
+  # run migrations always, because core plugins need also a db migration
   echo "running plugin migrations..."
   exec_rake redmine:plugins:migrate
   echo "plugin migrations... done"
@@ -51,18 +57,20 @@ function install_plugins(){
 
 # installs or upgrades the given plugin
 function install_plugin(){
-  PACKAGE="${1}"
-  NAME=$(echo "${PACKAGE}" | awk -F'-' '{print $1}')
-  VERSION=$(echo "${PACKAGE}" | awk -F'-' '{print $NF}' | sed -e 's/\.tar\.gz//g')
-  DIRECTORY="${PLUGIN_DIRECTORY}/${NAME}"
+  NAME="${1}"
+  SOURCE="${PLUGIN_STORE}/${NAME}"
+  TARGET="${PLUGIN_DIRECTORY}/${NAME}"
 
-  echo "install plugin ${NAME} in version ${VERSION}"
-  if [ -d "${DIRECTORY}" ]; then
-    rm -rf "${DIRECTORY}"  
+  if [ ! -d "${SOURCE}" ]; then
+    exit 1
   fi
 
-  mkdir -p "${DIRECTORY}"
-  tar xfz "${PLUGIN_STORE}/${PACKAGE}" --strip-components=1 -C "${DIRECTORY}" > /dev/null 2>&1
+  echo "install plugin ${NAME}"
+  if [ -d "${TARGET}" ]; then
+    rm -rf "${TARGET}"  
+  fi
+
+  cp -rf "${SOURCE}" "${TARGET}"
 }
 
 # adjust redmine database.yml
@@ -141,8 +149,7 @@ else
   sql "DELETE FROM users WHERE login='admin';"
 fi
 
-
-# install core plugins and manual installed plugins
+# install manual installed plugins
 install_plugins
 
 # Create links

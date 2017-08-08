@@ -16,9 +16,6 @@ function exec_rake() {
 
 echo "executing update ${FROM_VERSION} to ${TO_VERSION}"
 
-echo "install dependencies ..."
-RAILS_ENV="production" REDMINE_LANG="en" bundle install
-
 echo "migrate database ..."
 exec_rake db:migrate
 

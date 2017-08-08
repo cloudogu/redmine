@@ -85,16 +85,21 @@ RUN set -x \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
 
- # install core plugins to a temporary location
- # besure plugin name does not contain a minus or dots,
- # because the minus separates the version from the package name
- && mkdir -p /var/tmp/redmine/plugins \
+ # install core plugins
+ && mkdir -p "${WORKDIR}/plugins" \
+ # install cas plugin
+ && mkdir "${WORKDIR}/plugins/redmine_cas" \
  && curl -sL \
     https://github.com/cloudogu/redmine_cas/archive/${CAS_PLUGIN_VERSION}.tar.gz \
-    -o /var/tmp/redmine/plugins/redmine_cas-${CAS_PLUGIN_VERSION}.tar.gz \
+  | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
+ # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
+ && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
  && curl -sL \
     https://github.com/pencil/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
-    -o /var/tmp/redmine/plugins/redmine_activerecord_session_store-${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
+  | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
+
+ # install plugin gems
+ && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
 
  # cleanup
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
