@@ -4,7 +4,7 @@ MAINTAINER Robert Auer <robert.auer@cloudogu.com>
 
 # set environment variables
 ENV REDMINE_VERSION=3.4.2 \
-    CAS_PLUGIN_VERSION=1.2.11 \
+    CAS_PLUGIN_VERSION=1.2.12 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.0.1 \
     RUBYCASVERSION=2.3.13 \
     USER=redmine \
