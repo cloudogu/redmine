@@ -1,3 +1,20 @@
+file:
+  /startup.sh:
+    exists: true
+    owner: root
+    mode: "0755"
+    group: root
+    filetype: file
+  /usr/share/webapps/redmine/public/themes/Cloudogu:
+    exists: true
+    filetype: directory
+  /usr/share/webapps/redmine:
+    exists: true
+    filetype: directory
+  /usr/share/webapps/redmine/config/environment.rb:
+    exists: true
+    filetype: file
+contains: ["RedmineApp::Application.routes.default_scope = '/redmine'"]
 package:
   git:
     installed: true
@@ -21,3 +38,12 @@ package:
     installed: true
   tzdata:
     installed: true
+port:
+  tcp:3000:
+    listening: true
+interface:
+  eth1:
+    exists: true
+process:
+  ruby:
+    running: true
