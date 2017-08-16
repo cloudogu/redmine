@@ -1,0 +1,23 @@
+package:
+  git:
+    installed: true
+  imagemagick:
+    installed: true
+  libffi:
+    installed: true
+  postgresql-client:
+    installed: true
+  ruby:
+    installed: true
+  ruby-bigdecimal:
+    installed: true
+  ruby-bundler:
+    installed: true
+  sqlite-libs:
+    installed: true
+  su-exec:
+    installed: true
+  tini:
+    installed: true
+  tzdata:
+    installed: true
