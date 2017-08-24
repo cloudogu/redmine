@@ -125,17 +125,38 @@ class AuthSourceCas < AuthSource
                 end
               end
             end
-            # remove user's admin rights if he is not in admin group any more
-            if admingroup_exists
-              if user_groups.to_s.include?(Ces_admin_group.gsub('\n', ''))
-                user.admin = 1
-                user.save
-              else
-                user.admin = 0
-                user.save
-              end
+
+          # Grant admin rights to user if he/she is in ces_admin_group
+          # Revoke admin rights if they were granted by cas and not granted from a redmine administrator
+          if admingroup_exists
+            # Get custom field which indicates if the admin permissions of the user were set via cas
+            casAdminPermissionsCustomField = CustomField.find_by_name(user.login)
+            if casAdminPermissionsCustomField == nil
+              casAdminPermissionsCustomField = CustomField.new
+              casAdminPermissionsCustomField.field_format = 'bool'
+              casAdminPermissionsCustomField.name = user.login
+              casAdminPermissionsCustomField.description = 'false'
             end
+
+            if user_groups.to_s.include?(Ces_admin_group.gsub('\n', ''))
+              user.admin = 1
+              casAdminPermissionsCustomField.description = 'true'
+              return cas_user_not_created(user) if !user.save
+              user.reload
+            else
+              # Only revoke admin permissions if they were set via cas
+              if casAdminPermissionsCustomField.description == 'true'
+                user.admin = 0
+              end
+              casAdminPermissionsCustomField.description = 'false'
+              return cas_user_not_created(user) if !user.save
+              user.reload
+            end
+            casAdminPermissionsCustomField.validate_custom_field
+            casAdminPermissionsCustomField.save!
+           end
           end
+
           # return new user information
           retVal =
           {
