@@ -130,12 +130,13 @@ class AuthSourceCas < AuthSource
           # Revoke admin rights if they were granted by cas and not granted from a redmine administrator
           if admingroup_exists
             # Get custom field which indicates if the admin permissions of the user were set via cas
-            casAdminPermissionsCustomField = CustomField.find_by_name(user.login)
+            casAdminPermissionsCustomField = UserCustomField.find_by_name(user.login)
             if casAdminPermissionsCustomField == nil
-              casAdminPermissionsCustomField = CustomField.new
+              casAdminPermissionsCustomField = UserCustomField.new
               casAdminPermissionsCustomField.field_format = 'bool'
               casAdminPermissionsCustomField.name = user.login
               casAdminPermissionsCustomField.description = 'false'
+              casAdminPermissionsCustomField.visible = 'false'
             end
 
             if user_groups.to_s.include?(Ces_admin_group.gsub('\n', ''))
