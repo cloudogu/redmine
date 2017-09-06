@@ -133,18 +133,16 @@ class AuthSourceCas < AuthSource
             casAdminPermissionsCustomField = UserCustomField.find_by_name('casAdmin')
             # Create custom field if it doesn't exist yet
             if casAdminPermissionsCustomField == nil
-              $stderr.puts "CREATING NEW CUSTOM FIELD"
               casAdminPermissionsCustomField = UserCustomField.new
               casAdminPermissionsCustomField.field_format = 'bool'
               casAdminPermissionsCustomField.name = 'casAdmin'
-              casAdminPermissionsCustomField.description = 'admin permissions were granted via cas'
+              casAdminPermissionsCustomField.description = 'Indicates if admin permissions were granted via cas; do not delete!'
               casAdminPermissionsCustomField.visible = false
               casAdminPermissionsCustomField.editable = false
               casAdminPermissionsCustomField.validate_custom_field
               casAdminPermissionsCustomField.save!
             end
             if user_groups.to_s.include?(Ces_admin_group.gsub('\n', ''))
-              $stderr.puts "GRANT ADMIN PERMISSIONS TO USER"
               user.admin = 1
               user.custom_field_values.each do |field|
                 if field.custom_field.name == 'casAdmin'
@@ -157,7 +155,6 @@ class AuthSourceCas < AuthSource
               # Only revoke admin permissions if they were set via cas
               if user.custom_field_value(casAdminPermissionsCustomField).to_s == 'true'
                 user.admin = 0
-                $stderr.puts "ADMIN RIGHTS FROM CAS REVOKED"
               end
               user.custom_field_values.each do |field|
                 if field.custom_field.name == 'casAdmin'
