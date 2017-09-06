@@ -130,31 +130,43 @@ class AuthSourceCas < AuthSource
           # Revoke admin rights if they were granted by cas and not granted from a redmine administrator
           if admingroup_exists
             # Get custom field which indicates if the admin permissions of the user were set via cas
-            casAdminPermissionsCustomField = UserCustomField.find_by_name(user.login)
+            casAdminPermissionsCustomField = UserCustomField.find_by_name('casAdmin')
+            # Create custom field if it doesn't exist yet
             if casAdminPermissionsCustomField == nil
+              $stderr.puts "CREATING NEW CUSTOM FIELD"
               casAdminPermissionsCustomField = UserCustomField.new
               casAdminPermissionsCustomField.field_format = 'bool'
-              casAdminPermissionsCustomField.name = user.login
-              casAdminPermissionsCustomField.description = 'false'
-              casAdminPermissionsCustomField.visible = 'false'
+              casAdminPermissionsCustomField.name = 'casAdmin'
+              casAdminPermissionsCustomField.description = 'admin permissions were granted via cas'
+              casAdminPermissionsCustomField.visible = false
+              casAdminPermissionsCustomField.editable = false
+              casAdminPermissionsCustomField.validate_custom_field
+              casAdminPermissionsCustomField.save!
             end
-
             if user_groups.to_s.include?(Ces_admin_group.gsub('\n', ''))
+              $stderr.puts "GRANT ADMIN PERMISSIONS TO USER"
               user.admin = 1
-              casAdminPermissionsCustomField.description = 'true'
+              user.custom_field_values.each do |field|
+                if field.custom_field.name == 'casAdmin'
+                  field.value = true
+                end
+              end
               return cas_user_not_created(user) if !user.save
               user.reload
             else
               # Only revoke admin permissions if they were set via cas
-              if casAdminPermissionsCustomField.description == 'true'
+              if user.custom_field_value(casAdminPermissionsCustomField).to_s == 'true'
                 user.admin = 0
+                $stderr.puts "ADMIN RIGHTS FROM CAS REVOKED"
               end
-              casAdminPermissionsCustomField.description = 'false'
+              user.custom_field_values.each do |field|
+                if field.custom_field.name == 'casAdmin'
+                  field.value = false
+                end
+              end
               return cas_user_not_created(user) if !user.save
               user.reload
             end
-            casAdminPermissionsCustomField.validate_custom_field
-            casAdminPermissionsCustomField.save!
            end
           end
 
