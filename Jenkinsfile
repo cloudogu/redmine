@@ -1,11 +1,4 @@
 #!groovy
-
-// todo
-// - setup output
-
-// required plugins
-// - http://wiki.jenkins-ci.org/display/JENKINS/HTML+Publisher+Plugin
-
 node('vagrant') {
 
     properties([
@@ -55,11 +48,15 @@ node('vagrant') {
         }
 
         stage('Verify') {
-            catchError {
-                sh 'vagrant sh -c "sudo cesapp verify --ci --report-directory=/dogu/reports /dogu"'
+            if (!fileExists('reports/goss_official')) {
+                sh 'mkdir -p reports/goss_official'
+            } else {
+                sh 'rm -f reports/goss_official/*.xml'
             }
-            junit allowEmptyResults: true, testResults: '**/reports/TEST-*.xml'
-
+            catchError {
+                sh 'vagrant ssh -c "sudo cesapp verify --ci --report-directory=/dogu/reports /dogu"'
+            }
+            junit allowEmptyResults: true, testResults: 'reports/goss_official/*.xml'
         }
 
     } finally {
