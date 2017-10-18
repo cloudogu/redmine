@@ -2,7 +2,7 @@ file:
   /startup.sh:
     exists: true
     owner: root
-    mode: "0755"
+    mode: "0775"
     group: root
     filetype: file
   /usr/share/webapps/redmine/public/themes/Cloudogu:
