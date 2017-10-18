@@ -16,10 +16,7 @@ node('vagrant') {
     ])
 
     stage('Checkout') {
-        #
-        //checkout scm
-        git 'https://github.com/cloudogu/redmine'
-
+            checkout scm
         dir ('ecosystem') {
             git branch: 'develop', url: 'https://github.com/cloudogu/ecosystem'
         }
@@ -61,6 +58,7 @@ node('vagrant') {
 
         stage('Verify') {
             sh 'vagrant ssh -c "sudo cesapp verify /dogu"'
+            // TODO create attach unit test results 
         }
 
     } finally {
