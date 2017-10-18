@@ -46,7 +46,6 @@ node('vagrant') {
 
         stage('Wait for dependencies') {
             timeout(15) {
-                // TODO wait for all
                 sh 'vagrant ssh -c "sudo cesapp healthy --wait --timeout 600 --fail-fast cas"'
             }
         }
@@ -56,7 +55,11 @@ node('vagrant') {
         }
 
         stage('Verify') {
-            sh 'vagrant ssh -c "sudo cesapp verify /dogu"'
+            catchError {
+                sh 'vagrant sh -c "sudo cesapp verify --ci --report-directory=/dogu/reports /dogu"'
+            }
+            junit allowEmptyResults: true, testResults: '**/reports/TEST-*.xml'
+
         }
 
     } finally {
