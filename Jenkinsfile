@@ -16,7 +16,7 @@ node('vagrant') {
     ])
 
     stage('Checkout') {
-            checkout scm
+        checkout scm
         dir ('ecosystem') {
             git branch: 'develop', url: 'https://github.com/cloudogu/ecosystem'
         }
@@ -34,15 +34,14 @@ node('vagrant') {
 
         stage('Setup') {
             // TODO new credentials for setup, because new backend
-                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'cesmarvin-setup', usernameVariable: 'TOKEN_ID', passwordVariable: 'TOKEN_SECRET']]) {
-                    sh "vagrant ssh -c \"sudo cesapp login ${env.TOKEN_ID} ${env.TOKEN_SECRET}\""
-                }
-                writeSetupStagingJSON()
-                sh 'vagrant ssh -c "sudo mv /dogu/setup.staging.json /etc/ces/setup.staging.json"'
-                sh 'vagrant ssh -c "sudo mv /etc/ces/setup.staging.json /etc/ces/setup.json"'
-                sh 'vagrant ssh -c "while sudo pgrep -u root ces-setup > /dev/null; do sleep 1; done"'
-                sh 'vagrant ssh -c "sudo journalctl -u ces-setup -n 100"'
+            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'cesmarvin-setup', usernameVariable: 'TOKEN_ID', passwordVariable: 'TOKEN_SECRET']]) {
+                sh "vagrant ssh -c \"sudo cesapp login ${env.TOKEN_ID} ${env.TOKEN_SECRET}\""
             }
+            writeSetupStagingJSON()
+            sh 'vagrant ssh -c "sudo mv /dogu/setup.staging.json /etc/ces/setup.staging.json"'
+            sh 'vagrant ssh -c "sudo mv /etc/ces/setup.staging.json /etc/ces/setup.json"'
+            sh 'vagrant ssh -c "while sudo pgrep -u root ces-setup > /dev/null; do sleep 1; done"'
+            sh 'vagrant ssh -c "sudo journalctl -u ces-setup -n 100"'
         }
 
         stage('Wait for dependencies') {
@@ -58,7 +57,6 @@ node('vagrant') {
 
         stage('Verify') {
             sh 'vagrant ssh -c "sudo cesapp verify /dogu"'
-            // TODO create attach unit test results 
         }
 
     } finally {
