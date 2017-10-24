@@ -59,6 +59,31 @@ node('vagrant') {
             junit allowEmptyResults: true, testResults: 'reports/goss_official/*.xml'
         }
 
+        stage('Integration Tests') {
+
+            timeout(5) {
+                def seleniumChromeImage = docker.image('selenium/standalone-chrome:3.6.0')
+                def seleniumChromeContainer = seleniumChromeImage.run()
+
+                try {
+
+                    def seleniumChromeIP = containerIP(seleniumChromeContainer)
+                    def cesIP = getCesIP()
+
+                    docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_URL=${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
+                        sh 'yarn install'
+                        sh 'yarn test'
+                    }
+
+                } finally {
+                    seleniumChromeContainer.stop()
+                    // archive test results
+                    // junit 'integration-tests/reports/xml-report/*.xml'
+                }
+            }
+
+        }
+
     } finally {
         stage('Clean') {
             sh 'vagrant destroy -f'
@@ -152,12 +177,12 @@ void writeSetupStagingJSON() {
     "completed":true
   },
   "admin":{
-    "username":"admin",
-    "mail":"admin@cloudogu.com",
-    "password":"adminpw",
+    "username":"ces-admin",
+    "mail":"ces-admin@cloudogu.com",
+    "password":"ecosystem2016",
+    "confirmPassword":"ecosystem2016",
     "adminGroup":"CesAdministrators",
     "adminMember":true,
-    "confirmPassword":"adminpw",
     "completed":true
   },
   "userBackend":{
