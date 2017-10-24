@@ -54,12 +54,16 @@ node('vagrant') {
                 sh 'rm -f reports/goss_official/*.xml'
             }
             catchError {
-                sh 'vagrant ssh -c "sudo cesapp verify --ci --report-directory=/dogu/reports /dogu"'
+                sh 'vagrant ssh -c "sudo cesapp verify --keep-container --ci --report-directory=/dogu/reports /dogu"'
             }
             junit allowEmptyResults: true, testResults: 'reports/goss_official/*.xml'
         }
 
         stage('Integration Tests') {
+
+            if (fileExists('it/it-results.xml')) {
+                sh 'rm -f it/it-results.xml'
+            }
 
             timeout(5) {
                 def seleniumChromeImage = docker.image('selenium/standalone-chrome:3.6.0')
@@ -70,15 +74,18 @@ node('vagrant') {
                     def seleniumChromeIP = containerIP(seleniumChromeContainer)
                     def cesIP = getCesIP()
 
-                    docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_URL=${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
-                        sh 'yarn install'
-                        sh 'yarn test'
+                    dir('it') {
+
+                        docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_URL=${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
+                            sh 'yarn --cache-folder=$(pwd)/.yarn-cache install'
+                            sh 'yarn --cache-folder=$(pwd)/.yarn-cache run ci-test'
+                        }
                     }
 
                 } finally {
                     seleniumChromeContainer.stop()
                     // archive test results
-                    // junit 'integration-tests/reports/xml-report/*.xml'
+                    junit 'it/it-results.xml'
                 }
             }
 
