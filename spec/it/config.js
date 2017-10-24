@@ -1,6 +1,6 @@
 module.exports = {
     baseUrl: 'https://demo.cloudogu.com',
-    redmineUrlExtension: '/redmine',
+    redmineContextPath: '/redmine',
     username: 'ces-admin',
     password: 'ecosystem2016',
     firstname: 'admin',

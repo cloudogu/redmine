@@ -1,6 +1,6 @@
 const config = require('./config');
 const expectations = require('./expectations');
-const init = require('./init');
+const utils = require('./utils');
 
 const webdriver = require('selenium-webdriver');
 const By = webdriver.By;
@@ -11,7 +11,7 @@ jest.setTimeout(30000);
 let driver;
 
 beforeEach(() => {
-    driver = init.setDriver(webdriver);
+    driver = utils.createDriver(webdriver);
 });
 
 afterEach(() => {
@@ -22,21 +22,21 @@ afterEach(() => {
 describe('cas browser tests', () => {
 
     test('redirect to cas authentication', async() => {
-        driver.get(config.baseUrl + config.redmineUrlExtension);
+        driver.get(config.baseUrl + config.redmineContextPath);
         const url = await driver.getCurrentUrl();
 
         expectations.expectCasLogin(url);
     });
 
     test('cas authentication', async() => {
-        init.login(driver, By, config.redmineUrlExtension);
+        utils.login(driver, config.redmineContextPath);
         const username = await driver.findElement(By.css('#loggedas a.user')).getText();
 
         expect(username).toBe(config.username);
     });
 
     test('check cas attributes', async() => {
-        init.login(driver, By, config.redmineUrlExtension);
+        utils.login(driver, config.redmineContextPath);
         driver.findElement(By.css('#account a.my-account')).click();
 
         const firstname = await driver.findElement(By.id('user_firstname')).getAttribute('value');
@@ -50,7 +50,7 @@ describe('cas browser tests', () => {
     });
 
     test('front channel logout', async() => {
-        init.login(driver, By, config.redmineUrlExtension);
+        utils.login(driver, config.redmineContextPath);
         driver.findElement(By.css('a.logout')).click();
         const url = await driver.getCurrentUrl();
 
@@ -58,9 +58,9 @@ describe('cas browser tests', () => {
     });
 
     test('back channel logout', async() => {
-        init.login(driver, By, config.redmineUrlExtension);
+        utils.login(driver, config.redmineContextPath);
         driver.get(config.baseUrl + '/cas/logout');
-        driver.get(config.baseUrl + config.redmineUrlExtension);
+        driver.get(config.baseUrl + config.redmineContextPath);
         const url = await driver.getCurrentUrl();
 
         expectations.expectCasLogin(url);
