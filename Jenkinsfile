@@ -76,9 +76,9 @@ node('vagrant') {
 
                     dir('it') {
 
-                        docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_URL=${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
-                            sh 'yarn --cache-folder=$(pwd)/.yarn-cache install'
-                            sh 'yarn --cache-folder=$(pwd)/.yarn-cache run ci-test'
+                        docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_URL=https://${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
+                            sh 'yarn install'
+                            sh 'yarn run ci-test'
                         }
                     }
 
