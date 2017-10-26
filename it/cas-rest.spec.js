@@ -9,6 +9,9 @@ const until = webdriver.until;
 
 jest.setTimeout(30000);
 
+// disable certificate validation
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 describe('cas rest tests', () => {
 
   test('authenticate with basic authentication', async() => {

@@ -65,9 +65,8 @@ node('vagrant') {
                 sh 'rm -f it/it-results.xml'
             }
 
-            timeout(5) {
-                def seleniumChromeImage = docker.image('selenium/standalone-chrome:3.6.0')
-                def seleniumChromeContainer = seleniumChromeImage.run()
+            timeout(time: 5, unit: 'MINUTES') {
+                def seleniumChromeContainer = docker.image('selenium/standalone-chrome:3.6.0').run()
 
                 try {
 
@@ -76,7 +75,7 @@ node('vagrant') {
 
                     dir('it') {
 
-                        docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_URL=https://${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
+                        docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_FQDN=${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
                             sh 'yarn install'
                             sh 'yarn run ci-test'
                         }

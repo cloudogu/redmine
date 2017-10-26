@@ -1,7 +1,7 @@
-let cesUrl = process.env.CES_URL;
-if (!cesUrl) {
+let cesFqdn = process.env.CES_FQDN;
+if (!cesFqdn) {
   // url from ecosystem with private network
-  cesUrl = "https://192.168.42.2"
+  cesFqdn = "192.168.42.2"
 }
 
 let webdriverType = process.env.WEBDRIVER;
@@ -10,7 +10,8 @@ if (!webdriverType) {
 }
 
 module.exports = {
-    baseUrl: cesUrl,
+    fqdn: cesFqdn,
+    baseUrl: 'https://' + cesFqdn,
     redmineContextPath: '/redmine',
     username: 'ces-admin',
     password: 'ecosystem2016',
