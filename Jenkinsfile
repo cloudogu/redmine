@@ -69,7 +69,6 @@ node('vagrant') {
                 def seleniumChromeContainer = docker.image('selenium/standalone-chrome:3.6.0').run()
 
                 try {
-
                     def seleniumChromeIP = containerIP(seleniumChromeContainer)
                     def cesIP = getCesIP()
 
@@ -146,8 +145,6 @@ void writeSetupStagingJSON() {
     //      - to work in embedded mode
     //      - have an admin as 'admin/adminpw'
 
-//"fqdn":"${getCesIP()}"
-
     writeFile file: 'setup.staging.json', text: """
 {
   "token":{
@@ -161,7 +158,7 @@ void writeSetupStagingJSON() {
     "completed":true
   },
   "naming":{
-    "fqdn":"<<ip>>",
+    "fqdn":"${getCesIP()}",
     "hostname":"ces",
     "domain":"ces.local",
     "certificateType":"selfsigned",
