@@ -105,6 +105,7 @@ RUN set -x \
  && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
 
  # cleanup
+ && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/*
