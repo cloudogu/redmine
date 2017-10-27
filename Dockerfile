@@ -2,6 +2,9 @@
 FROM registry.cloudogu.com/official/base:3.5-2
 MAINTAINER Robert Auer <robert.auer@cloudogu.com>
 
+LABEL NAME="official/redmine"
+LABEL VERSION="3.4.2"
+
 # set environment variables
 ENV REDMINE_VERSION=3.4.2 \
     CAS_PLUGIN_VERSION=1.2.13 \

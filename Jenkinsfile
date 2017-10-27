@@ -10,14 +10,22 @@ node('vagrant') {
 
     stage('Checkout') {
         checkout scm
-        dir ('ecosystem') {
-            git branch: 'develop', url: 'https://github.com/cloudogu/ecosystem'
-        }
+    }
+
+    stage('Lint') {
+        // lint dockerfiles
+        // only latest version available
+        docker.image('projectatomic/dockerfile-lint:latest').inside({
+            sh 'dockerfile_lint -f Dockerfile'
+        })
     }
 
     try {
 
         stage('Provision') {
+            dir ('ecosystem') {
+                git branch: 'develop', url: 'https://github.com/cloudogu/ecosystem', changelog: false, poll: false
+            }
             timeout(5) {
                 writeVagrantConfiguration()
                 //sh 'rm -f setup.staging.json setup.json'
