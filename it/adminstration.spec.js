@@ -108,6 +108,7 @@ function takeAdminRights(){
 
 function testuserLogin() {
     driver.get(config.baseUrl + '/redmine');
+    driver.wait(until.elementLocated(By.id('username')), 5000);
     driver.findElement(By.id('username')).sendKeys(config.testuserName);
     driver.findElement(By.id('password')).sendKeys(config.testuserPasswort);
     driver.findElement(By.css('input[name="submit"]')).click();
@@ -146,6 +147,7 @@ describe('administration rights', () => {
     test('user gets admin rights in redmine', async() => {
 
         testuserLogin(); // test user login to update information in redmine
+        driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
         adminRightsInRedmine();
         testuserLogin();
@@ -157,6 +159,7 @@ describe('administration rights', () => {
     test('user gets admin rights in redmine and then in usermanagement = take rights in usermanagement', async() => {
 
         testuserLogin(); // test user login to update information in redmine
+        driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
         adminRightsInRedmine();
         giveAdminRights();
@@ -170,6 +173,7 @@ describe('administration rights', () => {
     test('user gets admin rights in redmine = take rights in redmine', async() => {
 
         testuserLogin(); // test user login to update information in redmine
+        driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
         adminRightsInRedmine();
         adminRightsInRedmine(); // takes them here!
@@ -182,6 +186,7 @@ describe('administration rights', () => {
     test('user gets admin rights in redmine and then in usermanagement = take rights in redmine', async() => {
 
         testuserLogin(); // test user login to update information in redmine
+        driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
         adminRightsInRedmine();
         giveAdminRights();
