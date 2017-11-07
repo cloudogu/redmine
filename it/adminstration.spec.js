@@ -12,9 +12,7 @@ jest.setTimeout(30000);
 let driver;
 
 beforeEach(async() => {
-    driver = new webdriver.Builder()
-        .withCapabilities(webdriver.Capabilities.chrome())
-        .build();
+    driver = utils.createDriver(webdriver);
     createUser();
     await driver.findElement(By.id('msg'));
 });
