@@ -67,7 +67,7 @@ function install_plugin(){
 
   echo "install plugin ${NAME}"
   if [ -d "${TARGET}" ]; then
-    rm -rf "${TARGET}"  
+    rm -rf "${TARGET}"
   fi
 
   cp -rf "${SOURCE}" "${TARGET}"
@@ -127,7 +127,7 @@ else
   sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
 
   # write url settings to database
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${FQDN}/redmine', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${FQDN}', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\r\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
 
