@@ -48,6 +48,7 @@ node('vagrant') {
         stage('Wait for dependencies') {
             timeout(15) {
                 sh 'vagrant ssh -c "sudo cesapp healthy --wait --timeout 600 --fail-fast cas"'
+                sh 'vagrant ssh -c "sudo cesapp healthy --wait --timeout 600 --fail-fast usermgt"'
             }
         }
 
@@ -73,7 +74,7 @@ node('vagrant') {
                 sh 'rm -f it/it-results.xml'
             }
 
-            timeout(time: 5, unit: 'MINUTES') {
+            timeout(time: 15, unit: 'MINUTES') {
                 def seleniumChromeContainer = docker.image('selenium/standalone-chrome:3.6.0').run()
 
                 try {

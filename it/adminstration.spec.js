@@ -7,7 +7,7 @@ const keys = webdriver.Key;
 const By = webdriver.By;
 const until = webdriver.until;
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 let driver;
 
