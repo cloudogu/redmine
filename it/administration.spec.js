@@ -1,7 +1,6 @@
 const config = require('./config');
 const expectations = require('./expectations');
 const utils = require('./utils');
-const adminFunctions = require('./adminFunctions');
 
 const webdriver = require('selenium-webdriver');
 const keys = webdriver.Key;
