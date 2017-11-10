@@ -1,6 +1,7 @@
 const config = require('./config');
 const expectations = require('./expectations');
 const utils = require('./utils');
+const adminFunctions = require('./adminFunctions');
 
 const webdriver = require('selenium-webdriver');
 const keys = webdriver.Key;
@@ -68,7 +69,7 @@ async function removeUser(){
     driver.findElement(By.linkText(config.testuserName)).click();
     driver.findElement(By.css('a.icon.icon-del')).click();
     driver.switchTo().alert().accept();
-    driver.wait(until.elementLocated(By.linkText(config.adminGroup)));
+    driver.wait(until.elementLocated(By.linkText(config.username)));
 }
 
 function giveAdminRights(){
