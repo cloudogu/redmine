@@ -25,5 +25,6 @@ module.exports = {
     testuserFirstname: 'testUser',
     testuserSurname: 'testUser',
     testuserEmail: 'testuser@test.de',
-    testuserPasswort:'testpassword'
-  };
+    testuserPasswort:'testpassword',
+    adminGroup: 'CesAdministrators'
+};

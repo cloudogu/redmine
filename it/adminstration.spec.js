@@ -68,7 +68,7 @@ async function removeUser(){
     driver.findElement(By.linkText(config.testuserName)).click();
     driver.findElement(By.css('a.icon.icon-del')).click();
     driver.switchTo().alert().accept();
-    driver.wait(until.elementLocated(By.linkText('admin')));
+    driver.wait(until.elementLocated(By.linkText(config.adminGroup)));
 }
 
 function giveAdminRights(){
@@ -77,7 +77,7 @@ function giveAdminRights(){
     driver.findElement(By.css('a[href="#/user/' + config.testuserName + '"]')).click();
     driver.wait(until.elementLocated(By.css('li[heading="Groups"] a.ng-binding')), 5000);
     driver.findElement(By.css('li[heading="Groups"] a.ng-binding')).click();
-    driver.findElement(By.id('addGroup')).sendKeys('admin', keys.ENTER);
+    driver.findElement(By.id('addGroup')).sendKeys(config.adminGroup, keys.ENTER);
     driver.wait(until.elementLocated(By.css('li[heading="Options"] a.ng-binding')), 5000);
     driver.findElement(By.css('li[heading="Options"] a.ng-binding')).click();
     driver.findElement(By.css('button[type="submit"]')).click();
