@@ -1,7 +1,7 @@
 const config = require('./config');
 const expectations = require('./expectations');
 const utils = require('./utils');
-
+const request = require('supertest');
 const webdriver = require('selenium-webdriver');
 const keys = webdriver.Key;
 const By = webdriver.By;
@@ -10,16 +10,15 @@ const until = webdriver.until;
 jest.setTimeout(60000);
 
 let driver;
-
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 beforeEach(async() => {
     driver = utils.createDriver(webdriver);
-    createUser();
-    await driver.findElement(By.id('msg'));
+    await createUser();
 });
 
 afterEach(async() => {
     driver.findElement(By.css('a.logout')).click();
-    removeUser();
+    await removeUser();
     await driver.quit();
 });
 
@@ -33,55 +32,57 @@ function logoutOfUsermanagement(){
     driver.findElement(By.css('a[href="api/logout"]')).click();
 }
 
-function createUser(){
-    loginToUsermanagementUsers();
-    driver.wait(until.elementLocated(By.css('a.btn.btn-default.pull-right')), 5000);
-    driver.findElement(By.css('a.btn.btn-default.pull-right')).click();
+async function createUser(){
 
-    driver.findElement(By.id('username')).sendKeys(config.testuserName);
-    driver.findElement(By.id('givenname')).sendKeys(config.testuserFirstname);
-    driver.findElement(By.id('surname')).sendKeys(config.testuserSurname);
-    driver.findElement(By.id('displayName')).sendKeys(config.testuserName);
-    driver.findElement(By.id('email')).sendKeys(config.testuserEmail);
-    driver.findElement(By.id('password')).sendKeys(config.testuserPasswort);
-    driver.findElement(By.id('confirmPassword')).sendKeys(config.testuserPasswort);
+    await request(config.baseUrl)
+        .post('/usermgt/api/users/')
+        .auth(config.username, config.password)
 
-    driver.findElement(By.css('button[type="submit"]')).click();
-    logoutOfUsermanagement();
-
+        .set('Content-Type', 'application/json;charset=UTF-8')
+        .type('json')
+        .send({'memberOf':[],
+            'username':config.testuserName,
+            'givenname':config.testuserFirstname,
+            'surname': config.testuserSurname,
+            'displayName':config.testuserName,
+            'mail':config.testuserEmail,
+            'password':config.testuserPasswort})
+        .expect(201);
 }
 
 async function removeUser(){
+
+    await request(config.baseUrl)
+        .del('/usermgt/api/users/' + config.testuserName)
+        .auth(config.username, config.password)
+        .expect(204);
+
+
     loginToUsermanagementUsers();
-
-    //delete user in user management
-    driver.wait(until.elementLocated(By.css('a[href="#/user/' + config.testuserName + '"]')), 5000);
-    driver.findElement(By.css('a[href="#/user/' + config.testuserName + '"]')).click();
-    driver.wait(until.elementLocated(By.css('button[ng-click="remove(user)"')), 5000);
-    driver.findElement(By.css('button[ng-click="remove(user)"')).click();
-    driver.wait(until.elementLocated(By.css('button.btn.btn-danger')), 5000);
-    driver.findElement(By.css('button.btn.btn-danger')).click();
-
     //delete user in redmine
-    driver.get(config.baseUrl + '/redmine/users');
-    driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
-    driver.findElement(By.linkText(config.testuserName)).click();
-    driver.findElement(By.css('a.icon.icon-del')).click();
-    driver.switchTo().alert().accept();
-    driver.wait(until.elementLocated(By.linkText(config.username)));
+    await driver.get(config.baseUrl + '/redmine/users');
+    await driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
+    await driver.findElement(By.linkText(config.testuserName)).click();
+    await driver.findElement(By.css('a.icon.icon-del')).click();
+    await driver.switchTo().alert().accept();
+    await driver.wait(until.elementLocated(By.linkText('admin')));
 }
 
-function giveAdminRights(){
-    loginToUsermanagementUsers();
-    driver.wait(until.elementLocated(By.css('a[href="#/user/' + config.testuserName + '"]')), 5000);
-    driver.findElement(By.css('a[href="#/user/' + config.testuserName + '"]')).click();
-    driver.wait(until.elementLocated(By.css('li[heading="Groups"] a.ng-binding')), 5000);
-    driver.findElement(By.css('li[heading="Groups"] a.ng-binding')).click();
-    driver.findElement(By.id('addGroup')).sendKeys(config.adminGroup, keys.ENTER);
-    driver.wait(until.elementLocated(By.css('li[heading="Options"] a.ng-binding')), 5000);
-    driver.findElement(By.css('li[heading="Options"] a.ng-binding')).click();
-    driver.findElement(By.css('button[type="submit"]')).click();
-    logoutOfUsermanagement();
+async function giveAdminRights(){
+
+    await request(config.baseUrl)
+        .put('/usermgt/api/users/' + config.testuserName)
+        .auth(config.username, config.password)
+        .set('Content-Type', 'application/json;charset=UTF-8')
+        .type('json')
+        .send({'memberOf':[config.adminGroup],
+            'username':config.testuserName,
+            'givenname':config.testuserFirstname,
+            'surname': config.testuserSurname,
+            'displayName':config.testuserName,
+            'mail':config.testuserEmail,
+            'password':config.testuserPasswort})
+        .expect(204);
 }
 
 function adminRightsInRedmine(){
@@ -96,14 +97,21 @@ function adminRightsInRedmine(){
 
 }
 
-function takeAdminRights(){
-    loginToUsermanagementUsers();
-    driver.wait(until.elementLocated(By.css('a[href="#/user/' + config.testuserName + '"]')), 5000);
-    driver.findElement(By.css('a[href="#/user/' + config.testuserName + '"]')).click();
-    driver.wait(until.elementLocated(By.css('li[heading="Groups"] a.ng-binding')), 5000);
-    driver.findElement(By.css('li[heading="Groups"] a.ng-binding')).click();
-    driver.findElement(By.css('span.glyphicon.glyphicon-remove.remove')).click();
-    logoutOfUsermanagement();
+async function takeAdminRights(){
+
+    await request(config.baseUrl)
+        .put('/usermgt/api/users/' + config.testuserName)
+        .auth(config.username, config.password)
+        .set('Content-Type', 'application/json;charset=UTF-8')
+        .type('json')
+        .send({'memberOf':[],
+            'username':config.testuserName,
+            'givenname':config.testuserFirstname,
+            'surname': config.testuserSurname,
+            'displayName':config.testuserName,
+            'mail':config.testuserEmail,
+            'password':config.testuserPasswort})
+        .expect(204);
 }
 
 function testuserLogin() {
