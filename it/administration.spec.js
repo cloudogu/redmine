@@ -22,16 +22,6 @@ afterEach(async() => {
     await driver.quit();
 });
 
-function loginToUsermanagementUsers(){
-    utils.login(driver, '/usermgt');
-    driver.get(config.baseUrl + '/usermgt/#/users');
-}
-
-function logoutOfUsermanagement(){
-    driver.wait(until.elementLocated(By.css('a[href="api/logout"]')), 5000);
-    driver.findElement(By.css('a[href="api/logout"]')).click();
-}
-
 async function createUser(){
 
     await request(config.baseUrl)
@@ -58,7 +48,7 @@ async function removeUser(){
         .expect(204);
 
 
-    loginToUsermanagementUsers();
+    utils.login(driver, '/redmine');
     //delete user in redmine
     await driver.get(config.baseUrl + '/redmine/users');
     await driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
@@ -86,7 +76,7 @@ async function giveAdminRights(){
 }
 
 function adminRightsInRedmine(){
-    loginToUsermanagementUsers();
+    utils.login(driver, '/redmine');
     driver.get(config.baseUrl + '/redmine/users');
 
     driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
