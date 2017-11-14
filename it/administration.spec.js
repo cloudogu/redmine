@@ -55,7 +55,7 @@ async function removeUser(){
     await driver.findElement(By.linkText(config.testuserName)).click();
     await driver.findElement(By.css('a.icon.icon-del')).click();
     await driver.switchTo().alert().accept();
-    await driver.wait(until.elementLocated(By.linkText('admin')));
+    await driver.wait(until.elementLocated(By.linkText(config.username)));
 }
 
 async function giveAdminRights(){
