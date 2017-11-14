@@ -135,6 +135,7 @@ module.exports = class adminFunctions{
 
         this.testuserLogin();
         this.driver.get(config.baseUrl + config.redmineContextPath + '/my/api_key');
+        this.driver.wait(until.elementLocated(By.css('div.box pre')), 5000);
         const apiKey = await this.driver.findElement(By.css('div.box pre')).getText();
         await this.testuserLogout();
         return apiKey;
