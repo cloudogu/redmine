@@ -10,7 +10,7 @@ module.exports = class adminFunctions{
 
     constructor(driver) {
         this.driver = driver;
-    }
+    };
 
     async createUser(){
 
@@ -28,7 +28,7 @@ module.exports = class adminFunctions{
                 'mail':config.testuserEmail,
                 'password':config.testuserPasswort})
             .expect(201);
-    }
+    };
 
     async removeUser(){
 
@@ -46,7 +46,7 @@ module.exports = class adminFunctions{
         await this.driver.findElement(By.css('a.icon.icon-del')).click();
         await this.driver.switchTo().alert().accept();
         await this.driver.wait(until.elementLocated(By.linkText(config.username)));
-    }
+    };
 
     async giveAdminRights(){
 
@@ -63,7 +63,7 @@ module.exports = class adminFunctions{
                 'mail':config.testuserEmail,
                 'password':config.testuserPasswort})
             .expect(204);
-    }
+    };
 
     adminRightsInRedmine(){
         utils.login(this.driver, '/redmine');
@@ -75,7 +75,7 @@ module.exports = class adminFunctions{
         this.driver.findElement(By.css('input[type="submit"]')).click();
         this.driver.findElement(By.css('a.logout')).click();
 
-    }
+    };
 
     async takeAdminRights(){
 
@@ -92,7 +92,7 @@ module.exports = class adminFunctions{
                 'mail':config.testuserEmail,
                 'password':config.testuserPasswort})
             .expect(204);
-    }
+    };
 
     testuserLogin() {
 
@@ -101,6 +101,11 @@ module.exports = class adminFunctions{
         this.driver.findElement(By.id('username')).sendKeys(config.testuserName);
         this.driver.findElement(By.id('password')).sendKeys(config.testuserPasswort);
         this.driver.findElement(By.css('input[name="submit"]')).click();
+    };
+
+    async testuserLogout() {
+        await this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
+        await this.driver.findElement(By.css('a.logout')).click();
     };
 
     async isAdministratorInRedmine(){
@@ -116,4 +121,23 @@ module.exports = class adminFunctions{
         });
     };
 
-}
+    async accessUsersJson(apiKey, expectStatus){
+
+        await request(config.baseUrl)
+            .get( config.redmineContextPath + '/users.json')
+            .set({
+                'X-Redmine-API-Key': apiKey
+            })
+            .expect(expectStatus); //403 = "Forbidden", 200 = "OK"
+    };
+
+    async getApiKeyOfTestuser(){
+
+        this.testuserLogin();
+        this.driver.get(config.baseUrl + config.redmineContextPath + '/my/api_key');
+        const apiKey = await this.driver.findElement(By.css('div.box pre')).getText();
+        await this.testuserLogout();
+        return apiKey;
+    };
+
+};
