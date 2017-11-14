@@ -73,6 +73,7 @@ module.exports = class adminFunctions{
         this.driver.findElement(By.linkText(config.testuserName)).click();
         this.driver.findElement(By.css('input[type="checkbox"]')).click();
         this.driver.findElement(By.css('input[type="submit"]')).click();
+        this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         this.driver.findElement(By.css('a.logout')).click();
 
     };
