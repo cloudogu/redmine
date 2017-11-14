@@ -49,7 +49,7 @@ describe('administration rights', () => {
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
-        adminFunctions.adminRightsInRedmine();
+        adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
         expect(adminrights).toBe(true);
@@ -61,7 +61,7 @@ describe('administration rights', () => {
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
-        adminFunctions.adminRightsInRedmine();
+        adminFunctions.takeAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
         adminFunctions.takeAdminRights();
         adminFunctions.testuserLogin();
@@ -75,8 +75,8 @@ describe('administration rights', () => {
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
-        adminFunctions.adminRightsInRedmine();
-        adminFunctions.adminRightsInRedmine(); // takes them here!
+        adminFunctions.giveAdminRightsInRedmine();
+        adminFunctions.takeAdminRightsInRedmine(); // takes them here!
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
         expect(adminrights).toBe(false);
@@ -88,9 +88,9 @@ describe('administration rights', () => {
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
-        adminFunctions.adminRightsInRedmine();
+        //adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
-        adminFunctions.adminRightsInRedmine(); // takes them here!
+        adminFunctions.takeAdminRightsInRedmine(); // takes them here!
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
         expect(adminrights).toBe(true);

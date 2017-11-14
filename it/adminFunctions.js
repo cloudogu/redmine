@@ -65,19 +65,35 @@ module.exports = class adminFunctions{
             .expect(204);
     };
 
-    adminRightsInRedmine(){
+    async giveAdminRightsInRedmine(){
         utils.login(this.driver, '/redmine');
         this.driver.get(config.baseUrl + '/redmine/users');
 
         this.driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
         this.driver.findElement(By.linkText(config.testuserName)).click();
-        this.driver.wait(until.elementLocated(By.css('input[type="checkbox"]')), 5000);
-        this.driver.findElement(By.css('input[type="checkbox"]')).click();
+        this.driver.wait(until.elementLocated(By.css('input:not(:checked)[type="checkbox"]')), 5000);
+        this.driver.findElement(By.css('input:not(:checked)[type="checkbox"]')).click();
+
         this.driver.findElement(By.css('input[type="submit"]')).click();
         this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         this.driver.findElement(By.css('a.logout')).click();
 
     };
+
+    async takeAdminRightsInRedmine(){
+        utils.login(this.driver, '/redmine');
+        this.driver.get(config.baseUrl + '/redmine/users');
+
+        this.driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
+        this.driver.findElement(By.linkText(config.testuserName)).click();
+        this.driver.wait(until.elementLocated(By.css('input:checked[type="checkbox"]')), 5000);
+        this.driver.findElement(By.css('input:checked[type="checkbox"]')).click();
+        this.driver.findElement(By.css('input[type="submit"]')).click();
+        this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
+        this.driver.findElement(By.css('a.logout')).click();
+
+    };
+
 
     async takeAdminRights(){
 
@@ -96,7 +112,7 @@ module.exports = class adminFunctions{
             .expect(204);
     };
 
-    testuserLogin() {
+    async testuserLogin() {
 
         this.driver.get(config.baseUrl + '/redmine');
         this.driver.wait(until.elementLocated(By.id('username')), 5000);

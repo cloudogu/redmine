@@ -44,7 +44,7 @@ describe('administration rest tests', () => {
 
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.adminRightsInRedmine();
+        adminFunctions.giveAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 200);
@@ -55,7 +55,7 @@ describe('administration rest tests', () => {
         //utils.testuserLogin(driver, '/redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.adminRightsInRedmine();
+        adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
         adminFunctions.takeAdminRights();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
@@ -67,8 +67,8 @@ describe('administration rest tests', () => {
 
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.adminRightsInRedmine();
-        adminFunctions.adminRightsInRedmine(); // takes them here!
+        adminFunctions.giveAdminRightsInRedmine();
+        adminFunctions.takeAdminRightsInRedmine(); // takes them here!
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 403);
@@ -78,9 +78,9 @@ describe('administration rest tests', () => {
 
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.adminRightsInRedmine();
+        adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
-        adminFunctions.adminRightsInRedmine(); // takes them here!
+        adminFunctions.takeAdminRightsInRedmine(); // takes them here!
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 200);
