@@ -26,16 +26,16 @@ module.exports = class adminFunctions{
                 'surname': config.testuserSurname,
                 'displayName':config.testuserName,
                 'mail':config.testuserEmail,
-                'password':config.testuserPasswort})
-            .expect(201);
+                'password':config.testuserPasswort});
+          //  .expect(201);
     };
 
     async removeUser(){
 
         await request(config.baseUrl)
             .del('/usermgt/api/users/' + config.testuserName)
-            .auth(config.username, config.password)
-            .expect(204);
+            .auth(config.username, config.password);
+           // .expect(204);
 
 
         utils.login(this.driver, '/redmine');
