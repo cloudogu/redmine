@@ -43,6 +43,7 @@ module.exports = class adminFunctions{
         await this.driver.get(config.baseUrl + '/redmine/users');
         await this.driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
         await this.driver.findElement(By.linkText(config.testuserName)).click();
+        await this.driver.wait(until.elementLocated(By.css('a.icon.icon-del')), 5000);
         await this.driver.findElement(By.css('a.icon.icon-del')).click();
         await this.driver.switchTo().alert().accept();
         await this.driver.wait(until.elementLocated(By.linkText(config.username)));
@@ -71,12 +72,14 @@ module.exports = class adminFunctions{
 
         this.driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
         this.driver.findElement(By.linkText(config.testuserName)).click();
-        this.driver.wait(until.elementLocated(By.css('input:not(:checked)[type="checkbox"]')), 5000);
-        this.driver.findElement(By.css('input:not(:checked)[type="checkbox"]')).click();
+        this.driver.wait(until.elementLocated(By.css('input[type="checkbox"]')), 5000);
+        var buttonEnabled = await this.driver.findElement(By.css('input#user_admin')).isSelected();
+        if(!buttonEnabled) this.driver.findElement(By.css('input#user_admin')).click();
+        await this.driver.findElement(By.css('input[type="submit"]')).click();
+        await this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
+        await this.driver.findElement(By.css('a.logout')).click();
 
-        this.driver.findElement(By.css('input[type="submit"]')).click();
-        this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
-        this.driver.findElement(By.css('a.logout')).click();
+
 
     };
 
@@ -86,11 +89,12 @@ module.exports = class adminFunctions{
 
         this.driver.wait(until.elementLocated(By.linkText(config.testuserName)), 5000);
         this.driver.findElement(By.linkText(config.testuserName)).click();
-        this.driver.wait(until.elementLocated(By.css('input:checked[type="checkbox"]')), 5000);
-        this.driver.findElement(By.css('input:checked[type="checkbox"]')).click();
-        this.driver.findElement(By.css('input[type="submit"]')).click();
-        this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
-        this.driver.findElement(By.css('a.logout')).click();
+        this.driver.wait(until.elementLocated(By.css('input#user_admin')), 5000);
+        var buttonEnabled = await this.driver.findElement(By.css('input#user_admin')).isSelected();
+        if(buttonEnabled) this.driver.findElement(By.css('input#user_admin')).click();
+        await this.driver.findElement(By.css('input[type="submit"]')).click();
+        await this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
+        await this.driver.findElement(By.css('a.logout')).click();
 
     };
 

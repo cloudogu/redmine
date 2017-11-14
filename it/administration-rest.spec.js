@@ -44,7 +44,7 @@ describe('administration rest tests', () => {
 
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.giveAdminRightsInRedmine();
+        await adminFunctions.giveAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 200);
@@ -52,10 +52,9 @@ describe('administration rest tests', () => {
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in usermanagement', async() => {
 
-        //utils.testuserLogin(driver, '/redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.giveAdminRightsInRedmine();
+        await adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
         adminFunctions.takeAdminRights();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
@@ -67,8 +66,8 @@ describe('administration rest tests', () => {
 
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.giveAdminRightsInRedmine();
-        adminFunctions.takeAdminRightsInRedmine(); // takes them here!
+        await adminFunctions.giveAdminRightsInRedmine();
+        await adminFunctions.takeAdminRightsInRedmine(); // takes them here!
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 403);
@@ -78,9 +77,9 @@ describe('administration rest tests', () => {
 
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
-        adminFunctions.giveAdminRightsInRedmine();
+        await adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
-        adminFunctions.takeAdminRightsInRedmine(); // takes them here!
+        await adminFunctions.takeAdminRightsInRedmine(); // takes them here!
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 200);
