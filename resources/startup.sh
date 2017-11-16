@@ -31,7 +31,7 @@ function sql(){
 }
 
 function exec_rake() {
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f ${WORKDIR}/Rakefile $*
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
 function install_plugins(){
@@ -80,7 +80,7 @@ render_template "${WORKDIR}/config/database.yml.tpl" > "${WORKDIR}/config/databa
 if [ ! -f "${WORKDIR}/config/initializers/secret_token.rb" ]; then
   exec_rake generate_secret_token
   # TODO do we need the step below?
-  SECRETKEYBASE=$(grep secret_key_base ${WORKDIR}/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
+  SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
   render_template "${WORKDIR}/config/secrets.yml.tpl" > "${WORKDIR}/config/secrets.yml"
 fi
 
@@ -153,11 +153,11 @@ fi
 install_plugins
 
 # Create links
-if [ ! -e ${WORKDIR}/public/redmine ]; then
-  ln -s ${WORKDIR} ${WORKDIR}/public/
+if [ ! -e "${WORKDIR}"/public/redmine ]; then
+  ln -s "${WORKDIR}" "${WORKDIR}"/public/
 fi
-if [ ! -e ${WORKDIR}/stylesheets ]; then
-  ln -s ${WORKDIR}/public/* ${WORKDIR}
+if [ ! -e "${WORKDIR}"/stylesheets ]; then
+  ln -s "${WORKDIR}"/public/* "${WORKDIR}"
 fi
 
 # Generate configuration.yml from template (e.g. for config of mail transport)
