@@ -29,7 +29,7 @@ afterEach(async() => {
 describe('administration rights', () => {
 
     test('user is admin in general = admin in redmine', async() => {
-
+        console.log('user is admin in general = admin in redmine');
         adminFunctions.giveAdminRights();
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
@@ -38,14 +38,14 @@ describe('administration rights', () => {
     });
 
     test('user is no admin in general = no admin in redmine', async() => {
-
+        console.log('user is no admin in general = no admin in redmine');
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
         expect(adminrights).toBe(false);
     });
 
     test('user gets admin rights in redmine', async() => {
-
+        console.log('user gets admin rights in redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
@@ -57,7 +57,7 @@ describe('administration rights', () => {
     });
 
     test('user gets admin rights in redmine and then in usermanagement = take rights in usermanagement', async() => {
-
+        console.log('user gets admin rights in redmine and then in usermanagement = take rights in usermanagement');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
@@ -71,7 +71,7 @@ describe('administration rights', () => {
     });
 
     test('user gets admin rights in redmine = take rights in redmine', async() => {
-
+        console.log('user gets admin rights in redmine = take rights in redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
@@ -84,7 +84,7 @@ describe('administration rights', () => {
     });
 
     test('user gets admin rights in redmine and then in usermanagement = take rights in redmine', async() => {
-
+        console.log('user gets admin rights in redmine and then in usermanagement = take rights in redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();

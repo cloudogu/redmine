@@ -17,11 +17,11 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 beforeEach(async() => {
     driver = utils.createDriver(webdriver);
     adminFunctions = new classAdminFunctions(driver);
-   // await adminFunctions.createUser();
+    await adminFunctions.createUser();
 });
 
 afterEach(async() => {
-  //  await adminFunctions.removeUser();
+    await adminFunctions.removeUser();
     await driver.quit();
 });
 
@@ -29,19 +29,21 @@ afterEach(async() => {
 describe('administration rest tests', () => {
 
     test('rest - user is admin in general = admin in redmine', async() => {
-       // adminFunctions.giveAdminRights();
-       // const apiKey = await adminFunctions.getApiKeyOfTestuser();
+        console.log('rest - user is admin in general = admin in redmine');
+        adminFunctions.giveAdminRights();
+        const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
-       // await adminFunctions.accessUsersJson(apiKey, 200);
+        await adminFunctions.accessUsersJson(apiKey, 200);
     });
 
- /*   test('rest - user is no admin in general = no admin in redmine', async() => {
+    test('rest - user is no admin in general = no admin in redmine', async() => {
+        console.log('rest - user is no admin in general = no admin in redmine');
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
         await adminFunctions.accessUsersJson(apiKey, 403);
     });
 
     test('rest - user gets admin rights in redmine', async() => {
-
+        console.log('rest - user gets admin rights in redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
@@ -51,7 +53,7 @@ describe('administration rest tests', () => {
     });
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in usermanagement', async() => {
-
+        console.log('rest - user gets admin rights in redmine and then in usermanagement = take rights in usermanagement');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
@@ -63,7 +65,7 @@ describe('administration rest tests', () => {
     });
 
     test('rest - user gets admin rights in redmine = take rights in redmine', async() => {
-
+        console.log('rest - user gets admin rights in redmine = take rights in redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
@@ -74,7 +76,7 @@ describe('administration rest tests', () => {
     });
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in redmine', async() => {
-
+        console.log('rest - user gets admin rights in redmine and then in usermanagement = take rights in redmine');
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
@@ -84,5 +86,5 @@ describe('administration rest tests', () => {
 
         await adminFunctions.accessUsersJson(apiKey, 200);
     });
-*/
+
 });
