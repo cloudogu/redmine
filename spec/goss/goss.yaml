@@ -41,9 +41,6 @@ package:
 port:
   tcp:3000:
     listening: true
-interface:
-  eth1:
-    exists: true
 process:
   ruby:
     running: true
