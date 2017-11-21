@@ -67,7 +67,7 @@ describe('administration rest tests', () => {
         adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
-        await adminFunctions.takeAdminRightsInRedmine(); // takes them here!
+        await adminFunctions.takeAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 403);
@@ -79,7 +79,7 @@ describe('administration rest tests', () => {
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
-        await adminFunctions.takeAdminRightsInRedmine(); // takes them here!
+        await adminFunctions.takeAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
 
         await adminFunctions.accessUsersJson(apiKey, 200);
