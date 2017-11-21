@@ -70,8 +70,8 @@ node('vagrant') {
 
         stage('Integration Tests') {
 
-            if (fileExists('it/it-results.xml')) {
-                sh 'rm -f it/it-results.xml'
+            if (fileExists('integrationTests/integrationTests-results.xml')) {
+                sh 'rm -f integrationTests/integrationTests-results.xml'
             }
 
             timeout(time: 15, unit: 'MINUTES') {
@@ -81,7 +81,7 @@ node('vagrant') {
                     def seleniumChromeIP = containerIP(seleniumChromeContainer)
                     def cesIP = getCesIP()
 
-                    dir('it') {
+                    dir('integrationTests') {
 
                         docker.image('node:8.7.0-stretch').inside("-e WEBDRIVER=remote -e CES_FQDN=${cesIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${seleniumChromeIP}:4444/wd/hub") {
                             sh 'yarn install'
@@ -92,7 +92,7 @@ node('vagrant') {
                 } finally {
                     seleniumChromeContainer.stop()
                     // archive test results
-                    junit 'it/it-results.xml'
+                    junit 'integrationTests/integrationTests-results.xml'
                 }
             }
 
