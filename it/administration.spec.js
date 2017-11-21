@@ -76,7 +76,7 @@ describe('administration rights', () => {
         driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         driver.findElement(By.css('a.logout')).click();
         await adminFunctions.giveAdminRightsInRedmine();
-        await adminFunctions.takeAdminRightsInRedmine(); // takes them here!
+        await adminFunctions.takeAdminRightsInRedmine();
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
         expect(adminrights).toBe(false);
@@ -90,7 +90,7 @@ describe('administration rights', () => {
         driver.findElement(By.css('a.logout')).click();
         await adminFunctions.giveAdminRightsInRedmine();
         adminFunctions.giveAdminRights();
-        await adminFunctions.takeAdminRightsInRedmine(); // takes them here!
+        await adminFunctions.takeAdminRightsInRedmine();
         adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
         expect(adminrights).toBe(true);
