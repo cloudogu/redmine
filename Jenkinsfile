@@ -70,8 +70,8 @@ node('vagrant') {
 
         stage('Integration Tests') {
 
-            if (fileExists('integrationTests/integrationTests-results.xml')) {
-                sh 'rm -f integrationTests/integrationTests-results.xml'
+            if (fileExists('integrationTests/it-results.xml')) {
+                sh 'rm -f integrationTests/it-results.xml'
             }
 
             timeout(time: 15, unit: 'MINUTES') {
@@ -92,7 +92,7 @@ node('vagrant') {
                 } finally {
                     seleniumChromeContainer.stop()
                     // archive test results
-                    junit 'integrationTests/integrationTests-results.xml'
+                    junit 'integrationTests/it-results.xml'
                 }
             }
 
