@@ -32,7 +32,6 @@ module.exports = class adminFunctions{
                 'displayName':this.testuserName,
                 'mail':this.testuserEmail,
                 'password':this.testuserPasswort});
-          //  .expect(201);
     };
 
     async removeUser(){
@@ -40,7 +39,6 @@ module.exports = class adminFunctions{
         await request(config.baseUrl)
             .del('/usermgt/api/users/' + this.testuserName)
             .auth(config.username, config.password);
-           // .expect(204);
 
 
         utils.login(this.driver, '/redmine');
@@ -143,7 +141,7 @@ module.exports = class adminFunctions{
             if (err instanceof webdriver.error.NoSuchElementError) {
                 return false;//element did not exist
             } else {
-                webdriver.promise.rejected(err);//some other error...
+                webdriver.promise.rejected(err);
             }
         });
     };
