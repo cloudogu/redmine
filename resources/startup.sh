@@ -26,6 +26,8 @@ REDMINE_LANG=en
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
+HOSTNAME_SETTING="${FQDN}"
+
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "${DATABASE_IP}" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
 }
@@ -104,7 +106,7 @@ if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
   echo "Redmine (database) has been installed already."
   # update FQDN in settings
   # we need to update the fqdn on every start, bacause of possible changes
-  sql "UPDATE settings SET value='${FQDN}/redmine' WHERE name='host_name';"
+  sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
   sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \nenabled: 1 \ncas_url: https://${FQDN}/cas \nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
 else
 
@@ -127,7 +129,7 @@ else
   sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
 
   # write url settings to database
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${FQDN}', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\r\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
 
