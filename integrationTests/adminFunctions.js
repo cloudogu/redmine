@@ -6,7 +6,7 @@ const By = webdriver.By;
 const until = webdriver.until;
 
 
-export default class AdminFunctions{
+module.exports = class AdminFunctions{
 
     constructor(driver, testuserName, testUserFirstname, testuserSurname, testuserEmail, testuserPasswort) {
         this.driver = driver;
