@@ -6,7 +6,7 @@ const By = webdriver.By;
 const until = webdriver.until;
 
 
-module.exports = class adminFunctions{
+export default class AdminFunctions{
 
     constructor(driver, testuserName, testUserFirstname, testuserSurname, testuserEmail, testuserPasswort) {
         this.driver = driver;
@@ -25,13 +25,15 @@ module.exports = class adminFunctions{
 
             .set('Content-Type', 'application/json;charset=UTF-8')
             .type('json')
-            .send({'memberOf':[],
+            .send({
                 'username':this.testuserName,
                 'givenname':this.testuserFirstname,
                 'surname': this.testuserSurname,
                 'displayName':this.testuserName,
                 'mail':this.testuserEmail,
-                'password':this.testuserPasswort});
+                'password':this.testuserPasswort,
+                'memberOf':[]
+            });
     };
 
     async removeUser(){
@@ -81,9 +83,6 @@ module.exports = class adminFunctions{
         await this.driver.findElement(By.css('input[type="submit"]')).click();
         await this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         await this.driver.findElement(By.css('a.logout')).click();
-
-
-
     };
 
     async takeAdminRightsInRedmine(){
@@ -98,7 +97,6 @@ module.exports = class adminFunctions{
         await this.driver.findElement(By.css('input[type="submit"]')).click();
         await this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         await this.driver.findElement(By.css('a.logout')).click();
-
     };
 
 

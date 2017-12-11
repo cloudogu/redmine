@@ -1,5 +1,5 @@
 const config = require('./config');
-const classAdminFunctions = require('./adminFunctions');
+const AdminFunctions = require('./adminFunctions');
 const expectations = require('./expectations');
 const utils = require('./utils');
 const webdriver = require('selenium-webdriver');
@@ -16,7 +16,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 beforeEach(async() => {
     driver = utils.createDriver(webdriver);
 
-    adminFunctions = new classAdminFunctions(driver, 'testUser', 'testUser', 'testUser', 'testUser@test.de', 'testuserpasswort');
+    adminFunctions = new AdminFunctions(driver, 'testUser', 'testUser', 'testUser', 'testUser@test.de', 'testuserpasswort');
     await adminFunctions.createUser();
 });
 

@@ -1,6 +1,6 @@
 const request = require('supertest');
 const config = require('./config');
-const classAdminFunctions = require('./adminFunctions');
+const AdminFunctions = require('./adminFunctions');
 const utils = require('./utils');
 const webdriver = require('selenium-webdriver');
 const By = webdriver.By;
@@ -16,7 +16,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 beforeEach(async() => {
     driver = utils.createDriver(webdriver);
-    adminFunctions = new classAdminFunctions(driver, 'testUserR', 'testUserR', 'testUserR', 'testUserR@test.de', 'testuserrpasswort');
+    adminFunctions = new AdminFunctions(driver, 'testUserR', 'testUserR', 'testUserR', 'testUserR@test.de', 'testuserrpasswort');
     await adminFunctions.createUser();
 });
 
