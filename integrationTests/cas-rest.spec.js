@@ -23,9 +23,9 @@ describe('cas rest tests', () => {
 
   test('authenticate with API key', async() => {
 
-    const driver = utils.createDriver(webdriver);
-    utils.login(driver, config.redmineContextPath + '/my/api_key');
-    driver.wait(until.elementLocated(By.css('div.box pre')), 5000);
+    const driver = await utils.createDriver(webdriver);
+    await utils.login(driver, config.redmineContextPath + '/my/api_key');
+    await driver.wait(until.elementLocated(By.css('div.box pre')), 5000);
     const apiKey = await driver.findElement(By.css('div.box pre')).getText();
     driver.quit();
 

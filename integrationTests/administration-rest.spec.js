@@ -1,11 +1,7 @@
-const request = require('supertest');
 const config = require('./config');
 const AdminFunctions = require('./adminFunctions');
 const utils = require('./utils');
 const webdriver = require('selenium-webdriver');
-const By = webdriver.By;
-const keys = webdriver.Key;
-const until = webdriver.until;
 
 jest.setTimeout(30000);
 let driver;
@@ -29,9 +25,8 @@ afterEach(async() => {
 describe('administration rest tests', () => {
 
     test('rest - user is admin in general = admin in redmine', async() => {
-        adminFunctions.giveAdminRights();
+        await adminFunctions.giveAdminRights();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
-
         await adminFunctions.accessUsersJson(apiKey, 200);
     });
 
@@ -42,46 +37,42 @@ describe('administration rest tests', () => {
 
     test('rest - user gets admin rights in redmine', async() => {
 
-        adminFunctions.testuserLogin(); // test user login to update information in redmine
+        await adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
-
         await adminFunctions.accessUsersJson(apiKey, 200);
     });
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in usermanagement', async() => {
 
-        adminFunctions.testuserLogin(); // test user login to update information in redmine
+        await adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
-        adminFunctions.giveAdminRights();
-        adminFunctions.takeAdminRights();
+        await adminFunctions.giveAdminRights();
+        await adminFunctions.takeAdminRights();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
-
         await adminFunctions.accessUsersJson(apiKey, 200);
     });
 
     test('rest - user gets admin rights in redmine = take rights in redmine', async() => {
 
-        adminFunctions.testuserLogin(); // test user login to update information in redmine
+        await adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         await adminFunctions.takeAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
-
         await adminFunctions.accessUsersJson(apiKey, 403);
     });
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in redmine', async() => {
 
-        adminFunctions.testuserLogin(); // test user login to update information in redmine
+        await adminFunctions.testuserLogin(); // test user login to update information in redmine
         await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
-        adminFunctions.giveAdminRights();
+        await adminFunctions.giveAdminRights();
         await adminFunctions.takeAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
-
         await adminFunctions.accessUsersJson(apiKey, 200);
     });
 

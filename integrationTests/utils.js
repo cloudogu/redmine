@@ -21,9 +21,9 @@ function createLocalDriver() {
     .build();
 }
 
-exports.login = function(driver, relativeUrl) {
-    driver.get(config.baseUrl + relativeUrl);
-    driver.findElement(By.id('username')).sendKeys(config.username);
-    driver.findElement(By.id('password')).sendKeys(config.password);
-    driver.findElement(By.css('input[name="submit"]')).click();
+exports.login = async function(driver, relativeUrl) {
+    await driver.get(config.baseUrl + relativeUrl);
+    await driver.findElement(By.id('username')).sendKeys(config.username);
+    await driver.findElement(By.id('password')).sendKeys(config.password);
+    await driver.findElement(By.css('input[name="submit"]')).click();
 };
