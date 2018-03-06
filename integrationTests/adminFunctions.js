@@ -122,14 +122,14 @@ module.exports = class AdminFunctions{
     async testuserLogin() {
 
         await this.driver.get(config.baseUrl + '/redmine');
-        await this.driver.wait(until.elementLocated(By.id('username')), 5000);
+        await this.driver.wait(until.elementLocated(By.id('username')), 8000);
         await this.driver.findElement(By.id('username')).sendKeys(this.testuserName);
         await this.driver.findElement(By.id('password')).sendKeys(this.testuserPasswort);
         await this.driver.findElement(By.css('input[name="submit"]')).click();
     };
 
     async testuserLogout() {
-        await this.driver.wait(until.elementLocated(By.css('a.logout')), 5000);
+        await this.driver.wait(until.elementLocated(By.css('a.logout')), 8000);
         await this.driver.findElement(By.css('a.logout')).click();
     };
 
@@ -160,7 +160,7 @@ module.exports = class AdminFunctions{
 
         await this.testuserLogin();
         await this.driver.get(config.baseUrl + config.redmineContextPath + '/my/api_key');
-        await this.driver.wait(until.elementLocated(By.css('div.box pre')), 5000);
+        await this.driver.wait(until.elementLocated(By.css('div.box pre')), 8000);
         const apiKey = await this.driver.findElement(By.css('div.box pre')).getText();
         await this.testuserLogout();
         return apiKey;
