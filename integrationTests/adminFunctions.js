@@ -45,12 +45,7 @@ module.exports = class AdminFunctions{
         utils.login(this.driver, '/redmine');
         //delete user in redmine
         await this.driver.get(config.baseUrl + '/redmine/users');
-        try{
-            await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 20000);
-        }catch(err){
-            console.log("the username that should be deleted could not be found");
-            console.log(err);
-        }
+        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 20000);
         await this.driver.findElement(By.linkText(this.testuserName)).click();
         await this.driver.wait(until.elementLocated(By.css('a.icon.icon-del')), 5000);
         await this.driver.findElement(By.css('a.icon.icon-del')).click();
