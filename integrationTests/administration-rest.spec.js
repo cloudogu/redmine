@@ -14,6 +14,8 @@ beforeEach(async() => {
     driver = await utils.createDriver(webdriver);
     adminFunctions = new AdminFunctions(driver, 'testUserR', 'testUserR', 'testUserR', 'testUserR@test.de', 'testuserrpasswort');
     await adminFunctions.createUser();
+    await adminFunctions.testuserLogin();
+    await adminFunctions.testuserLogout();
 });
 
 afterEach(async() => {
@@ -37,8 +39,6 @@ describe('administration rest tests', () => {
 
     test('rest - user gets admin rights in redmine', async() => {
 
-        await adminFunctions.testuserLogin(); // test user login to update information in redmine
-        await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
         await adminFunctions.accessUsersJson(apiKey, 200);
@@ -46,8 +46,6 @@ describe('administration rest tests', () => {
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in usermanagement', async() => {
 
-        await adminFunctions.testuserLogin(); // test user login to update information in redmine
-        await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         await adminFunctions.giveAdminRights();
         await adminFunctions.takeAdminRights();
@@ -57,8 +55,6 @@ describe('administration rest tests', () => {
 
     test('rest - user gets admin rights in redmine = take rights in redmine', async() => {
 
-        await adminFunctions.testuserLogin(); // test user login to update information in redmine
-        await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         await adminFunctions.takeAdminRightsInRedmine();
         const apiKey = await adminFunctions.getApiKeyOfTestuser();
@@ -67,8 +63,6 @@ describe('administration rest tests', () => {
 
     test('rest - user gets admin rights in redmine and then in usermanagement = take rights in redmine', async() => {
 
-        await adminFunctions.testuserLogin(); // test user login to update information in redmine
-        await adminFunctions.testuserLogout();
         await adminFunctions.giveAdminRightsInRedmine();
         await adminFunctions.giveAdminRights();
         await adminFunctions.takeAdminRightsInRedmine();

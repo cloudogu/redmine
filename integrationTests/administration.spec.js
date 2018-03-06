@@ -17,6 +17,8 @@ beforeEach(async() => {
     driver = await utils.createDriver(webdriver);
     adminFunctions = new AdminFunctions(driver, 'testUser', 'testUser', 'testUser', 'testUser@test.de', 'testuserpasswort');
     await adminFunctions.createUser();
+    await adminFunctions.testuserLogin();
+    await adminFunctions.testuserLogout();
 });
 
 afterEach(async() => {
