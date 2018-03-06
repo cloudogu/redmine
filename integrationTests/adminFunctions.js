@@ -42,13 +42,12 @@ module.exports = class AdminFunctions{
             .del('/usermgt/api/users/' + this.testuserName)
             .auth(config.username, config.password);
 
-
         utils.login(this.driver, '/redmine');
         //delete user in redmine
         await this.driver.get(config.baseUrl + '/redmine/users');
-        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 8000);
+        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 5000);
         await this.driver.findElement(By.linkText(this.testuserName)).click();
-        await this.driver.wait(until.elementLocated(By.css('a.icon.icon-del')), 8000);
+        await this.driver.wait(until.elementLocated(By.css('a.icon.icon-del')), 5000);
         await this.driver.findElement(By.css('a.icon.icon-del')).click();
         await this.driver.switchTo().alert().accept();
         await this.driver.wait(until.elementLocated(By.linkText(config.username)));
