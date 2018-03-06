@@ -46,7 +46,7 @@ module.exports = class AdminFunctions{
         //delete user in redmine
         await this.driver.get(config.baseUrl + '/redmine/users');
         try{
-            await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 8000);
+            await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 20000);
         }catch(err){
             console.log("the username that should be deleted could not be found");
             console.log(err);
@@ -78,7 +78,7 @@ module.exports = class AdminFunctions{
         await utils.login(this.driver, '/redmine');
         await this.driver.get(config.baseUrl + '/redmine/users');
 
-        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 5000);
+        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 20000);
         await this.driver.findElement(By.linkText(this.testuserName)).click();
         await this.driver.wait(until.elementLocated(By.css('input[type="checkbox"]')), 5000);
         var buttonEnabled = await this.driver.findElement(By.css('input#user_admin')).isSelected();
@@ -93,7 +93,7 @@ module.exports = class AdminFunctions{
     async takeAdminRightsInRedmine(){
         await utils.login(this.driver, '/redmine');
         await this.driver.get(config.baseUrl + '/redmine/users');
-        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 5000);
+        await this.driver.wait(until.elementLocated(By.linkText(this.testuserName)), 20000);
         await this.driver.findElement(By.linkText(this.testuserName)).click();
         await this.driver.wait(until.elementLocated(By.css('input#user_admin')), 5000);
         var buttonEnabled = await this.driver.findElement(By.css('input#user_admin')).isSelected();
