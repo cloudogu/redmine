@@ -22,47 +22,49 @@ afterEach(() => {
 describe('cas browser tests', () => {
 
     test('redirect to cas authentication', async() => {
-        driver.get(config.baseUrl + config.redmineContextPath);
+        await driver.get(config.baseUrl + config.redmineContextPath);
         const url = await driver.getCurrentUrl();
-
         expectations.expectCasLogin(url);
     });
 
     test('cas authentication', async() => {
-        utils.login(driver, config.redmineContextPath);
+        await utils.login(driver, config.redmineContextPath);
+        await driver.wait(until.elementLocated(By.css('#loggedas a.user')), 5000);
         const username = await driver.findElement(By.css('#loggedas a.user')).getText();
-
         expect(username).toBe(config.username);
     });
 
     test('check cas attributes', async() => {
-        utils.login(driver, config.redmineContextPath);
-        driver.findElement(By.css('#account a.my-account')).click();
-
-        const firstname = await driver.findElement(By.id('user_firstname')).getAttribute('value');
+        await utils.login(driver, config.redmineContextPath);
+        await driver.wait(until.elementLocated(By.css('#account a.my-account')), 5000);
+        await driver.findElement(By.css('#account a.my-account')).click();
+        let firstname = await driver.findElement(By.id('user_firstname'));
+        firstname = await firstname.getAttribute('value');
         expect(firstname).toBe(config.firstname);
 
-        const lastname = await driver.findElement(By.id('user_lastname')).getAttribute('value');
+        let lastname = await driver.findElement(By.id('user_lastname'));
+        lastname = await lastname.getAttribute('value');
         expect(lastname).toBe(config.lastname);
 
-        const email = await driver.findElement(By.id('user_mail')).getAttribute('value');
+        let email = await driver.findElement(By.id('user_mail'));
+        email = await email.getAttribute('value');
         expect(email).toBe(config.email);
     });
 
     test('front channel logout', async() => {
-        utils.login(driver, config.redmineContextPath);
-        driver.findElement(By.css('a.logout')).click();
+        await utils.login(driver, config.redmineContextPath);
+        await driver.wait(until.elementLocated(By.css('a.logout')), 5000);
+        await driver.findElement(By.css('a.logout')).click();
         const url = await driver.getCurrentUrl();
 
         expectations.expectCasLogout(url);
     });
 
     test('back channel logout', async() => {
-        utils.login(driver, config.redmineContextPath);
-        driver.get(config.baseUrl + '/cas/logout');
-        driver.get(config.baseUrl + config.redmineContextPath);
+        await utils.login(driver, config.redmineContextPath);
+        await driver.get(config.baseUrl + '/cas/logout');
+        await driver.get(config.baseUrl + config.redmineContextPath);
         const url = await driver.getCurrentUrl();
-
         expectations.expectCasLogin(url);
     });
 
