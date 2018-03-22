@@ -5,21 +5,11 @@ set -o pipefail
 
 source /etc/ces/functions.sh
 
-# return global config value or default value
-# param1 config key
-# param2 default value
-function global_cfg_or_default {
-  if ! VALUE=$(doguctl config --global "${1}"); then
-    VALUE="${2}"
-  fi
-  echo "${VALUE}"
-}
-
 # get variables for templates
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
 ADMIN_GROUP=$(doguctl config --global 'admin_group')
-MAIL_ADDRESS=$(global_cfg_or_default 'mail_address' "redmine@${DOMAIN}")
+MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
 RELAYHOST="postfix"
 
 # database connection
