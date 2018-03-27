@@ -9,6 +9,7 @@ source /etc/ces/functions.sh
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
 ADMIN_GROUP=$(doguctl config --global 'admin_group')
+MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
 RELAYHOST="postfix"
 
 # database connection
@@ -134,7 +135,7 @@ else
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\r\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
 
   # set default email address
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','redmine@${DOMAIN}', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','${MAIL_ADDRESS}', now());"
 
   # set theme to cloudogu, do this only on installation not on a upgrade
   # because the user should be able to change the theme
