@@ -1,5 +1,5 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.5-2
+FROM registry.cloudogu.com/official/base:3.5-3
 MAINTAINER Robert Auer <robert.auer@cloudogu.com>
 
 LABEL NAME="official/redmine"
