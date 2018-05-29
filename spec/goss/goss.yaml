@@ -1,8 +1,8 @@
 file:
   /startup.sh:
     exists: true
-    owner: root
-    mode: "0775"
+    owner: testuser
+    mode: "0555"
     group: root
     filetype: file
   /usr/share/webapps/redmine/public/themes/Cloudogu:
@@ -17,7 +17,7 @@ file:
 contains: ["RedmineApp::Application.routes.default_scope = '/redmine'"]
 package:
   git:
-    installed: true
+    installed: false
   imagemagick:
     installed: true
   libffi:
