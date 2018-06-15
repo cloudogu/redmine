@@ -3,6 +3,15 @@ const config = require('./config');
 const webdriver = require('selenium-webdriver');
 const By = webdriver.By;
 
+const chromeCapabilities = webdriver.Capabilities.chrome();
+
+const chromeOptions = {
+    'args': ['--test-type', '--start-maximized']
+};
+
+chromeCapabilities.set('chromeOptions', chromeOptions);
+chromeCapabilities.set('name', 'Redmine ITs');
+
 exports.createDriver = function(){
     if (config.webdriverType === 'local') {
         return createLocalDriver();
@@ -11,13 +20,13 @@ exports.createDriver = function(){
 };
 
 function createRemoteDriver() {
-    return new webdriver.Builder()
+    return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome())
     .build();
 }
 
 function createLocalDriver() {
-  return new webdriver.Builder()
-    .withCapabilities(webdriver.Capabilities.chrome())
+  return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome())
+    .usingServer('http://localhost:4444/wd/hub')
     .build();
 }
 

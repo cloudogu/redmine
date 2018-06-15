@@ -15,6 +15,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 beforeEach(async() => {
     driver = await utils.createDriver(webdriver);
+    await driver.manage().window().maximize();
     adminFunctions = new AdminFunctions(driver, 'testUser', 'testUser', 'testUser', 'testUser@test.de', 'testuserpasswort');
     await adminFunctions.createUser();
     await adminFunctions.testuserLogin();
