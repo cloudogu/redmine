@@ -1,4 +1,4 @@
-<img src="https://cloudogu.com/images/dogus/redmine.png" alt="jenkins logo" height="100px">
+<img src="https://cloudogu.com/images/dogus/redmine.png" alt="redmine logo" height="100px">
 
 
 [![GitHub license](https://img.shields.io/github/license/cloudogu/redmine.svg)](https://github.com/cloudogu/redmine/blob/master/LICENSE)
