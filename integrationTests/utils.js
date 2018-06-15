@@ -20,12 +20,12 @@ exports.createDriver = function(){
 };
 
 function createRemoteDriver() {
-    return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome())
+    return new webdriver.Builder().withCapabilities(chromeCapabilities)
     .build();
 }
 
 function createLocalDriver() {
-  return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome())
+  return new webdriver.Builder().withCapabilities(chromeCapabilities)
     .usingServer('http://localhost:4444/wd/hub')
     .build();
 }
