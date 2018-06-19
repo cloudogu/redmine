@@ -14,8 +14,6 @@
 
 **Website:** http://www.redmine.org
 
-**Size:** ~250MB
-
 **Dependencies:** postgresql, cas, nginx, postfix
 
 ## Installation Ecosystem
