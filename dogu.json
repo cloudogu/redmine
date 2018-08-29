@@ -30,7 +30,7 @@
     "Path": "/usr/share/webapps/redmine/log",
     "Owner": "1000",
     "Group": "1000",
-    "NeedsBackup": true
+    "NeedsBackup": false
   }],
   "ServiceAccounts": [{
     "Type": "postgresql"
