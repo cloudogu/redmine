@@ -1,12 +1,12 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.5-5
-MAINTAINER Robert Auer <robert.auer@cloudogu.com>
+FROM registry.cloudogu.com/official/base:3.7-1
 
-LABEL NAME="official/redmine"
-LABEL VERSION="3.4.2"
+LABEL NAME="official/redmine" \
+   VERSION="3.4.6" \
+   maintainer="robert.auer@cloudogu.com"
 
 # set environment variables
-ENV REDMINE_VERSION=3.4.2 \
+ENV REDMINE_VERSION=3.4.6 \
     CAS_PLUGIN_VERSION=1.2.13 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.0.1 \
     RUBYCASVERSION=2.3.13 \
@@ -25,12 +25,12 @@ RUN set -x \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
-
  # install runtime packages
  && apk --no-cache add --virtual /.run-deps \
     postgresql-client \
 		sqlite-libs \
     imagemagick \
+    ruby-rmagick \
     tzdata \
     ruby \
 		ruby-bigdecimal \
@@ -39,7 +39,6 @@ RUN set -x \
     libffi \
     su-exec \
     git \
-
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
     build-base \
@@ -52,15 +51,12 @@ RUN set -x \
     patch \
     coreutils \
     libffi-dev \
-
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
-
  # install redmine
  && mkdir -p ${WORKDIR} \
  && curl -L http://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz | tar xfz - --strip-components=1 -C ${WORKDIR} \
-
  # set temporary database configuration for bundle install
  && DATABASE_TYPE=postgresql \
     DATABASE_IP=localhost \
@@ -68,26 +64,21 @@ RUN set -x \
     DATABASE_USER=redmine \
     DATABASE_USER_PASSWORD=redmine \
     eval "echo \"$(cat  ${WORKDIR}/config/database.yml.tpl)\"" > ${WORKDIR}/config/database.yml \
-
  # Install (available) rubycas-client version
  && git clone https://github.com/cloudogu/rubycas-client.git \
  && cd rubycas-client \
  && gem build rubycas-client.gemspec \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
  && cd ..; rm -rf rubycas-client \
-
  # install redmine required gems
  && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
  && echo 'gem "activerecord-deprecated_finders", require: "active_record/deprecated_finders"' >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
-
  # install required gems
  && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
-
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
-
  # install core plugins
  && mkdir -p "${WORKDIR}/plugins" \
  # install cas plugin
@@ -100,10 +91,8 @@ RUN set -x \
  && curl -sL \
     https://github.com/pencil/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
   | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
-
  # install plugin gems
  && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
-
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
