@@ -5,25 +5,25 @@ set -o pipefail
 
 source /etc/ces/functions.sh
 
-# get variables for templates
+echo "get variables for templates"
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
 ADMIN_GROUP=$(doguctl config --global 'admin_group')
 MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
 RELAYHOST="postfix"
 
-# database connection
+echo "get data for database connection"
 DATABASE_TYPE=postgresql
 DATABASE_IP=postgresql
 DATABASE_USER=$(doguctl config -e sa-postgresql/username)
 DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
 DATABASE_DB=$(doguctl config -e sa-postgresql/database)
 
-# redmine environment
+echo "set redmine environment variables"
 RAILS_ENV=production
 REDMINE_LANG=en
 
-# plugin locations
+echo "get plugin locations"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
