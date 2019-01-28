@@ -11,16 +11,6 @@ jest.setTimeout(30000);
 
 // disable certificate validation
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-let driver;
-
-beforeEach(async() => {
-    driver = utils.createDriver(webdriver);
-    await driver.manage().window().maximize();
-});
-
-afterEach(async () => {
-    await driver.quit();
-});
 
 describe('cas rest tests', () => {
 
@@ -32,7 +22,6 @@ describe('cas rest tests', () => {
   });
 
   test('authenticate with API key', async() => {
-
     const driver = await utils.createDriver(webdriver);
     await utils.login(driver, config.redmineContextPath + '/my/api_key');
     await driver.wait(until.elementLocated(By.css('div.box pre')), 5000);
@@ -45,6 +34,7 @@ describe('cas rest tests', () => {
         'X-Redmine-API-Key': apiKey
       })
       .expect(200);
+      await driver.quit();
   });
 
   test('check cas attributes', async() => {
