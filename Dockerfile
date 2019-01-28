@@ -33,8 +33,9 @@ RUN set -x \
     ruby-rmagick \
     tzdata \
     ruby \
-		ruby-bigdecimal \
-		ruby-bundler \
+    ruby-bigdecimal \
+    ruby-bundler \
+    ruby-rdoc \
     tini \
     libffi \
     su-exec \
