@@ -29,7 +29,7 @@ RUN set -x \
  && apk --no-cache add --virtual /.run-deps \
     postgresql-client \
 		sqlite-libs \
-    imagemagick \
+    imagemagick6 \
     ruby-rmagick \
     tzdata \
     ruby \
@@ -45,7 +45,7 @@ RUN set -x \
     build-base \
     ruby-dev \
     libxslt-dev \
-    imagemagick-dev \
+    imagemagick6-dev \
     postgresql-dev \
     sqlite-dev \
     linux-headers \
