@@ -2,9 +2,9 @@ default:
   email_delivery:
     delivery_method: :smtp
     smtp_settings:
-      address: \"${RELAYHOST}\"
+      address: \"postfix\"
       port: 25
-      domain: '${DOMAIN}'
+      domain: '{{ .GlobalConfig.Get "domain" }}'
   attachments_storage_path:
   autologin_cookie_name:
   autologin_cookie_path:
@@ -29,8 +29,8 @@ production:
   email_delivery:
     delivery_method: :smtp
     smtp_settings:
-      address: \"${RELAYHOST}\"
+      address: \"postfix\"
       port: 25
-      domain: '${DOMAIN}'
+      domain: '{{ .GlobalConfig.Get "domain" }}'
 # that overrides the default ones
 development:

@@ -3,18 +3,13 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-source /etc/ces/functions.sh
-
 echo "get variables for templates"
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
 ADMIN_GROUP=$(doguctl config --global 'admin_group')
 MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
-RELAYHOST="postfix"
 
 echo "get data for database connection"
-DATABASE_TYPE=postgresql
-DATABASE_IP=postgresql
 DATABASE_USER=$(doguctl config -e sa-postgresql/username)
 DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
 DATABASE_DB=$(doguctl config -e sa-postgresql/database)
@@ -30,7 +25,7 @@ PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 HOSTNAME_SETTING="${FQDN}"
 
 function sql(){
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "${DATABASE_IP}" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
 }
 
 function exec_rake() {
@@ -77,14 +72,15 @@ function install_plugin(){
 }
 
 # adjust redmine database.yml
-render_template "${WORKDIR}/config/database.yml.tpl" > "${WORKDIR}/config/database.yml"
+doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
 
 # insert secret_key_base into secrets.yml
 if [ ! -f "${WORKDIR}/config/initializers/secret_token.rb" ]; then
   exec_rake generate_secret_token
-  # TODO do we need the step below?
+  # TODO do we need the steps below?
   SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-  render_template "${WORKDIR}/config/secrets.yml.tpl" > "${WORKDIR}/config/secrets.yml"
+  doguctl config -e secret_key_base "${SECRETKEYBASE}"
+  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
 fi
 
 # export variables for auth_source_cas.rb
@@ -164,7 +160,7 @@ if [ ! -e "${WORKDIR}"/stylesheets ]; then
 fi
 
 # Generate configuration.yml from template (e.g. for config of mail transport)
-render_template "${WORKDIR}/config/configuration.yml.tpl" > "${WORKDIR}/config/configuration.yml"
+doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 
 # remove old pid
 RPID="${WORKDIR}/tmp/pids/server.pid"
