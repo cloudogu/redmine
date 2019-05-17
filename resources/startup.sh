@@ -104,7 +104,7 @@ if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
   # update FQDN in settings
   # we need to update the fqdn on every start, bacause of possible changes
   sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
-  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \nenabled: 1 \ncas_url: https://${FQDN}/cas \nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
+  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
 else
 
   # Create the database structure
@@ -116,7 +116,7 @@ else
   exec_rake redmine:load_default_data
 
   echo "Writing cas plugin settings to database..."
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \nenabled: 1 \ncas_url: https://${FQDN}/cas \nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \nautocreate_users: 1', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
 
   # Enabling REST API
@@ -128,7 +128,7 @@ else
   # write url settings to database
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\r\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\\r\\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
 
   # set default email address
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','${MAIL_ADDRESS}', now());"
