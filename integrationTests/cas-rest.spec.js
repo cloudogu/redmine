@@ -26,7 +26,6 @@ describe('cas rest tests', () => {
     await utils.login(driver, config.redmineContextPath + '/my/api_key');
     await driver.wait(until.elementLocated(By.css('div.box pre')), 5000);
     const apiKey = await driver.findElement(By.css('div.box pre')).getText();
-    driver.quit();
 
     await request(config.baseUrl)
       .get( config.redmineContextPath + '/users/current.json')

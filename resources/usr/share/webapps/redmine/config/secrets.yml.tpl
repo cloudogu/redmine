@@ -5,4 +5,4 @@ test:
   secret_key_base:
 
 production:
-  secret_key_base: ${SECRETKEYBASE}
+  secret_key_base: {{ .Config.GetAndDecrypt "secret_key_base" }}
