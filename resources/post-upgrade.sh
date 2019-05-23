@@ -11,7 +11,7 @@ if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
 fi
 
 function exec_rake() {
-  RAILS_ENV="production" REDMINE_LANG="en" rake --trace -f ${WORKDIR}/Rakefile $*
+  RAILS_ENV="production" REDMINE_LANG="en" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
 echo "executing update ${FROM_VERSION} to ${TO_VERSION}"

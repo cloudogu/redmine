@@ -3,18 +3,13 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-source /etc/ces/functions.sh
-
 echo "get variables for templates"
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
 ADMIN_GROUP=$(doguctl config --global 'admin_group')
 MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
-RELAYHOST="postfix"
 
 echo "get data for database connection"
-DATABASE_TYPE=postgresql
-DATABASE_IP=postgresql
 DATABASE_USER=$(doguctl config -e sa-postgresql/username)
 DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
 DATABASE_DB=$(doguctl config -e sa-postgresql/database)
@@ -30,7 +25,7 @@ PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 HOSTNAME_SETTING="${FQDN}"
 
 function sql(){
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "${DATABASE_IP}" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
 }
 
 function exec_rake() {
@@ -77,14 +72,15 @@ function install_plugin(){
 }
 
 # adjust redmine database.yml
-render_template "${WORKDIR}/config/database.yml.tpl" > "${WORKDIR}/config/database.yml"
+doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
 
 # insert secret_key_base into secrets.yml
 if [ ! -f "${WORKDIR}/config/initializers/secret_token.rb" ]; then
   exec_rake generate_secret_token
-  # TODO do we need the step below?
+  # TODO do we need the steps below?
   SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-  render_template "${WORKDIR}/config/secrets.yml.tpl" > "${WORKDIR}/config/secrets.yml"
+  doguctl config -e secret_key_base "${SECRETKEYBASE}"
+  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
 fi
 
 # export variables for auth_source_cas.rb
@@ -108,7 +104,7 @@ if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
   # update FQDN in settings
   # we need to update the fqdn on every start, bacause of possible changes
   sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
-  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \nenabled: 1 \ncas_url: https://${FQDN}/cas \nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
+  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
 else
 
   # Create the database structure
@@ -120,7 +116,7 @@ else
   exec_rake redmine:load_default_data
 
   echo "Writing cas plugin settings to database..."
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \nenabled: 1 \ncas_url: https://${FQDN}/cas \nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \nautocreate_users: 1', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
 
   # Enabling REST API
@@ -132,7 +128,7 @@ else
   # write url settings to database
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\r\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
+  sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\\r\\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
 
   # set default email address
   sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','${MAIL_ADDRESS}', now());"
@@ -164,7 +160,7 @@ if [ ! -e "${WORKDIR}"/stylesheets ]; then
 fi
 
 # Generate configuration.yml from template (e.g. for config of mail transport)
-render_template "${WORKDIR}/config/configuration.yml.tpl" > "${WORKDIR}/config/configuration.yml"
+doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 
 # remove old pid
 RPID="${WORKDIR}/tmp/pids/server.pid"

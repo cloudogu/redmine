@@ -2,11 +2,11 @@
 FROM registry.cloudogu.com/official/base:3.7-4
 
 LABEL NAME="official/redmine" \
-   VERSION="3.4.8-2" \
+   VERSION="3.4.10-1" \
    maintainer="robert.auer@cloudogu.com"
 
 # set environment variables
-ENV REDMINE_VERSION=3.4.8 \
+ENV REDMINE_VERSION=3.4.10 \
     CAS_PLUGIN_VERSION=1.2.13 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.0.1 \
     RUBYCASVERSION=2.3.13 \

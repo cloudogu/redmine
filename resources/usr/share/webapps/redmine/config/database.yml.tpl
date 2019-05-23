@@ -3,11 +3,11 @@
 # Line indentation must be 2 spaces (no tabs).
 
 production:
-  adapter: ${DATABASE_TYPE}
-  database: ${DATABASE_DB}
-  host: ${DATABASE_IP}
-  username: ${DATABASE_USER}
-  password: ${DATABASE_USER_PASSWORD}
+  adapter: postgresql
+  database: {{ .Config.GetAndDecrypt "sa-postgresql/database" }}
+  host: postgresql
+  username: {{ .Config.GetAndDecrypt "sa-postgresql/username" }}
+  password: {{ .Config.GetAndDecrypt "sa-postgresql/password" }}
   encoding: utf8
 
 #development:
