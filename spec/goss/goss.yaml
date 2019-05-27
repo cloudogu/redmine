@@ -19,6 +19,8 @@ package:
     installed: true
   imagemagick6:
     installed: true
+  imagemagick:
+    installed: true
   libffi:
     installed: true
   postgresql-client:
@@ -28,6 +30,8 @@ package:
   ruby-bigdecimal:
     installed: true
   ruby-bundler:
+    installed: true
+  ruby-webrick:
     installed: true
   sqlite-libs:
     installed: true
