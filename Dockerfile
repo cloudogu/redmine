@@ -1,5 +1,5 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.7-4
+FROM registry.cloudogu.com/official/base:3.9.4-1
 
 LABEL NAME="official/redmine" \
    VERSION="3.4.10-1" \
@@ -27,31 +27,32 @@ RUN set -x \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
  # install runtime packages
  && apk --no-cache add --virtual /.run-deps \
-    postgresql-client \
-		sqlite-libs \
-    imagemagick6 \
-    ruby-rmagick \
-    tzdata \
-    ruby \
-    ruby-bigdecimal \
-    ruby-bundler \
-    ruby-rdoc \
-    tini \
-    libffi \
-    su-exec \
-    git \
+   postgresql-client \
+   sqlite-libs \
+   imagemagick6 \
+   imagemagick \
+   tzdata \
+   ruby \
+   ruby-bigdecimal \
+   ruby-bundler \
+   ruby-rdoc \
+   ruby-webrick \
+   tini \
+   libffi \
+   su-exec \
+   git \
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
-    build-base \
-    ruby-dev \
-    libxslt-dev \
-    imagemagick6-dev \
-    postgresql-dev \
-    sqlite-dev \
-    linux-headers \
-    patch \
-    coreutils \
-    libffi-dev \
+   build-base \
+   ruby-dev \
+   libxslt-dev \
+   imagemagick6-dev \
+   postgresql-dev \
+   sqlite-dev \
+   linux-headers \
+   patch \
+   coreutils \
+   libffi-dev \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
