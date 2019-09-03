@@ -146,14 +146,13 @@ class AuthSourceCas < AuthSource
           }
           return retVal
         else
-          raise 'Service ticket validation failure'
+          logger.error('Service ticket validation failure')
         end
       else
-        raise 'No Service ticket granted'
-        return nil
+        logger.error('No Service ticket granted')
       end
     else
-      raise 'Authentication data not accepted'
+      logger.error('Authentication data not accepted')
     end
     return nil
   rescue *NETWORK_EXCEPTIONS => e
