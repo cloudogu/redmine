@@ -10,13 +10,13 @@
 
 **Name:** official/redmine
 
-**Description:** [Redmine](https://en.wikipedia.org/wiki/Redmine)  is a free and open source, web-based project management and issue tracking tool.
+**Description:** [Redmine](https://en.wikipedia.org/wiki/Redmine) is a free and open source, web-based project management and issue tracking tool.
 
 **Website:** http://www.redmine.org
 
 **Dependencies:** postgresql, cas, nginx, postfix
 
-## Installation Ecosystem
+## Installation in the Cloudogu EcoSystem
 ```
 cesapp install official/redmine
 
