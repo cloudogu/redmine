@@ -2,7 +2,7 @@
 FROM registry.cloudogu.com/official/base:3.9.4-1
 
 LABEL NAME="official/redmine" \
-   VERSION="3.4.10-2" \
+   VERSION="3.4.11-1" \
    maintainer="robert.auer@cloudogu.com"
 
 # set environment variables
