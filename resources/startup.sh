@@ -71,6 +71,9 @@ function install_plugin(){
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
+# render template to use "/redmine" relative URL
+doguctl template "${WORKDIR}/config.ru.tpl" "${WORKDIR}/config.ru"
+
 # adjust redmine database.yml
 doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
 
@@ -102,7 +105,7 @@ sleep 10
 if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
   echo "Redmine (database) has been installed already."
   # update FQDN in settings
-  # we need to update the fqdn on every start, bacause of possible changes
+  # we need to update the fqdn on every start, because of possible changes
   sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
   sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
 else
