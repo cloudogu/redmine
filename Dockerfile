@@ -69,12 +69,13 @@ RUN set -eux -o pipefail \
  && rm redmine.tar.gz \
  && mkdir -p ${WORKDIR}/app/assets/config && touch ${WORKDIR}/app/assets/config/manifest.js \
  # set temporary database configuration for bundle install
- && DATABASE_TYPE=postgresql \
-    DATABASE_IP=localhost \
-    DATABASE_DB=redmine \
-    DATABASE_USER=redmine \
-    DATABASE_USER_PASSWORD=redmine \
-    eval "echo \"$(cat  ${WORKDIR}/config/database.yml.tpl)\"" > ${WORKDIR}/config/database.yml \
+ #&& DATABASE_TYPE=postgresql \
+ #   DATABASE_IP=localhost \
+ #   DATABASE_DB=redmine \
+ #   DATABASE_USER=redmine \
+ #   DATABASE_USER_PASSWORD=redmine \
+ #   eval "echo \"$(cat  ${WORKDIR}/config/database.yml.tpl)\"" > ${WORKDIR}/config/database.yml \
+  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
  # Install (available) rubycas-client version
  && git clone https://github.com/cloudogu/rubycas-client.git \
  && cd rubycas-client \
