@@ -11,7 +11,7 @@ LABEL NAME="official/redmine" \
 ENV REDMINE_VERSION=4.0.5 \
     CAS_PLUGIN_VERSION=1.2.14 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
-    RUBYCASVERSION=2.3.13 \
+    RUBYCASVERSION=2.3.14 \
     USER=redmine \
     BASEDIR=/usr/share/webapps \
     WORKDIR=/usr/share/webapps/redmine \
@@ -106,8 +106,6 @@ RUN set -eux -o pipefail \
  # install plugin gems
  && cd ${WORKDIR} \
  && bundle install --without development test \
- # log to STDOUT (https://github.com/docker-library/redmine/issues/108)
- && echo 'config.logger = Logger.new(STDOUT)' > config/additional_environment.rb \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \

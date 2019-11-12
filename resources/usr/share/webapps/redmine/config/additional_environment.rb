@@ -8,6 +8,6 @@
 #   ...
 #
 
-# configure redmine to log to stdout
+ # log to STDOUT (https://github.com/docker-library/redmine/issues/108)
 config.logger = Logger.new(STDOUT)
 config.log_level = :info
