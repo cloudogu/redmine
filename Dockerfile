@@ -17,7 +17,9 @@ ENV REDMINE_VERSION=4.0.5 \
     WORKDIR=/usr/share/webapps/redmine \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
-    REDMINE_TARGZ_MD5=d25649272a9c347e4368cdd50e039e86 \
+    REDMINE_TARGZ_SHA256=64eabe6867fd5d14d1b4c584417b9b71fbb9b68a019400eeb03e1f2147c369e8 \
+    CAS_PLUGIN_TARGZ_SHA256=184cbb41abde38e85aae1f4f0117adf2f1eff061ccfe377c91c3545428c5ad46 \
+    ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RAILS_RELATIVE_URL_ROOT=/redmine
 
 # copy resource files
@@ -64,18 +66,12 @@ RUN set -eux -o pipefail \
  # install redmine
  && mkdir -p ${WORKDIR} \
  && wget -O redmine.tar.gz "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz" \
- && echo "${REDMINE_TARGZ_MD5} *redmine.tar.gz" | md5sum -c - \
+ && echo "${REDMINE_TARGZ_SHA256} *redmine.tar.gz" | sha256sum -c - \
  && tar -xf redmine.tar.gz --strip-components=1 -C ${WORKDIR} \
  && rm redmine.tar.gz \
  && mkdir -p ${WORKDIR}/app/assets/config && touch ${WORKDIR}/app/assets/config/manifest.js \
  # set temporary database configuration for bundle install
- #&& DATABASE_TYPE=postgresql \
- #   DATABASE_IP=localhost \
- #   DATABASE_DB=redmine \
- #   DATABASE_USER=redmine \
- #   DATABASE_USER_PASSWORD=redmine \
- #   eval "echo \"$(cat  ${WORKDIR}/config/database.yml.tpl)\"" > ${WORKDIR}/config/database.yml \
-  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
+ && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
  # Install (available) rubycas-client version
  && git clone https://github.com/cloudogu/rubycas-client.git \
  && cd rubycas-client \
@@ -87,24 +83,23 @@ RUN set -eux -o pipefail \
  && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
- # install required gems
- && cd ${WORKDIR} \
- && bundle install --without development test \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
  && mkdir -p "${WORKDIR}/plugins" \
  # install cas plugin
  && mkdir "${WORKDIR}/plugins/redmine_cas" \
- && curl -sL \
-    https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz \
-  | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
+ && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
+ && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${CAS_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
+ && rm v${CAS_PLUGIN_VERSION}.tar.gz \
  # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
  && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
- && curl -sL \
-    https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
-  | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
- # install plugin gems
+ && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
+ && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
+ && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
+ # install required and plugin gems
  && cd ${WORKDIR} \
  && bundle install --without development test \
  # cleanup
