@@ -107,6 +107,7 @@ RUN set -eux -o pipefail \
  # install required and plugin gems
  && cd ${WORKDIR} \
  && bundle install --without development test \
+ && gem install puma \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
