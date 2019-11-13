@@ -179,4 +179,4 @@ chmod -R 755 files log tmp public/plugin_assets
 
 # Start redmine
 echo "Starting redmine..."
-exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} bundle exec ruby bin/rails server webrick -e ${RAILS_ENV} -b 0.0.0.0"
+exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} bundle exec rails server webrick -e ${RAILS_ENV} -b 0.0.0.0"
