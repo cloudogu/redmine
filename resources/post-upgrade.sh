@@ -14,10 +14,13 @@ function exec_rake() {
   RAILS_ENV="production" REDMINE_LANG="en" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
-echo "executing update ${FROM_VERSION} to ${TO_VERSION}"
+echo "Executing Redmine upgrade from ${FROM_VERSION} to ${TO_VERSION}"
 
-echo "migrate database ..."
+echo "Migrating database..."
 exec_rake db:migrate
 
-echo "migrate plugins ..."
+echo "Migrating plugins..."
 exec_rake redmine:plugins:migrate
+
+echo "Clearing cache..."
+exec_rake tmp:cache:clear

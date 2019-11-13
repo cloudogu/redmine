@@ -14,7 +14,7 @@ CORE_PLUGINS="redmine_activerecord_session_store redmine_cas"
 for CP in ${CORE_PLUGINS}; do
   CP_DIR="${PLUGIN_DIRECTORY}/${CP}"
   if [ -d "${CP_DIR}" ]; then
-    echo "remove old installation of ${CP}"
+    echo "removing old installation of ${CP}..."
     rm -rf "${CP_DIR}"
   fi
 done
