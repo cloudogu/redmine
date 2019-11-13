@@ -11,7 +11,7 @@ LABEL NAME="official/redmine" \
 ENV REDMINE_VERSION=4.0.5 \
     CAS_PLUGIN_VERSION=1.2.14 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
-    RUBYCASVERSION=2.3.14 \
+    RUBYCASVERSION=2.3.15 \
     USER=redmine \
     BASEDIR=/usr/share/webapps \
     WORKDIR=/usr/share/webapps/redmine \
@@ -20,6 +20,7 @@ ENV REDMINE_VERSION=4.0.5 \
     REDMINE_TARGZ_SHA256=64eabe6867fd5d14d1b4c584417b9b71fbb9b68a019400eeb03e1f2147c369e8 \
     CAS_PLUGIN_TARGZ_SHA256=184cbb41abde38e85aae1f4f0117adf2f1eff061ccfe377c91c3545428c5ad46 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
+    RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
     RAILS_RELATIVE_URL_ROOT=/redmine
 
 # copy resource files
@@ -72,8 +73,12 @@ RUN set -eux -o pipefail \
  && mkdir -p ${WORKDIR}/app/assets/config && touch ${WORKDIR}/app/assets/config/manifest.js \
  # set temporary database configuration for bundle install
  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
- # Install (available) rubycas-client version
- && git clone https://github.com/cloudogu/rubycas-client.git \
+ # Install rubycas-client
+ && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
+ && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
+ && mkdir rubycas-client \
+ && tar xfz v${RUBYCASVERSION}.tar.gz --strip-components=1 -C rubycas-client \
+ && rm v${RUBYCASVERSION}.tar.gz \
  && cd rubycas-client \
  && gem build rubycas-client.gemspec \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
