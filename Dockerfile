@@ -26,9 +26,6 @@ ENV REDMINE_VERSION=4.0.5 \
 # copy resource files
 COPY resources/ /
 
-# install theme, before the ownership is changed
-ADD packages/cloudogu.tar.gz ${WORKDIR}/public/themes
-
 RUN set -eux -o pipefail \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
@@ -123,4 +120,4 @@ EXPOSE 3000
 HEALTHCHECK CMD [ $(doguctl healthy redmine; echo $?) == 0 ]
 
 # start
-CMD /startup.sh
+CMD ["/startup.sh"]
