@@ -13,7 +13,18 @@ file:
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
-contains: ["RedmineApp::Application.routes.default_scope = '/redmine'"]
+    contains: ["ENV['RAILS_RELATIVE_URL_ROOT'] = \"/redmine\""]
+    contains: ["Redmine::Utils::relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']"]
+  /usr/share/webapps/redmine/config/database.yml:
+    exists: true
+    contains: ["production:"]
+  /usr/share/webapps/redmine/config.ru:
+    exists: true
+    contains: ["map ENV['RAILS_RELATIVE_URL_ROOT'] || '/' do"]
+  /usr/share/webapps/redmine/config/additional_environment.rb:
+    exists: true
+    contains: ["config.logger = Logger.new(STDOUT)"]
+    contains: ["config.log_level = :info"]
 package:
   git:
     installed: true
@@ -45,5 +56,5 @@ port:
   tcp:3000:
     listening: true
 process:
-  ruby:
+  puma:
     running: true
