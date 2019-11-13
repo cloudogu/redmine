@@ -10,6 +10,8 @@ file:
   /usr/share/webapps/redmine:
     exists: true
     filetype: directory
+  /usr/share/webapps/redmine/config/initializers/secret_token.rb:
+    exists: false
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
