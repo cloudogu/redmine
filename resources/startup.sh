@@ -78,12 +78,12 @@ doguctl template "${WORKDIR}/config.ru.tpl" "${WORKDIR}/config.ru"
 doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
 
 # insert secret_key_base into secrets.yml
-if [ ! -f "${WORKDIR}/config/initializers/secret_token.rb" ]; then
+if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
   exec_rake generate_secret_token
-  # TODO do we need the steps below?
   SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
   doguctl config -e secret_key_base "${SECRETKEYBASE}"
   doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
+  rm "${WORKDIR}/config/initializers/secret_token.rb"
 fi
 
 # export variables for auth_source_cas.rb
