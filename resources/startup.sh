@@ -71,19 +71,25 @@ function install_plugin(){
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
-# render template to use "/redmine" relative URL
+echo "render config.ru template"
 doguctl template "${WORKDIR}/config.ru.tpl" "${WORKDIR}/config.ru"
 
-# adjust redmine database.yml
+echo "render database.yml template"
 doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
 
-# insert secret_key_base into secrets.yml
-if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
-  exec_rake generate_secret_token
-  SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-  doguctl config -e secret_key_base "${SECRETKEYBASE}"
+
+if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
+  echo "create secrets.yml"
+  if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
+    # secret_key_base has not been initialized yet
+    exec_rake generate_secret_token
+    SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
+    doguctl config -e secret_key_base "${SECRETKEYBASE}"
+    rm "${WORKDIR}/config/initializers/secret_token.rb"
+  fi
+  # secret_key_base is stored in etcd, but secrets.yml is missing
+  # this happens after a restore of the dogu, because the config folder is not backed up
   doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
-  rm "${WORKDIR}/config/initializers/secret_token.rb"
 fi
 
 # export variables for auth_source_cas.rb
@@ -162,7 +168,7 @@ if [ ! -e "${WORKDIR}"/stylesheets ]; then
   ln -s "${WORKDIR}"/public/* "${WORKDIR}"
 fi
 
-# Generate configuration.yml from template (e.g. for config of mail transport)
+echo "Generate configuration.yml from template"
 doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 
 # remove old pid
@@ -171,8 +177,8 @@ if [ -f "${RPID}" ]; then
   rm -f "${RPID}"
 fi
 
-# besure temp, file and log folders are writable
-# TODO should tmp a volume, because of performance?
+# make sure temp, file and log folders are writable
+# TODO should tmp be a volume, because of performance?
 mkdir -p tmp tmp/pdf public/plugin_assets
 chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
 chmod -R 755 files log tmp public/plugin_assets

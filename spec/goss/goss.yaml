@@ -9,6 +9,8 @@ file:
     filetype: directory
   /usr/share/webapps/redmine/config/initializers/secret_token.rb:
     exists: false
+  /usr/share/webapps/redmine/config/secrets.yml:
+    exists: true
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
