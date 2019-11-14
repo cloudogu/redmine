@@ -63,10 +63,11 @@ RUN set -eux -o pipefail \
  && 2>/dev/null 1>&2 gem update --system --quiet \
  # install redmine
  && mkdir -p ${WORKDIR} \
- && wget -O redmine.tar.gz "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz" \
- && echo "${REDMINE_TARGZ_SHA256} *redmine.tar.gz" | sha256sum -c - \
- && tar -xf redmine.tar.gz --strip-components=1 -C ${WORKDIR} \
- && rm redmine.tar.gz \
+ && mkdir -p /redmine_source \
+ && wget "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz" \
+ && echo "${REDMINE_TARGZ_SHA256} *redmine-${REDMINE_VERSION}.tar.gz" | sha256sum -c - \
+ && tar -xf redmine-${REDMINE_VERSION}.tar.gz --strip-components=1 -C ${WORKDIR} \
+ && mv redmine-${REDMINE_VERSION}.tar.gz /redmine_source/redmine-${REDMINE_VERSION}.tar.gz \
  && mkdir -p ${WORKDIR}/app/assets/config && touch ${WORKDIR}/app/assets/config/manifest.js \
  # set temporary database configuration for bundle install
  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
