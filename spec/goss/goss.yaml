@@ -11,6 +11,7 @@ file:
     exists: false
   /usr/share/webapps/redmine/config/secrets.yml:
     exists: true
+    filetype: file
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
@@ -18,12 +19,15 @@ file:
     contains: ["Redmine::Utils::relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']"]
   /usr/share/webapps/redmine/config/database.yml:
     exists: true
+    filetype: file
     contains: ["production:"]
   /usr/share/webapps/redmine/config.ru:
     exists: true
+    filetype: file
     contains: ["map ENV['RAILS_RELATIVE_URL_ROOT'] || '/' do"]
   /usr/share/webapps/redmine/config/additional_environment.rb:
     exists: true
+    filetype: file
     contains: ["config.logger = Logger.new(STDOUT)"]
     contains: ["config.log_level = :info"]
 package:
