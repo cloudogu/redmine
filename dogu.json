@@ -40,9 +40,6 @@
     "Port": 3000
   },
   "ExposedCommands": [{
-    "Name": "pre-upgrade",
-    "Command": "/pre-upgrade.sh"
-  },{
     "Name": "post-upgrade",
     "Command": "/post-upgrade.sh"
   }]
