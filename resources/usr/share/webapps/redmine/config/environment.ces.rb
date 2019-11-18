@@ -13,7 +13,5 @@ end
 # Initialize the Rails application
 Rails.application.initialize!
 
-ActionController::Base.relative_url_root = RedmineApp::Application.routes.default_scope
-
 ENV['RAILS_RELATIVE_URL_ROOT'] = "/redmine"
 Redmine::Utils::relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']
