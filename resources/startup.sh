@@ -3,6 +3,12 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# check whether post-upgrade script is still running
+while [[ "$(doguctl config post_upgrade_running)" == "true" ]]; do
+  echo "Post-upgrade script is running. Waiting..."
+  sleep 3
+done
+
 echo "get variables for templates"
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)

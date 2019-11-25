@@ -42,5 +42,8 @@
   "ExposedCommands": [{
     "Name": "post-upgrade",
     "Command": "/post-upgrade.sh"
+  },{
+    "Name": "pre-upgrade",
+    "Command": "/pre-upgrade.sh"
   }]
 }
