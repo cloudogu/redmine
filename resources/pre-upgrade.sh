@@ -9,7 +9,7 @@ TO_VERSION="${2}"
 echo "Executing Redmine pre-upgrade from ${FROM_VERSION} to ${TO_VERSION}"
 
 if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
-  echo "FROM an TO versions are the same; Exiting..."
+  echo "FROM and TO versions are the same; Exiting..."
   exit 0
 fi
 

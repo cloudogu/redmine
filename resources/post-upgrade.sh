@@ -9,7 +9,7 @@ TO_VERSION="${2}"
 echo "Executing Redmine post-upgrade from ${FROM_VERSION} to ${TO_VERSION}"
 
 if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
-  echo "FROM an TO versions are the same; Exiting..."
+  echo "FROM and TO versions are the same; Exiting..."
   exit 0
 fi
 
@@ -27,7 +27,7 @@ if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
     doguctl config -e secret_key_base "${SECRETKEYBASE}"
     rm "${WORKDIR}/config/initializers/secret_token.rb"
   fi
-  # secret_key_base is stored in etcd, but secrets.yml is missing
+  # secret_key_base is stored in registry, but secrets.yml is missing
     echo "Rendering config/secrets.yml..."
   doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
 fi

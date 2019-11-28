@@ -93,7 +93,7 @@ if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
     doguctl config -e secret_key_base "${SECRETKEYBASE}"
     rm "${WORKDIR}/config/initializers/secret_token.rb"
   fi
-  # secret_key_base is stored in etcd, but secrets.yml is missing
+  # secret_key_base is stored in registry, but secrets.yml is missing
   # this happens after a restore of the dogu, because the config folder is not backed up
   doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
 fi
