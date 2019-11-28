@@ -1,3 +1,17 @@
+FROM node:10 AS builder
+ENV CLOUDOGU_THEME_VERSION=2.8.0-1 \
+    WORKDIR=/theme/Cloudogu \
+    THEME_TARGZ_SHA256=58eca2b1741e1288644dc35a0a3208b09b49b5c55ff73f816930c4394b88b669 \
+    TARGET="cloudogu.tar.gz"
+WORKDIR ${WORKDIR}
+# theme
+RUN wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/archive/v${CLOUDOGU_THEME_VERSION}.tar.gz" \
+ && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}" \
+ && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
+ && npm i && npm run build \
+ && tar cvfz /theme/Cloudogu/${TARGET} --transform="s/^/Cloudogu\//" favicon/ fonts/ images/ javascripts/ stylesheets/
+
+
 # registry.cloudogu.com/official/redmine
 FROM registry.cloudogu.com/official/base:3.9.4-2
 
@@ -25,6 +39,9 @@ ENV REDMINE_VERSION=4.0.5 \
 
 # copy resource files
 COPY resources/ /
+
+# copy theme archive from builder
+COPY --from=builder /theme/Cloudogu/cloudogu.tar.gz /
 
 RUN set -eux -o pipefail \
  # add user and group
@@ -96,6 +113,9 @@ RUN set -eux -o pipefail \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz v${CAS_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
+ # install theme
+ && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
+ && tar xvzf /cloudogu.tar.gz --strip-components=1 -C "${WORKDIR}/public/themes/Cloudogu"\
  # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
  && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
  && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
