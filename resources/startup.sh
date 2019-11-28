@@ -4,8 +4,8 @@ set -o nounset
 set -o pipefail
 
 # check whether post-upgrade script is still running
-while [[ "$(doguctl config post_upgrade_running)" == "true" ]]; do
-  echo "Post-upgrade script is running. Waiting..."
+while [[ "$(doguctl state)" == "upgrading" ]]; do
+  echo "Upgrade script is running. Waiting..."
   sleep 3
 done
 

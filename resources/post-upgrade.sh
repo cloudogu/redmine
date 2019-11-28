@@ -52,6 +52,6 @@ exec_rake tmp:cache:clear
 
 echo "Set etcd flag so startup script can start afterwards..."
 # Note: This flag has been set to "true" in pre-upgrade.sh
-doguctl config post_upgrade_running "false"
+doguctl state "upgrade done"
 
 echo "Redmine post-upgrade done"

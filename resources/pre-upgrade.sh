@@ -14,6 +14,6 @@ if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
 fi
 
 echo "Setting etcd flag so startup script waits for post-upgrade to finish..."
-doguctl config post_upgrade_running "true"
+doguctl state "upgrading"
 
 echo "Redmine pre-upgrade done"
