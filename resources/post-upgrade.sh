@@ -3,6 +3,20 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# import util functions:
+# - create_secrets_yml
+# - render_config_ru_template
+# - render_database_yml_template
+# - render_configuration_yml_template
+# - exec_rake
+#
+# import util variables:
+# - RAILS_ENV
+# - REDMINE_LANG
+#
+# shellcheck disable=SC1091
+source /util.sh
+
 FROM_VERSION="${1}"
 TO_VERSION="${2}"
 
@@ -13,33 +27,17 @@ if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
   exit 0
 fi
 
-function exec_rake() {
-  RAILS_ENV="production" REDMINE_LANG="en" rake --trace -f "${WORKDIR}"/Rakefile "$*"
-}
-
 echo "Making sure config/secrets.yml exists..."
-if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
-  if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
-    # secret_key_base has not been initialized yet
-    echo "Generating secret token..."
-    exec_rake generate_secret_token
-    SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-    doguctl config -e secret_key_base "${SECRETKEYBASE}"
-    rm "${WORKDIR}/config/initializers/secret_token.rb"
-  fi
-  # secret_key_base is stored in registry, but secrets.yml is missing
-    echo "Rendering config/secrets.yml..."
-  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
-fi
+create_secrets_yml
 
 echo "Rendering config.ru template..."
-doguctl template "${WORKDIR}/config.ru.tpl" "${WORKDIR}/config.ru"
+render_config_ru_template
 
 echo "Rendering database.yml template..."
-doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
+render_database_yml_template
 
 echo "Generating configuration.yml from template..."
-doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
+render_configuration_yml_template
 
 echo "Migrating database..."
 exec_rake db:migrate

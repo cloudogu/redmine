@@ -4,6 +4,21 @@ file:
     owner: root
     group: root
     filetype: file
+  /pre-upgrade.sh:
+    exists: true
+    owner: root
+    group: root
+    filetype: file
+  /post-upgrade.sh:
+    exists: true
+    owner: root
+    group: root
+    filetype: file
+  /util.sh:
+    exists: true
+    owner: root
+    group: root
+    filetype: file
   /usr/share/webapps/redmine:
     exists: true
     filetype: directory

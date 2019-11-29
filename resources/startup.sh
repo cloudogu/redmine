@@ -3,6 +3,20 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# import util functions:
+# - create_secrets_yml
+# - render_config_ru_template
+# - render_database_yml_template
+# - render_configuration_yml_template
+# - exec_rake
+#
+# import util variables:
+# - RAILS_ENV
+# - REDMINE_LANG
+#
+# shellcheck disable=SC1091
+source /util.sh
+
 # check whether post-upgrade script is still running
 while [[ "$(doguctl state)" == "upgrading" ]]; do
   echo "Upgrade script is running. Waiting..."
@@ -22,10 +36,6 @@ DATABASE_USER=$(doguctl config -e sa-postgresql/username)
 DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
 DATABASE_DB=$(doguctl config -e sa-postgresql/database)
 
-echo "set redmine environment variables"
-RAILS_ENV=production
-REDMINE_LANG=en
-
 echo "get plugin locations"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
@@ -34,10 +44,6 @@ HOSTNAME_SETTING="${FQDN}"
 
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
-}
-
-function exec_rake() {
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
 function install_plugins(){
@@ -80,25 +86,13 @@ function install_plugin(){
 }
 
 echo "render config.ru template"
-doguctl template "${WORKDIR}/config.ru.tpl" "${WORKDIR}/config.ru"
+render_config_ru_template
 
 echo "render database.yml template"
-doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
+render_database_yml_template
 
-
-if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
-  echo "create secrets.yml"
-  if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
-    # secret_key_base has not been initialized yet
-    exec_rake generate_secret_token
-    SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-    doguctl config -e secret_key_base "${SECRETKEYBASE}"
-    rm "${WORKDIR}/config/initializers/secret_token.rb"
-  fi
-  # secret_key_base is stored in registry, but secrets.yml is missing
-  # this happens after a restore of the dogu, because the config folder is not backed up
-  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
-fi
+# Make sure secrets.yml exists
+create_secrets_yml
 
 # export variables for auth_source_cas.rb
 export FQDN
@@ -177,7 +171,7 @@ if [ ! -e "${WORKDIR}"/stylesheets ]; then
 fi
 
 echo "Generate configuration.yml from template"
-doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
+render_configuration_yml_template
 
 # remove old pid
 RPID="${WORKDIR}/tmp/pids/server.pid"
