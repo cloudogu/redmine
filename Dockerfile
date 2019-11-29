@@ -1,17 +1,3 @@
-FROM node:10.17.0 AS builder
-ENV CLOUDOGU_THEME_VERSION=2.8.0-1 \
-    WORKDIR=/theme/Cloudogu \
-    THEME_TARGZ_SHA256=58eca2b1741e1288644dc35a0a3208b09b49b5c55ff73f816930c4394b88b669 \
-    TARGET="cloudogu.tar.gz"
-WORKDIR ${WORKDIR}
-# download and build Cloudogu theme
-RUN wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/archive/v${CLOUDOGU_THEME_VERSION}.tar.gz" \
- && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}" \
- && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
- && npm i && npm run build \
- && tar cvfz /theme/Cloudogu/${TARGET} --transform="s/^/Cloudogu\//" favicon/ fonts/ images/ javascripts/ stylesheets/
-
-
 # registry.cloudogu.com/official/redmine
 FROM registry.cloudogu.com/official/base:3.9.4-2
 
@@ -35,13 +21,12 @@ ENV REDMINE_VERSION=4.0.5 \
     CAS_PLUGIN_TARGZ_SHA256=184cbb41abde38e85aae1f4f0117adf2f1eff061ccfe377c91c3545428c5ad46 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
-    RAILS_RELATIVE_URL_ROOT=/redmine
+    RAILS_RELATIVE_URL_ROOT=/redmine \
+    CLOUDOGU_THEME_VERSION=2.8.0-1 \
+    THEME_TARGZ_SHA256=4bd81861bafecf27ed41316697c011dbf73b7379f547b1993b8898e210cff0db
 
 # copy resource files
 COPY resources/ /
-
-# copy theme archive from builder
-COPY --from=builder /theme/Cloudogu/cloudogu.tar.gz /
 
 RUN set -eux -o pipefail \
  # add user and group
@@ -113,9 +98,11 @@ RUN set -eux -o pipefail \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz v${CAS_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
- # install theme
- && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
- && tar xvzf /cloudogu.tar.gz --strip-components=1 -C "${WORKDIR}/public/themes/Cloudogu"\
+ # install Cloudogu theme
+ && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
+ && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/public/themes" \
+ && rm v${CLOUDOGU_THEME_VERSION}.tar.gz \
  # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
  && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
  && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
