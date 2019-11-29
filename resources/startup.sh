@@ -9,6 +9,8 @@ while [[ "$(doguctl state)" == "upgrading" ]]; do
   sleep 3
 done
 
+doguctl state "installing"
+
 echo "get variables for templates"
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
@@ -188,6 +190,8 @@ fi
 mkdir -p tmp tmp/pdf public/plugin_assets
 chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
 chmod -R 755 files log tmp public/plugin_assets
+
+doguctl state "ready"
 
 # Start redmine
 echo "Starting redmine..."
