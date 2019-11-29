@@ -30,6 +30,9 @@ file:
     filetype: file
     contains: ["config.logger = Logger.new(STDOUT)"]
     contains: ["config.log_level = :info"]
+  /usr/share/webapps/redmine/public/themes/Cloudogu:
+    exists: true
+    filetype: directory
 package:
   git:
     installed: true

@@ -1,10 +1,10 @@
-FROM node:10 AS builder
+FROM node:10.17.0 AS builder
 ENV CLOUDOGU_THEME_VERSION=2.8.0-1 \
     WORKDIR=/theme/Cloudogu \
     THEME_TARGZ_SHA256=58eca2b1741e1288644dc35a0a3208b09b49b5c55ff73f816930c4394b88b669 \
     TARGET="cloudogu.tar.gz"
 WORKDIR ${WORKDIR}
-# theme
+# download and build Cloudogu theme
 RUN wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/archive/v${CLOUDOGU_THEME_VERSION}.tar.gz" \
  && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}" \
  && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
