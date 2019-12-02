@@ -20,7 +20,7 @@ node('vagrant') {
 
         stage('Lint') {
             lintDockerfile()
-            shellCheck("./resources/pre-upgrade.sh ./resources/startup.sh ./resources/post-upgrade.sh")
+            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh")
         }
 
         try {

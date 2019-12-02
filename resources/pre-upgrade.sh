@@ -1,20 +1,19 @@
 #!/bin/bash
-
-# older installation of redmine exposed the core plugins to the
-# plugin volume, these exposed plugin could be old and must be
-# removed.
-
 set -o errexit
 set -o nounset
 set -o pipefail
 
-PLUGIN_DIRECTORY="${WORKDIR}/plugins"
-CORE_PLUGINS="redmine_activerecord_session_store redmine_cas"
+FROM_VERSION="${1}"
+TO_VERSION="${2}"
 
-for CP in ${CORE_PLUGINS}; do
-  CP_DIR="${PLUGIN_DIRECTORY}/${CP}"
-  if [ -d "${CP_DIR}" ]; then
-    echo "remove old installation of ${CP}"
-    rm -rf "${CP_DIR}"
-  fi
-done
+echo "Executing Redmine pre-upgrade from ${FROM_VERSION} to ${TO_VERSION}"
+
+if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
+  echo "FROM and TO versions are the same; Exiting..."
+  exit 0
+fi
+
+echo "Set registry flag so startup script waits for post-upgrade to finish..."
+doguctl state "upgrading"
+
+echo "Redmine pre-upgrade done"

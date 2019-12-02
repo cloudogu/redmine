@@ -1,27 +1,34 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.9.4-1
+FROM registry.cloudogu.com/official/base:3.9.4-2
 
 LABEL NAME="official/redmine" \
    VERSION="3.4.11-1" \
    maintainer="robert.auer@cloudogu.com"
 
+# This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
+
 # set environment variables
-ENV REDMINE_VERSION=3.4.11 \
-    CAS_PLUGIN_VERSION=1.2.13 \
-    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.0.1 \
-    RUBYCASVERSION=2.3.13 \
+ENV REDMINE_VERSION=4.0.5 \
+    CAS_PLUGIN_VERSION=1.2.14 \
+    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
+    RUBYCASVERSION=2.3.15 \
     USER=redmine \
     BASEDIR=/usr/share/webapps \
     WORKDIR=/usr/share/webapps/redmine \
-    SERVICE_TAGS=webapp
+    SERVICE_TAGS=webapp \
+    RAILS_ENV=production \
+    REDMINE_TARGZ_SHA256=64eabe6867fd5d14d1b4c584417b9b71fbb9b68a019400eeb03e1f2147c369e8 \
+    CAS_PLUGIN_TARGZ_SHA256=184cbb41abde38e85aae1f4f0117adf2f1eff061ccfe377c91c3545428c5ad46 \
+    ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
+    RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
+    RAILS_RELATIVE_URL_ROOT=/redmine \
+    CLOUDOGU_THEME_VERSION=2.8.0-1 \
+    THEME_TARGZ_SHA256=4bd81861bafecf27ed41316697c011dbf73b7379f547b1993b8898e210cff0db
 
 # copy resource files
 COPY resources/ /
 
-# install theme, before the ownership is changed
-ADD packages/cloudogu.tar.gz ${WORKDIR}/public/themes
-
-RUN set -x \
+RUN set -eux -o pipefail \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
@@ -58,43 +65,55 @@ RUN set -x \
  && 2>/dev/null 1>&2 gem update --system --quiet \
  # install redmine
  && mkdir -p ${WORKDIR} \
- && curl -L http://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz | tar xfz - --strip-components=1 -C ${WORKDIR} \
+ && mkdir -p /redmine_source \
+ && wget "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz" \
+ && echo "${REDMINE_TARGZ_SHA256} *redmine-${REDMINE_VERSION}.tar.gz" | sha256sum -c - \
+ && tar -xf redmine-${REDMINE_VERSION}.tar.gz --strip-components=1 -C ${WORKDIR} \
+ && mv redmine-${REDMINE_VERSION}.tar.gz /redmine_source/redmine-${REDMINE_VERSION}.tar.gz \
+ && mkdir -p ${WORKDIR}/app/assets/config && touch ${WORKDIR}/app/assets/config/manifest.js \
  # set temporary database configuration for bundle install
- && DATABASE_TYPE=postgresql \
-    DATABASE_IP=localhost \
-    DATABASE_DB=redmine \
-    DATABASE_USER=redmine \
-    DATABASE_USER_PASSWORD=redmine \
-    eval "echo \"$(cat  ${WORKDIR}/config/database.yml.tpl)\"" > ${WORKDIR}/config/database.yml \
- # Install (available) rubycas-client version
- && git clone https://github.com/cloudogu/rubycas-client.git \
+ && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
+ # Install rubycas-client
+ && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
+ && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
+ && mkdir rubycas-client \
+ && tar xfz v${RUBYCASVERSION}.tar.gz --strip-components=1 -C rubycas-client \
+ && rm v${RUBYCASVERSION}.tar.gz \
  && cd rubycas-client \
  && gem build rubycas-client.gemspec \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
- && cd ..; rm -rf rubycas-client \
+ && cd .. \
+ && rm -rf rubycas-client \
  # install redmine required gems
  && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
- && echo 'gem "activerecord-deprecated_finders", require: "active_record/deprecated_finders"' >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
- # install required gems
- && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
  && mkdir -p "${WORKDIR}/plugins" \
  # install cas plugin
  && mkdir "${WORKDIR}/plugins/redmine_cas" \
- && curl -sL \
-    https://github.com/cloudogu/redmine_cas/archive/${CAS_PLUGIN_VERSION}.tar.gz \
-  | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
+ && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
+ && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${CAS_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_cas" \
+ && rm v${CAS_PLUGIN_VERSION}.tar.gz \
+ # install Cloudogu theme
+ && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
+ && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
+ && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/public/themes/Cloudogu" \
+ && rm v${CLOUDOGU_THEME_VERSION}.tar.gz \
  # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
  && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
- && curl -sL \
-    https://github.com/pencil/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
-  | tar xfz - --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
- # install plugin gems
- && cd ${WORKDIR}; RAILS_ENV="production" bundle install --without development test \
+ && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
+ && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
+ && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
+ # install required and plugin gems
+ && cd ${WORKDIR} \
+ && bundle install --without development test \
+ && gem install puma \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
@@ -107,7 +126,7 @@ WORKDIR ${WORKDIR}
 # expose application port
 EXPOSE 3000
 
-HEALTHCHECK CMD [ $(doguctl healthy redmine; EXIT_CODE=$?; echo ${EXIT_CODE}) == 0 ]
+HEALTHCHECK CMD [ $(doguctl healthy redmine; echo $?) == 0 ]
 
 # start
-CMD /startup.sh
+CMD ["/startup.sh"]
