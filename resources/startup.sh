@@ -3,6 +3,28 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# import util functions:
+# - create_secrets_yml
+# - render_config_ru_template
+# - render_database_yml_template
+# - render_configuration_yml_template
+# - exec_rake
+#
+# import util variables:
+# - RAILS_ENV
+# - REDMINE_LANG
+#
+# shellcheck disable=SC1091
+source /util.sh
+
+# check whether post-upgrade script is still running
+while [[ "$(doguctl state)" == "upgrading" ]]; do
+  echo "Upgrade script is running. Waiting..."
+  sleep 3
+done
+
+doguctl state "installing"
+
 echo "get variables for templates"
 FQDN=$(doguctl config --global fqdn)
 DOMAIN=$(doguctl config --global domain)
@@ -14,10 +36,6 @@ DATABASE_USER=$(doguctl config -e sa-postgresql/username)
 DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
 DATABASE_DB=$(doguctl config -e sa-postgresql/database)
 
-echo "set redmine environment variables"
-RAILS_ENV=production
-REDMINE_LANG=en
-
 echo "get plugin locations"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
@@ -26,10 +44,6 @@ HOSTNAME_SETTING="${FQDN}"
 
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
-}
-
-function exec_rake() {
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
 function install_plugins(){
@@ -71,17 +85,14 @@ function install_plugin(){
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
-# adjust redmine database.yml
-doguctl template "${WORKDIR}/config/database.yml.tpl" "${WORKDIR}/config/database.yml"
+echo "render config.ru template"
+render_config_ru_template
 
-# insert secret_key_base into secrets.yml
-if [ ! -f "${WORKDIR}/config/initializers/secret_token.rb" ]; then
-  exec_rake generate_secret_token
-  # TODO do we need the steps below?
-  SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-  doguctl config -e secret_key_base "${SECRETKEYBASE}"
-  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
-fi
+echo "render database.yml template"
+render_database_yml_template
+
+# Make sure secrets.yml exists
+create_secrets_yml
 
 # export variables for auth_source_cas.rb
 export FQDN
@@ -102,7 +113,7 @@ sleep 10
 if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
   echo "Redmine (database) has been installed already."
   # update FQDN in settings
-  # we need to update the fqdn on every start, bacause of possible changes
+  # we need to update the fqdn on every start, because of possible changes
   sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
   sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
 else
@@ -159,8 +170,8 @@ if [ ! -e "${WORKDIR}"/stylesheets ]; then
   ln -s "${WORKDIR}"/public/* "${WORKDIR}"
 fi
 
-# Generate configuration.yml from template (e.g. for config of mail transport)
-doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
+echo "Generate configuration.yml from template"
+render_configuration_yml_template
 
 # remove old pid
 RPID="${WORKDIR}/tmp/pids/server.pid"
@@ -168,12 +179,14 @@ if [ -f "${RPID}" ]; then
   rm -f "${RPID}"
 fi
 
-# besure temp, file and log folders are writable
-# TODO should tmp a volume, because of performance?
+# make sure temp, file and log folders are writable
+# TODO should tmp be a volume, because of performance?
 mkdir -p tmp tmp/pdf public/plugin_assets
 chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
 chmod -R 755 files log tmp public/plugin_assets
 
+doguctl state "ready"
+
 # Start redmine
 echo "Starting redmine..."
-exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} bundle exec ruby bin/rails server webrick -e ${RAILS_ENV} -b 0.0.0.0"
+exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} puma -e ${RAILS_ENV} -p 3000"

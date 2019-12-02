@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "3.4.11-1",
+  "Version": "4.0.5-1",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -35,15 +35,17 @@
   "ServiceAccounts": [{
     "Type": "postgresql"
   }],
-  "HealthCheck": {
+  "HealthChecks": [{
     "Type": "tcp",
     "Port": 3000
-  },
-  "ExposedCommands": [{
-    "Name": "pre-upgrade",
-    "Command": "/pre-upgrade.sh"
   },{
+    "Type": "state"
+  }],
+  "ExposedCommands": [{
     "Name": "post-upgrade",
     "Command": "/post-upgrade.sh"
+  },{
+    "Name": "pre-upgrade",
+    "Command": "/pre-upgrade.sh"
   }]
 }

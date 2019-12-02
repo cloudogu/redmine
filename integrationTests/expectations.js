@@ -10,9 +10,9 @@ exports.expectState = function(state) {
 }
 
 exports.expectCasLogin = function(url) {
-  expect(url).toBe(config.baseUrl + '/cas/login?service=https%3A%2F%2F' + config.fqdn + '%2Fredmine%2Fcas%3Fref%3D%252Fredmine');
+  expect(url).toBe(config.baseUrl + '/cas/login?service=https%3A%2F%2F' + config.fqdn + '%2Fredmine%2Fcas%3Fref%3D%252Fredmine%252F');
 }
 
 exports.expectCasLogout = function(url) {
-  expect(url).toBe(config.baseUrl + '/cas/logout?destination=https%3A%2F%2F' + config.fqdn + '%2Fredmine&gateway=true');
+  expect(url).toBe(config.baseUrl + '/cas/logout?destination=https%3A%2F%2F' + config.fqdn + '%2Fredmine%2F&gateway=true');
 }

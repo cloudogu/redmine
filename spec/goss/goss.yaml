@@ -4,16 +4,50 @@ file:
     owner: root
     group: root
     filetype: file
-  /usr/share/webapps/redmine/public/themes/Cloudogu:
+  /pre-upgrade.sh:
     exists: true
-    filetype: directory
+    owner: root
+    group: root
+    filetype: file
+  /post-upgrade.sh:
+    exists: true
+    owner: root
+    group: root
+    filetype: file
+  /util.sh:
+    exists: true
+    owner: root
+    group: root
+    filetype: file
   /usr/share/webapps/redmine:
     exists: true
     filetype: directory
+  /usr/share/webapps/redmine/config/initializers/secret_token.rb:
+    exists: false
+  /usr/share/webapps/redmine/config/secrets.yml:
+    exists: true
+    filetype: file
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
-contains: ["RedmineApp::Application.routes.default_scope = '/redmine'"]
+    contains: ["ENV['RAILS_RELATIVE_URL_ROOT'] = \"/redmine\""]
+    contains: ["Redmine::Utils::relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']"]
+  /usr/share/webapps/redmine/config/database.yml:
+    exists: true
+    filetype: file
+    contains: ["production:"]
+  /usr/share/webapps/redmine/config.ru:
+    exists: true
+    filetype: file
+    contains: ["map ENV['RAILS_RELATIVE_URL_ROOT'] || '/' do"]
+  /usr/share/webapps/redmine/config/additional_environment.rb:
+    exists: true
+    filetype: file
+    contains: ["config.logger = Logger.new(STDOUT)"]
+    contains: ["config.log_level = :info"]
+  /usr/share/webapps/redmine/public/themes/Cloudogu:
+    exists: true
+    filetype: directory
 package:
   git:
     installed: true
@@ -45,5 +79,5 @@ port:
   tcp:3000:
     listening: true
 process:
-  ruby:
+  puma:
     running: true
