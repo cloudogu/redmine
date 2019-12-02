@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [v4.0.5-1] - 2019-12-02
 ### Changed
 - Upgrade to Redmine 4.0.5
 - Switch from WEBrick to Puma web server
@@ -12,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update [redmine_activerecord_session_store plugin](https://github.com/cloudogu/redmine_activerecord_session_store) to v0.1.0
 - Update [rubycas-client plugin](https://github.com/cloudogu/rubycas-client) to v2.3.15
 
-## Removed
+### Removed
 - Gem activerecord-deprecated_finders was removed as it is not maintained in Rails 5 any more. See https://github.com/rails/activerecord-deprecated_finders
 
 ## [v3.4.11-1] - 2019-09-04
