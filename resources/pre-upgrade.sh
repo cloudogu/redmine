@@ -13,7 +13,7 @@ if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
   exit 0
 fi
 
-echo "Setting etcd flag so startup script waits for post-upgrade to finish..."
+echo "Set registry flag so startup script waits for post-upgrade to finish..."
 doguctl state "upgrading"
 
 echo "Redmine pre-upgrade done"

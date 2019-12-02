@@ -48,8 +48,7 @@ exec_rake redmine:plugins:migrate
 echo "Clearing cache..."
 exec_rake tmp:cache:clear
 
-echo "Set etcd flag so startup script can start afterwards..."
-# Note: This flag has been set to "true" in pre-upgrade.sh
+echo "Set registry flag so startup script can start afterwards..."
 doguctl state "upgrade done"
 
 echo "Redmine post-upgrade done"
