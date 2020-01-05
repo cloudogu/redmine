@@ -40,7 +40,7 @@ echo "get plugin locations"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
-HOSTNAME_SETTING="${FQDN}"
+HOSTNAME_SETTING="${FQDN}/redmine"
 
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
