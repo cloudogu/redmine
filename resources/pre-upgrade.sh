@@ -17,3 +17,7 @@ echo "Set registry flag so startup script waits for post-upgrade to finish..."
 doguctl state "upgrading"
 
 echo "Redmine pre-upgrade done"
+
+echo "Please be aware that after any upgrade of redmine existing session cookies"
+echo "will most likely stop working. If a user tries to access redmine with a"
+echo "pre-upgrade session cookie it will result in an error."
