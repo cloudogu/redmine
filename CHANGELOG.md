@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v4.1.0-2](https://github.com/cloudogu/redmine/releases/tag/v4.1.0-2) - 2020-01-15
 ### Added
 - Add an upgrade notification for invalid cookies after dogu upgrade
 - Update theme to v2.8.0-2
