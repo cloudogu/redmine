@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "4.1.0-1",
+  "Version": "4.1.0-2",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -44,6 +44,9 @@
   "ExposedCommands": [{
     "Name": "post-upgrade",
     "Command": "/post-upgrade.sh"
+  },{
+    "Name": "upgrade-notification",
+    "Command": "/upgrade-notification.sh"
   },{
     "Name": "pre-upgrade",
     "Command": "/pre-upgrade.sh"
