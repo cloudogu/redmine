@@ -85,9 +85,10 @@ RUN set -eux -o pipefail \
  && cd .. \
  && rm -rf rubycas-client \
  # install redmine required gems
- && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
+ # install activerecord-session_store to be able to invalidate sessions after cas logout
+ && echo 'gem "activerecord-session_store", "1.1.3"' >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
- && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
+ && echo 'gem "json", "2.3.0"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
@@ -108,8 +109,6 @@ RUN set -eux -o pipefail \
  && cd ${WORKDIR} \
  && bundle install --without development test \
  && gem install puma -v 4.3.1 \
- # install activerecord-session_store to be able to invalidate sessions after cas logout
- && gem install activerecord-session_store -v 1.1.3 \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
