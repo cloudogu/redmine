@@ -122,6 +122,12 @@ else
   echo "Creating database structure..."
   exec_rake db:migrate
 
+  # Session migration
+  echo "Generating session migration..."
+  rails generate active_record:session_migration
+  echo "Executing session migration..."
+  exec_rake db:migrate
+
   # insert default configuration data into database
   echo "Inserting default configuration data into database..."
   exec_rake redmine:load_default_data

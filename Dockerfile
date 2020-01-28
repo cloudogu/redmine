@@ -104,16 +104,12 @@ RUN set -eux -o pipefail \
  && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/public/themes/Cloudogu" \
  && rm v${CLOUDOGU_THEME_VERSION}.tar.gz \
- # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
- && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
- && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
- && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
- && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
  # install required and plugin gems
  && cd ${WORKDIR} \
  && bundle install --without development test \
- && gem install puma \
+ && gem install puma -v 4.3.1 \
+ # install activerecord-session_store to be able to invalidate sessions after cas logout
+ && gem install activerecord-session_store -v 1.1.3 \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
