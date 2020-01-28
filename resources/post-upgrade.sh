@@ -51,8 +51,8 @@ exec_rake db:migrate
 echo "Migrating plugins..."
 exec_rake redmine:plugins:migrate
 
-echo "Clearing cache..."
-exec_rake tmp:cache:clear
+echo "Clearing cache and sessions..."
+exec_rake tmp:cache:clear tmp:sessions:clear
 
 echo "Set registry flag so startup script can start afterwards..."
 doguctl state "upgrade done"
