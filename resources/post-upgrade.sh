@@ -42,6 +42,12 @@ render_configuration_yml_template
 echo "Migrating database..."
 exec_rake db:migrate
 
+# Session migration
+echo "Generating session migration..."
+rails generate active_record:session_migration
+echo "Executing session migration..."
+exec_rake db:migrate
+
 echo "Migrating plugins..."
 exec_rake redmine:plugins:migrate
 
