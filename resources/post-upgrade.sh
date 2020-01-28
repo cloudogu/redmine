@@ -9,6 +9,7 @@ set -o pipefail
 # - render_database_yml_template
 # - render_configuration_yml_template
 # - exec_rake
+# - write_session_store_rb
 #
 # import util variables:
 # - RAILS_ENV
@@ -42,11 +43,8 @@ render_configuration_yml_template
 echo "Migrating database..."
 exec_rake db:migrate
 
-# Session migration
-echo "Generating session migration..."
-rails generate active_record:session_migration
-echo "Executing session migration..."
-exec_rake db:migrate
+echo "Writing session_store.rb..."
+write_session_store_rb
 
 echo "Migrating plugins..."
 exec_rake redmine:plugins:migrate

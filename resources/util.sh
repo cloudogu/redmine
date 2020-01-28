@@ -39,3 +39,7 @@ function render_database_yml_template() {
 function render_configuration_yml_template() {
     doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 }
+
+function write_session_store_rb() {
+  echo 'Rails.application.config.session_store :active_record_store, :key => '\''_redmine_session'\'' ' > "${WORKDIR}"/config/initializers/session_store.rb
+}

@@ -9,6 +9,7 @@ set -o pipefail
 # - render_database_yml_template
 # - render_configuration_yml_template
 # - exec_rake
+# - write_session_store_rb
 #
 # import util variables:
 # - RAILS_ENV
@@ -122,15 +123,9 @@ else
   echo "Creating database structure..."
   exec_rake db:migrate
 
-  # Session migration
-  echo "Generating session migration..."
-  rails generate active_record:session_migration
-  echo "Executing session migration..."
-  exec_rake db:migrate
-
   # Set session store
   echo "Writing session_store.rb..."
-  echo 'Rails.application.config.session_store :active_record_store, :key => '\''_sessions'\'' ' > "${WORKDIR}"/config/initializers/session_store.rb
+  write_session_store_rb
 
   # insert default configuration data into database
   echo "Inserting default configuration data into database..."
