@@ -123,6 +123,12 @@ else
   echo "Creating database structure..."
   exec_rake db:migrate
 
+  # Session migration
+  echo "Generating session migration..."
+  rails generate active_record:session_migration
+  echo "Executing session migration..."
+  exec_rake db:migrate
+
   # Set session store
   echo "Writing session_store.rb..."
   write_session_store_rb
