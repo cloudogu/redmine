@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Applies diverse style fixes (#36)  
+
+### Fixed
+
+- Fixes checkbox unavailability when an administrator wants to set the user's project roles. (#36) 
+
 ## [v4.1.0-2](https://github.com/cloudogu/redmine/releases/tag/v4.1.0-2) - 2020-01-15
 ### Added
 - Add an upgrade notification for invalid cookies after dogu upgrade
