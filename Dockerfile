@@ -8,7 +8,7 @@ LABEL NAME="official/redmine" \
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
 
 # set environment variables
-ENV REDMINE_VERSION=4.1.0 \
+ENV REDMINE_VERSION=4.1.1 \
     CAS_PLUGIN_VERSION=1.2.14 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
     RUBYCASVERSION=2.3.15 \
@@ -17,7 +17,7 @@ ENV REDMINE_VERSION=4.1.0 \
     WORKDIR=/usr/share/webapps/redmine \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
-    REDMINE_TARGZ_SHA256=91f220504ee0d25ea0f8ed4d6cc49071c914b6de616cf488dc8e91427107acbb \
+    REDMINE_TARGZ_SHA256=05faafe764330f2d77b0aacddf9d8ddce579c3d26bb8e03a7d6e7ff461f1cdda \
     CAS_PLUGIN_TARGZ_SHA256=184cbb41abde38e85aae1f4f0117adf2f1eff061ccfe377c91c3545428c5ad46 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
