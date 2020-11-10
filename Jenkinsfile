@@ -20,7 +20,7 @@ node('vagrant') {
 
         stage('Lint') {
             lintDockerfile()
-            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh")
+            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh")
         }
 
         try {
@@ -52,34 +52,7 @@ node('vagrant') {
             }
 
             stage('Integration Tests') {
-
-                String externalIP = ecoSystem.externalIP
-
-                if (fileExists('integrationTests/it-results.xml')) {
-                    sh 'rm -f integrationTests/it-results.xml'
-                }
-
-                timeout(time: 15, unit: 'MINUTES') {
-
-                    try {
-
-                        withZalenium { zaleniumIp ->
-
-                            dir('integrationTests') {
-
-                                docker.image('node:8.14.0-stretch').inside("-e WEBDRIVER=remote -e CES_FQDN=${externalIP} -e SELENIUM_BROWSER=chrome -e SELENIUM_REMOTE_URL=http://${zaleniumIp}:4444/wd/hub") {
-                                    sh 'yarn install'
-                                    sh 'yarn run ci-test'
-                                }
-
-                            }
-
-                        }
-                    } finally {
-                        // archive test results
-                        junit allowEmptyResults: true, testResults: 'integrationTests/it-results.xml'
-                    }
-                }
+                ecoSystem.runYarnIntegrationTests(15, 'node:8.14.0-stretch')
             }
 
         } finally {
