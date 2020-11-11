@@ -1,9 +1,21 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.44.3', 'github.com/cloudogu/dogu-build-lib@v1.1.0']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.44.3', 'github.com/cloudogu/dogu-build-lib@v1.1.0', 'github.com/cloudogu/zalenium-build-lib@30923630']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
+import com.cloudogu.ces.zaleniumbuildlib.*
+
+node('docker'){
+    stage('Checkout') {
+        checkout scm
+    }
+    stage('Lint') {
+        lintDockerfile()
+        shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh")
+    }
+}
 
 node('vagrant') {
+    String doguName = "redmine"
     Git git = new Git(this, "cesmarvin")
     git.committerName = 'cesmarvin'
     git.committerEmail = 'cesmarvin@cloudogu.com'
@@ -25,15 +37,6 @@ node('vagrant') {
         ])
 
         EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
-
-        stage('Checkout') {
-            checkout scm
-        }
-
-        stage('Lint') {
-            lintDockerfile()
-            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh")
-        }
 
         try {
 
