@@ -13,6 +13,21 @@
   "Dependencies": [
     "postgresql", "cas", "nginx", "postfix"
   ],
+  "Configuration": [{
+    "Name": "logging/root",
+    "Description": "Set the root log level to one of ERROR, WARN, INFO, DEBUG.",
+    "Optional": true,
+    "Default": "INFO",
+    "Validation": {
+      "Type": "ONE_OF",
+      "Values": [
+        "WARN",
+        "DEBUG",
+        "INFO",
+        "ERROR"
+      ]
+    }
+  }],
   "Volumes": [{
     "Name": "files",
     "Path": "/usr/share/webapps/redmine/files",

@@ -46,6 +46,27 @@ function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
 }
 
+function setDoguLogLevel() {
+  echo "Mapping dogu specific log level..."
+  currentLogLevel=$(doguctl config --default "WARN" "logging/root")
+
+  case "${currentLogLevel}" in
+    "ERROR")
+      export REDMINE_LOGLEVEL=":error"
+    ;;
+    "INFO")
+      export REDMINE_LOGLEVEL=":info"
+    ;;
+    "DEBUG")
+      export REDMINE_LOGLEVEL=":debug"
+    ;;
+    *)
+      export REDMINE_LOGLEVEL=":warn"
+    ;;
+  esac
+  doguctl template /usr/share/webapps/redmine/config/additional_environment.rb.tpl /usr/share/webapps/redmine/config/additional_environment.rb
+}
+
 function install_plugins(){
   echo "installing plugins"
 
@@ -90,6 +111,8 @@ render_config_ru_template
 
 echo "render database.yml template"
 render_database_yml_template
+
+setDoguLogLevel
 
 # Make sure secrets.yml exists
 create_secrets_yml
