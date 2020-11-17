@@ -44,19 +44,6 @@ PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
 HOSTNAME_SETTING="${FQDN}/redmine"
 
-function sql(){
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
-}
-
-function get_setting_value() {
-  SETTING_NAME=$1
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql -t \
-    --host "postgresql" \
-    --username "${DATABASE_USER}" \
-    --dbname "${DATABASE_DB}" \
-    -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
-}
-
 function setDoguLogLevel() {
   echo "Mapping dogu specific log level..."
   currentLogLevel=$(doguctl config --default "WARN" "logging/root")
