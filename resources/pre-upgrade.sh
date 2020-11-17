@@ -16,6 +16,8 @@ if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
   exit 0
 fi
 
+doguctl state "upgrading"
+
 if [[ "${FROM_VERSION}" =~ ^v3.*$ || "${FROM_VERSION}" =~ ^v4.((0.5-1)|(1.0-[123]))$ ]]; then
   DELETE_DUPLICATE_STATEMENT="DELETE FROM settings WHERE id IN (SELECT id FROM settings WHERE NOT id IN (SELECT max(id) FROM settings GROUP BY name HAVING count(*) > 1) AND name IN (SELECT name FROM settings GROUP BY name HAVING count(name) > 1))"
   echo "Pre-upgrade: Deleting duplicate settings in database..."
@@ -23,5 +25,4 @@ if [[ "${FROM_VERSION}" =~ ^v3.*$ || "${FROM_VERSION}" =~ ^v4.((0.5-1)|(1.0-[123
 fi
 
 echo "Set registry flag so startup script waits for post-upgrade to finish..."
-doguctl state "upgrading"
 echo "Redmine pre-upgrade done"
