@@ -33,11 +33,6 @@ DOMAIN=$(doguctl config --global domain)
 ADMIN_GROUP=$(doguctl config --global 'admin_group')
 MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
 
-echo "get data for database connection"
-DATABASE_USER=$(doguctl config -e sa-postgresql/username)
-DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
-DATABASE_DB=$(doguctl config -e sa-postgresql/database)
-
 echo "get plugin locations"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
