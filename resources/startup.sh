@@ -3,6 +3,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+SETUP_DONE_KEY="startup/setup_done"
+
 # import util functions:
 # - create_secrets_yml
 # - render_config_ru_template
@@ -44,6 +46,15 @@ HOSTNAME_SETTING="${FQDN}/redmine"
 
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
+}
+
+function get_setting_value() {
+  SETTING_NAME=$1
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql -t \
+    --host "postgresql" \
+    --username "${DATABASE_USER}" \
+    --dbname "${DATABASE_DB}" \
+    -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
 }
 
 function setDoguLogLevel() {
@@ -132,13 +143,35 @@ fi
 # TODO: check why the if statement below sometimes fails if there is no sleep
 sleep 10
 
+SETUP_DONE=$(doguctl config "${SETUP_DONE_KEY}" --default "false")
 # Check if Redmine has been installed already
-if 2>/dev/null 1>&2 sql "select count(*) from settings;"; then
+if [[ "${SETUP_DONE}" == "true" ]]; then
   echo "Redmine (database) has been installed already."
   # update FQDN in settings
   # we need to update the fqdn on every start, because of possible changes
   sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
-  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" > /dev/null 2>&1
+
+  echo "Get cas plugin config values..."
+
+  # Get the configured value for the redmine cas plugin config
+  OLD_SETTINGS="$(get_setting_value "plugin_redmine_cas")"
+
+  # Extract the value for the redirect_enabled config
+  VALUE_REDIRECT_SETTING="$(echo "${OLD_SETTINGS}" |grep "redirect_enabled: '" |sed "s/^[^']*'\([^']*\)'.*$/\1/g" || echo "0")"
+
+  # Value: 1 => true / not existing => false
+  # Even value: 0 would still be true. This is why this step is necessary.
+  REDIRECT_SETTINGS="redirect_enabled: 1 \\n"
+  if [ "${VALUE_REDIRECT_SETTING}" != "1" ]
+  then
+    REDIRECT_SETTINGS=""
+  fi
+
+  echo "Updating cas plugin settings..."
+
+  # Reason for this update: The cas plugin config should not be configurable. This lock out the user and make the dogu unusable.
+  # This is why the config is overridden at each start. The only flag that must be configurable is the redirect_enabled flag.
+  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\n${REDIRECT_SETTINGS}cas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" >/dev/null 2>&1
 else
 
   # Create the database structure
@@ -180,6 +213,8 @@ else
 
   # Remove default admin account
   sql "DELETE FROM users WHERE login='admin';"
+
+  doguctl config "${SETUP_DONE_KEY}" "true"
 fi
 
 # install manual installed plugins
