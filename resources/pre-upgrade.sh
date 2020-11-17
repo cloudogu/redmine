@@ -3,6 +3,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck disable=SC1091
 source /util.sh
 
 FROM_VERSION="${1}"
