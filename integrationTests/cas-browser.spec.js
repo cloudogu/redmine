@@ -70,20 +70,21 @@ describe('cas browser tests', () => {
     });
 
     test('do not redirect to cas when redirect disabled', async() => {
-        await driver.get(config.redmineContextPath + '/login');
+        await driver.get(config.baseUrl + config.redmineContextPath + '/login');
         const url = await driver.getCurrentUrl();
-        expect(url).toBe(config.redmineContextPath + '/login');
+        expect(url).toBe(config.baseUrl + config.redmineContextPath + '/login');
     });
 
     test('redirect to cas when redirect enabled', async() => {
         await utils.login(driver, config.redmineContextPath);
-        await driver.get(config.redmineContextPath + '/settings/plugin/redmine_cas');
+        await driver.get(config.baseUrl + config.redmineContextPath + '/settings/plugin/redmine_cas');
         await driver.findElement(By.id('settings_redirect_enabled')).click();
         await driver.findElement(By.name('commit')).click();
         await driver.findElement(By.css('a.logout')).click();
-        await driver.get(config.redmineContextPath + '/login');
+        await driver.get(config.baseUrl + config.redmineContextPath + '/login');
         const url = await driver.getCurrentUrl();
-        expectations.expectCasLogin(url);
+        expect(url).toBe(config.baseUrl + '/cas/login?service=https%3A%2F%2F192.168.56.2%2Fredmine%2F');
     });
+
 
 });
