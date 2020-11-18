@@ -83,7 +83,7 @@ describe('cas browser tests', () => {
         await driver.findElement(By.css('a.logout')).click();
         await driver.get(config.baseUrl + config.redmineContextPath + '/login');
         const url = await driver.getCurrentUrl();
-        expect(url).toBe(config.baseUrl + '/cas/login?service=https%3A%2F%2F192.168.56.2%2Fredmine%2F');
+        expect(url).toBe(config.baseUrl + '/cas/login?service=https%3A%2F%2F' + config.fqdn + '%2Fredmine%2F');
     });
 
 
