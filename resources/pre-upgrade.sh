@@ -3,9 +3,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# shellcheck disable=SC1091
-source /util.sh
-
 FROM_VERSION="${1}"
 TO_VERSION="${2}"
 
@@ -16,14 +13,7 @@ if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
   exit 0
 fi
 
+echo "Set registry flag so startup script waits for post-upgrade to finish..."
 doguctl state "upgrading"
 
-if [[ "${FROM_VERSION}" =~ ^v3.*$ || "${FROM_VERSION}" =~ ^[v]*4.((0.5-1)|(1.0-[123]))$ ]]; then
-  # This was added due to issue #42. There can be duplicated settings in the database. This sql statement will remove them.
-  DELETE_DUPLICATE_STATEMENT="DELETE FROM settings WHERE id IN (SELECT id FROM settings WHERE NOT id IN (SELECT max(id) FROM settings GROUP BY name HAVING count(*) > 1) AND name IN (SELECT name FROM settings GROUP BY name HAVING count(name) > 1))"
-  echo "Pre-upgrade: Deleting duplicate settings in database..."
-  sql "${DELETE_DUPLICATE_STATEMENT}"
-fi
-
-echo "Set registry flag so startup script waits for post-upgrade to finish..."
 echo "Redmine pre-upgrade done"
