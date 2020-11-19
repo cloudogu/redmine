@@ -39,3 +39,21 @@ function render_database_yml_template() {
 function render_configuration_yml_template() {
     doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 }
+
+echo "get data for database connection"
+DATABASE_USER=$(doguctl config -e sa-postgresql/username)
+DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
+DATABASE_DB=$(doguctl config -e sa-postgresql/database)
+
+function sql(){
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
+}
+
+function get_setting_value() {
+  SETTING_NAME=$1
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql -t \
+    --host "postgresql" \
+    --username "${DATABASE_USER}" \
+    --dbname "${DATABASE_DB}" \
+    -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
+}

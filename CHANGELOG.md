@@ -4,14 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.1.0-3](https://github.com/cloudogu/redmine/releases/tag/v4.1.0-3) - 2020-03-20
+## [Unreleased]
 
+## [v4.1.1-1] - 2020-11-19
 ### Changed
+- Upgrade to Redmine 4.1.1; #38
+- Upgrade to base image v3.11.6-3
+- Update cas plugin to 1.2.15
+- Use setup_done flag to check if first or subsequent start
+- Remove redundant settings in pre-upgrade #42
 
+### Added
+- Add automated dogu release process
+- Add dogu upgrade test in Jenkins pipeline
+- Add log level adjustment option
+
+## [4.1.0-3](https://github.com/cloudogu/redmine/releases/tag/v4.1.0-3) - 2020-03-20
+### Changed
 - Update theme to v2.9.1-1 (#36) which applies also diverse style fixes (#36)
 
 ### Fixed
-
 - Fixes a checkbox unavailability when an administrator wants to set the user's project roles. (#36) 
 
 ## [v4.1.0-2](https://github.com/cloudogu/redmine/releases/tag/v4.1.0-2) - 2020-01-15
