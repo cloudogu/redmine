@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Upgrade to Redmine 4.1.1; #38
 - Upgrade to base image v3.11.6-3
+- Update cas plugin to 1.2.15
+- Use setup_done flag to check if first or subsequent start
+- Remove redundant settings in pre-upgrade #42
 
 ### Added
 - Add automated dogu release process

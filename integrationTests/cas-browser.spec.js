@@ -69,4 +69,33 @@ describe('cas browser tests', () => {
         expectations.expectCasLogin(url);
     });
 
+    test('do not redirect to cas when redirect disabled', async() => {
+        await utils.login(driver, config.redmineContextPath + '/cas');
+        await utils.setLoginRedirect(driver, false);
+        await utils.setAnonymousAccess(driver, true)
+        await utils.logout(driver);
+
+        await driver.get(config.baseUrl + config.redmineContextPath + '/login');
+        const url = await driver.getCurrentUrl();
+        expect(url).toBe(config.baseUrl + config.redmineContextPath + '/login');
+
+        await utils.login(driver, config.redmineContextPath + '/cas');
+        await utils.setAnonymousAccess(driver, false)
+    });
+
+    test('redirect to cas when redirect enabled', async() => {
+        await utils.login(driver, config.redmineContextPath + '/cas');
+        await utils.setLoginRedirect(driver, true);
+        await utils.setAnonymousAccess(driver, true)
+        await utils.logout(driver);
+
+        await driver.get(config.baseUrl + config.redmineContextPath + '/settings/plugin/redmine_cas');
+        await driver.get(config.baseUrl + config.redmineContextPath + '/login');
+        const url = await driver.getCurrentUrl();
+        expect(url).toBe(config.baseUrl + '/cas/login?service=https%3A%2F%2F' + config.fqdn + '%2Fredmine%2F');
+
+        await utils.login(driver, config.redmineContextPath + '/cas');
+        await utils.setLoginRedirect(driver, false);
+        await utils.setAnonymousAccess(driver, false)
+    });
 });

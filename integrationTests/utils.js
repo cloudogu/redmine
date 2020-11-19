@@ -13,6 +13,7 @@ chromeCapabilities.set('chromeOptions', chromeOptions);
 chromeCapabilities.set('name', 'Redmine ITs');
 // set filename pattern for zalenium videos
 chromeCapabilities.set("testFileNameTemplate", "{testName}_{testStatus}");
+chromeCapabilities.setAcceptInsecureCerts(true);
 
 let driver = null;
 
@@ -57,9 +58,41 @@ function createLocalDriver() {
     .build();
 }
 
+exports.setLoginRedirect = async function (driver, redirect) {
+    await driver.get(config.baseUrl + config.redmineContextPath + '/settings/plugin/redmine_cas');
+    try {
+        if (redirect) {
+            await driver.findElement(By.css('#settings_redirect_enabled:not(:checked)')).click();
+        } else {
+            await driver.findElement(By.css('#settings_redirect_enabled:checked')).click();
+        }
+    }
+    catch (e){
+
+    }
+    await driver.findElement(By.name('commit')).click();
+}
+
+exports.setAnonymousAccess = async function (driver, anonymousAccess) {
+    await driver.get(config.baseUrl + config.redmineContextPath + '/settings?tab=authentication');
+
+    await driver.wait(webdriver.until.elementLocated(By.id("settings_login_required")), 2000);
+    await driver.findElement(By.id("settings_login_required")).click()
+    if (anonymousAccess === true) {
+        await driver.findElement(By.css("#settings_login_required option[value='0']")).click()
+    } else{
+        await driver.findElement(By.css("#settings_login_required option[value='1']")).click()
+    }
+    await driver.findElement(By.css("form[action*='tab=authentication'] input[type='submit']")).click();
+}
+
 exports.login = async function(driver, relativeUrl) {
     await driver.get(config.baseUrl + relativeUrl);
     await driver.findElement(By.id('username')).sendKeys(config.username);
     await driver.findElement(By.id('password')).sendKeys(config.password);
     await driver.findElement(By.css('input[name="submit"]')).click();
+};
+
+exports.logout = async function(driver) {
+    await driver.get(config.baseUrl + '/cas/logout');
 };
