@@ -1,69 +1,91 @@
 {
   "Name": "official/redmine",
-  "Version": "4.1.0-3",
+  "Version": "4.1.1-1",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
   "Tags": [
-    "warp", "pm", "projectmanagement", "issue", "task"
+    "warp",
+    "pm",
+    "projectmanagement",
+    "issue",
+    "task"
   ],
   "Logo": "https://cloudogu.com/images/dogus/redmine.png",
   "Url": "http://www.redmine.org",
   "Image": "registry.cloudogu.com/official/redmine",
   "Dependencies": [
-    "postgresql", "cas", "nginx", "postfix"
+    "postgresql",
+    "cas",
+    "nginx",
+    "postfix"
   ],
-  "Configuration": [{
-    "Name": "logging/root",
-    "Description": "Set the root log level to one of ERROR, WARN, INFO, DEBUG.",
-    "Optional": true,
-    "Default": "INFO",
-    "Validation": {
-      "Type": "ONE_OF",
-      "Values": [
-        "WARN",
-        "DEBUG",
-        "INFO",
-        "ERROR"
-      ]
+  "Configuration": [
+    {
+      "Name": "logging/root",
+      "Description": "Set the root log level to one of ERROR, WARN, INFO, DEBUG.",
+      "Optional": true,
+      "Default": "INFO",
+      "Validation": {
+        "Type": "ONE_OF",
+        "Values": [
+          "WARN",
+          "DEBUG",
+          "INFO",
+          "ERROR"
+        ]
+      }
     }
-  }],
-  "Volumes": [{
-    "Name": "files",
-    "Path": "/usr/share/webapps/redmine/files",
-    "Owner": "1000",
-    "Group": "1000",
-    "NeedsBackup": true
-  }, {
-    "Name": "plugins",
-    "Path": "/var/tmp/redmine/plugins",
-    "Owner": "1000",
-    "Group": "1000",
-    "NeedsBackup": true
-  }, {
-    "Name": "logs",
-    "Path": "/usr/share/webapps/redmine/log",
-    "Owner": "1000",
-    "Group": "1000",
-    "NeedsBackup": false
-  }],
-  "ServiceAccounts": [{
-    "Type": "postgresql"
-  }],
-  "HealthChecks": [{
-    "Type": "tcp",
-    "Port": 3000
-  },{
-    "Type": "state"
-  }],
-  "ExposedCommands": [{
-    "Name": "post-upgrade",
-    "Command": "/post-upgrade.sh"
-  },{
-    "Name": "upgrade-notification",
-    "Command": "/upgrade-notification.sh"
-  },{
-    "Name": "pre-upgrade",
-    "Command": "/pre-upgrade.sh"
-  }]
+  ],
+  "Volumes": [
+    {
+      "Name": "files",
+      "Path": "/usr/share/webapps/redmine/files",
+      "Owner": "1000",
+      "Group": "1000",
+      "NeedsBackup": true
+    },
+    {
+      "Name": "plugins",
+      "Path": "/var/tmp/redmine/plugins",
+      "Owner": "1000",
+      "Group": "1000",
+      "NeedsBackup": true
+    },
+    {
+      "Name": "logs",
+      "Path": "/usr/share/webapps/redmine/log",
+      "Owner": "1000",
+      "Group": "1000",
+      "NeedsBackup": false
+    }
+  ],
+  "ServiceAccounts": [
+    {
+      "Type": "postgresql"
+    }
+  ],
+  "HealthChecks": [
+    {
+      "Type": "tcp",
+      "Port": 3000
+    },
+    {
+      "Type": "state"
+    }
+  ],
+  "ExposedCommands": [
+    {
+      "Name": "post-upgrade",
+      "Command": "/post-upgrade.sh"
+    },
+    {
+      "Name": "upgrade-notification",
+      "Command": "/upgrade-notification.sh"
+    },
+    {
+      "Name": "pre-upgrade",
+      "Command": "/pre-upgrade.sh"
+    }
+  ]
 }
