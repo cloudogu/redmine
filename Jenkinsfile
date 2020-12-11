@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.44.3', 'github.com/cloudogu/dogu-build-lib@v1.1.0', 'github.com/cloudogu/zalenium-build-lib@30923630']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.44.3', 'github.com/cloudogu/dogu-build-lib@c42865d', 'github.com/cloudogu/zalenium-build-lib@be3c37d']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -31,8 +31,9 @@ node('vagrant') {
                 disableConcurrentBuilds(),
                 // Parameter to activate dogu upgrade test on demand
                 parameters([
-                    booleanParam(defaultValue: false, description: 'Test dogu upgrade from latest release or optionally from defined version below', name: 'TestDoguUpgrade'),
-                    string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest')
+                        booleanParam(defaultValue: false, description: 'Test dogu upgrade from latest release or optionally from defined version below', name: 'TestDoguUpgrade'),
+                        booleanParam(defaultValue: false, description: 'Should record videos for the integration test', name: 'VideoRecorderEnabled'),
+                        string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest')
                 ])
         ])
 
@@ -67,7 +68,7 @@ node('vagrant') {
             }
 
             stage('Integration Tests') {
-                ecoSystem.runYarnIntegrationTests(15, 'node:8.14.0-stretch')
+                ecoSystem.runYarnIntegrationTests(15, 'node:8.14.0-stretch', [], params.VideoRecorderEnabled)
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade){
