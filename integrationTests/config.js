@@ -9,6 +9,12 @@ if (!webdriverType) {
   webdriverType = 'local';
 }
 
+let enableVideoRecording = false;
+if(process.env.ENABLE_VIDEO_RECORDING==='true') {
+    console.log('...video recording will be enabled during test execution')
+    enableVideoRecording = true;
+}
+
 module.exports = {
     fqdn: cesFqdn,
     baseUrl: 'https://' + cesFqdn,
@@ -21,5 +27,6 @@ module.exports = {
     email: 'ces-admin@cloudogu.com',
     webdriverType: webdriverType,
     debug: true,
-    adminGroup: 'CesAdministrators'
+    adminGroup: 'CesAdministrators',
+    enableVideoRecording: enableVideoRecording
 };
