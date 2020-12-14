@@ -13,10 +13,7 @@ chromeCapabilities.set('chromeOptions', chromeOptions);
 chromeCapabilities.set('name', 'Redmine ITs');
 // set filename pattern for zalenium videos
 chromeCapabilities.set("testFileNameTemplate", "{testName}_{testStatus}");
-if(!config.enableVideoRecording) {
-    chromeCapabilities.set("recordVideo", "false");
-}
-chromeCapabilities.set("acceptInsecureCerts", "true");
+chromeCapabilities.set("acceptInsecureCerts", true);
 
 let driver = null;
 
