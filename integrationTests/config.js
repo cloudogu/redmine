@@ -21,6 +21,5 @@ module.exports = {
     email: 'ces-admin@cloudogu.com',
     webdriverType: webdriverType,
     debug: true,
-    adminGroup: 'CesAdministrators',
-    enableVideoRecording: enableVideoRecording
+    adminGroup: 'CesAdministrators'
 };
