@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.1.1-2] - 2021-01-06
+### Added
+- Added the ability to configure the memory limits with cesapp edit-config; #45
+
+### Changed
+- Update dogu-build-lib to `v1.1.1`
+- Update zalenium-build-lib to `v2.1.0`
+- toggle video recording with build parameter (#76)
+
 ## [v4.1.1-1] - 2020-11-19
 ### Changed
 - Upgrade to Redmine 4.1.1; #38
