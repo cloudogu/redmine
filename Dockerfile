@@ -126,7 +126,8 @@ RUN set -eux -o pipefail \
  && cd ${WORKDIR} \
  # install required and plugin gems
  && cd ${WORKDIR} \
- && bundle install --without development test \
+ && bundle config set --local without 'development test' \
+ && bundle install \
  && gem install puma \
  # cleanup
  && gem cleanup all \
