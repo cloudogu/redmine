@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- install `redmine_extended_rest_api` plugin during docker build
+
 ## [v4.1.1-2] - 2021-01-06
 ### Added
 - Added the ability to configure the memory limits with cesapp edit-config; #45

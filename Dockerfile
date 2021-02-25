@@ -11,6 +11,7 @@ LABEL NAME="official/redmine" \
 ENV REDMINE_VERSION=4.1.1 \
     CAS_PLUGIN_VERSION=1.2.15 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
+    EXTENDED_REST_API_PLUGIN_VERSION=1.0.0 \
     RUBYCASVERSION=2.3.15 \
     USER=redmine \
     BASEDIR=/usr/share/webapps \
@@ -19,6 +20,7 @@ ENV REDMINE_VERSION=4.1.1 \
     RAILS_ENV=production \
     REDMINE_TARGZ_SHA256=05faafe764330f2d77b0aacddf9d8ddce579c3d26bb8e03a7d6e7ff461f1cdda \
     CAS_PLUGIN_TARGZ_SHA256=05f4a1c2b838f5f71e0a23824683d74fd5c14ebd444e263f4f636e82bc0e146b \
+    EXTENDED_REST_API_TARGZ_SHA256=eedd4c8a9a707a8ac0f499d79c686ed8faf8bc603118a54c18e4829faaeee320 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
     RAILS_RELATIVE_URL_ROOT=/redmine \
@@ -110,6 +112,18 @@ RUN set -eux -o pipefail \
  && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
  && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
+ ###
+ # install redmine_extended_rest_api plugin
+ ###
+ && mkdir "${WORKDIR}/plugins/redmine_extended_rest_api" \
+ && wget -O v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
+    "https://github.com/cloudogu/redmine_extended_rest_api/archive/v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz" \
+ && echo "${EXTENDED_REST_API_TARGZ_SHA256} *v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && SUB_DIR="redmine_extended_rest_api-${EXTENDED_REST_API_PLUGIN_VERSION}/src/" \
+ && tar -C "${WORKDIR}/plugins/redmine_extended_rest_api" --strip-components=2 -xvf v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz "${SUB_DIR}" \
+ && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
+ && find "${WORKDIR}/plugins/redmine_extended_rest_api" -name 'Gemfile*' -type f -delete \
+ && cd ${WORKDIR} \
  # install required and plugin gems
  && cd ${WORKDIR} \
  && bundle install --without development test \
