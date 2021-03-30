@@ -9,5 +9,7 @@
 #
 
  # log to STDOUT (https://github.com/docker-library/redmine/issues/108)
-config.logger = Logger.new(STDOUT)
+logger           = ActiveSupport::Logger.new(STDOUT)
+logger.formatter = config.log_formatter
+config.logger = ActiveSupport::TaggedLogging.new(logger)
 config.log_level = {{ .Env.Get "REDMINE_LOGLEVEL" }}
