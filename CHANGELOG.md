@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - install `redmine_extended_rest_api` plugin during docker build (#47)
 - update deprecated bundle install call (#34)
+- Upgrade base image to 3.12.4-1
+- Upgrade Redmine to 4.2.0; #50
 
 ## [v4.1.1-2] - 2021-01-06
 ### Added
