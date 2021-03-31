@@ -11,6 +11,11 @@ Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die fol
 
 Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus' ist, dass die REST-API in den Einstellungen
 aktiviert ist. Dafür muss der etcd-Key `config/redmine/etcd_redmine_config` gesetzt werden.
+Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key entfernt.
+
+Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/etcd_redmine_config_archived` gespeichert.
+**Hinweis:** Dieser Key wird bei jeder erneuten ausführung überschrieben. Es ist immer nur die zuletzt angewandte 
+Konfiguration historisiert.
 
 ## Beispielkonfiguration
 
