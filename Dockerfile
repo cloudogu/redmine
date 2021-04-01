@@ -134,6 +134,7 @@ RUN set -eux -o pipefail \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/* \
+ && apk add nano \
  && apk add ruby-irb
 
 # set workdir

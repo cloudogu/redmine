@@ -3,6 +3,18 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+echo "                                     ./////,                    "
+echo "                                 ./////==//////*                "
+echo "                                ////.  ___   ////.              "
+echo "                         ,**,. ////  ,////A,  */// ,**,.        "
+echo "                    ,/////////////*  */////*  *////////////A    "
+echo "                   ////'        \VA.   '|'   .///'       '///*  "
+echo "                  *///  .*///*,         |         .*//*,   ///* "
+echo "                  (///  (//////)**--_./////_----*//////)   ///) "
+echo "                   V///   '°°°°      (/////)      °°°°'   ////  "
+echo "                    V/////(////////\. '°°°' ./////////(///(/'   "
+echo "                       'V/(/////////////////////////////V'      "
+
 SETUP_DONE_KEY="startup/setup_done"
 
 # import util functions:
@@ -198,6 +210,11 @@ else
 
   doguctl config "${SETUP_DONE_KEY}" "true"
 fi
+
+create_temporary_admin
+
+echo "admin-name: ${TMP_ADMIN_NAME}"
+echo "admin-pw: ${TMP_ADMIN_PASSWORD}"
 
 # install manual installed plugins
 install_plugins

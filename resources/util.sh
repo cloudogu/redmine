@@ -57,3 +57,26 @@ function get_setting_value() {
     --dbname "${DATABASE_DB}" \
     -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
 }
+
+function create_temporary_admin() {
+  echo "Creating temporary admin..."
+  TMP_ADMIN_NAME="$(doguctl random)"
+  TMP_ADMIN_PASSWORD="$(doguctl random)"
+
+  # In case we are in restart loop to prevent infinite admin users...
+  remove_last_temporary_admin
+
+  source "/create-admin.sh" "${TMP_ADMIN_NAME}" "${TMP_ADMIN_PASSWORD}"
+}
+
+function remove_last_temporary_admin() {
+  # Empty string is not possible with doguctl command
+  DEFAULT="<empty>"
+  LAST_TMP_ADMIN="$(doguctl config --default "${DEFAULT}" last_tmp_admin)"
+
+  if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
+  then
+    echo "Removing last temporary admin..."
+    source "/remove-user.sh" "${LAST_TMP_ADMIN}"
+  fi
+}
