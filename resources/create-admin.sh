@@ -22,7 +22,6 @@ rescue => error
 end
 ")"
 
-
 # There is no way to get an exit code on error. So we check if exception raised text appears and exit manually.
 if [[ "${OUTPUT}" == *"RuntimeError (User was not saved)"* ]]; then
   echo "Could not create admin ${USERNAME} due to error: "

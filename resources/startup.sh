@@ -211,10 +211,19 @@ else
   doguctl config "${SETUP_DONE_KEY}" "true"
 fi
 
-create_temporary_admin
+EMPTY="<empty>"
+DEFAULT_CONFIGURATION=$(doguctl config --default "${EMPTY}" etcd_redmine_config)
 
-echo "admin-name: ${TMP_ADMIN_NAME}"
-echo "admin-pw: ${TMP_ADMIN_PASSWORD}"
+if [ "${DEFAULT_CONFIGURATION}" != "${EMPTY}" ]
+then
+  create_temporary_admin
+
+  echo "admin-name: ${TMP_ADMIN_NAME}"
+  echo "admin-pw: ${TMP_ADMIN_PASSWORD}"
+
+  remove_last_temporary_admin
+fi
+
 
 # install manual installed plugins
 install_plugins

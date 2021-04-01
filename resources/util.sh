@@ -1,7 +1,7 @@
 #!/bin/bash
-set -o errexit
-set -o nounset
-set -o pipefail
+#set -o errexit
+#set -o nounset
+#set -o pipefail
 
 echo "setting redmine environment variables..."
 RAILS_ENV=production
@@ -71,12 +71,14 @@ function create_temporary_admin() {
 
 function remove_last_temporary_admin() {
   # Empty string is not possible with doguctl command
-  DEFAULT="<empty>"
+  local DEFAULT="<empty>"
+  local LAST_TMP_ADMIN
   LAST_TMP_ADMIN="$(doguctl config --default "${DEFAULT}" last_tmp_admin)"
 
   if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
   then
     echo "Removing last temporary admin..."
     source "/remove-user.sh" "${LAST_TMP_ADMIN}"
+    doguctl config --rm last_tmp_admin
   fi
 }
