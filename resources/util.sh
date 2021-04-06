@@ -7,6 +7,13 @@ echo "setting redmine environment variables..."
 RAILS_ENV=production
 REDMINE_LANG=en
 
+#function log_debug(){
+#  local MSG="${1}"
+#  if [ "${REDMINE_LOGLEVEL}" = ":debug" ]; then
+#    echo "${MSG}"
+#  fi
+#}
+
 function exec_rake() {
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
@@ -81,4 +88,43 @@ function remove_last_temporary_admin() {
     source "/remove-user.sh" "${LAST_TMP_ADMIN}"
     doguctl config --rm last_tmp_admin
   fi
+}
+
+function curl_extended_api(){
+  local BASE_URL="http://127.0.0.1:3000/redmine/extended_api/v1"
+  local API="${1}"
+  local METHOD="${2}"
+  local PAYLOAD
+  PAYLOAD="$(echo "${3}" |jq -c)"
+
+  echo "Execute curl to extended_api..."
+  echo "curl command is: "
+  local CURL_COMMAND="curl --fail -X '${METHOD}' -L -H 'accept: */*' -H 'Content-Type: application/json' -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} ${BASE_URL}/${API} -d '${PAYLOAD}'"
+  echo "${CURL_COMMAND}"
+  bash -c "${CURL_COMMAND}"
+
+  sleep infinity
+}
+
+function add_settings(){
+  echo "Apply settings..."
+  local JSON="${1}"
+  echo "Found settings config:"
+  echo "${JSON}"
+  curl_extended_api "settings" "PUT" "${JSON}"
+}
+
+function validate_default_config(){
+  echo "Validate configuration..."
+  echo "${DEFAULT_CONFIGURATION}" |jq
+}
+
+function start_redmine_in_background(){
+  echo "Starting redmine in background..."
+  rails server --daemon
+}
+
+function stop_redmine(){
+  echo "Stopping redmine..."
+  kill "$(cat /usr/share/webapps/redmine/tmp/pids/server.pid)"
 }

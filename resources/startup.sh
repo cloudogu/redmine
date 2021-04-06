@@ -214,13 +214,19 @@ fi
 EMPTY="<empty>"
 DEFAULT_CONFIGURATION=$(doguctl config --default "${EMPTY}" etcd_redmine_config)
 
+# The last tmp admin will be removed in any case to make sure it does not exist whenever redmine has started
+remove_last_temporary_admin
+
 if [ "${DEFAULT_CONFIGURATION}" != "${EMPTY}" ]
 then
+  validate_default_config
   create_temporary_admin
+  start_redmine_in_background
 
-  echo "admin-name: ${TMP_ADMIN_NAME}"
-  echo "admin-pw: ${TMP_ADMIN_PASSWORD}"
+  SETTINGS="$(echo "${DEFAULT_CONFIGURATION}" |jq ".settings")"
+  add_settings "${SETTINGS}"
 
+  stop_redmine
   remove_last_temporary_admin
 fi
 
