@@ -27,7 +27,9 @@ Konfiguration historisiert.
   },
   "trackers": [
     {
-      "name": "new feature tracker"
+      "name": "new feature tracker",
+      "default_status_id": 1,
+      "description": "my description"
     }
   ],
   "workflows": [
@@ -101,9 +103,13 @@ Ein Json-Array mit allen anzulegenden Trackern in folgendem Format:
   .....
   {
     "name": "<tracker 1 name>"
+    "default_status_id": <issue-status-id>,
+    "description": "<description>"
   },
   {
     "name": "<tracker 2 name>"
+    "default_status_id": <issue-status-id>,
+    "description": "<description>"
   },
   .....
 ]

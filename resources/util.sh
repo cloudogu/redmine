@@ -95,23 +95,52 @@ function curl_extended_api(){
   local API="${1}"
   local METHOD="${2}"
   local PAYLOAD
+  # Make sure the json is a oneliner for better overview in output
   PAYLOAD="$(echo "${3}" |jq -c)"
 
   echo "Execute curl to extended_api..."
-  echo "curl command is: "
-  local CURL_COMMAND="curl --fail -X '${METHOD}' -L -H 'accept: */*' -H 'Content-Type: application/json' -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} ${BASE_URL}/${API} -d '${PAYLOAD}'"
-  echo "${CURL_COMMAND}"
-  bash -c "${CURL_COMMAND}"
 
-  sleep infinity
+
+  URL="${BASE_URL}/${API}"
+
+  local CURL_COMMAND="curl -L -H 'accept: */*' -H 'Content-Type: application/json' -X ${METHOD} -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} --silent --write-out 'HTTPSTATUS:%{http_code}' -d '${PAYLOAD}' ${URL}"
+  echo "${CURL_COMMAND}"
+  HTTP_RESPONSE=$(bash -c "${CURL_COMMAND}")
+  # shellcheck disable=SC2001 => Doesn't work
+  HTTP_BODY=$(echo "$HTTP_RESPONSE" | sed -e 's/HTTPSTATUS\:.*//g')
+  if [ -z "${HTTP_BODY}" ]
+  then
+    HTTP_BODY="{}"
+  fi
+  HTTP_STATUS=$(echo "${HTTP_RESPONSE}" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+
+  RESPONSE="{\"body\": ${HTTP_BODY}, \"status\": ${HTTP_STATUS}}"
+  echo "${RESPONSE}" >> /file.txt
+
+
+#  echo "Execute curl to extended_api..."
+#  echo "curl command is: "
+#  local CURL_COMMAND="curl --fail -X '${METHOD}' -L -H 'accept: */*' -H 'Content-Type: application/json' -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} ${BASE_URL}/${API} -d '${PAYLOAD}'"
+#  echo "${CURL_COMMAND}"
+#  bash -c "${CURL_COMMAND}"
 }
 
 function add_settings(){
   echo "Apply settings..."
   local JSON="${1}"
-  echo "Found settings config:"
-  echo "${JSON}"
-  curl_extended_api "settings" "PUT" "${JSON}"
+  echo "Found settings config: ${JSON}"
+  curl_extended_api "settings" "PUT" "${JSON}" || echo "Failed to apply settings: '${JSON}'"
+}
+
+function add_trackers(){
+  echo "add trackers..."
+  local JSON="${1}"
+  echo "Found tracker config: ${JSON}"
+  echo "${JSON}" |jq -c -r .[] | while IFS= read -r TRACKER ;
+  do
+    curl_extended_api "trackers" "POST" "${TRACKER}" || echo "Failed to apply tracker: '${TRACKER}'"
+  done
 }
 
 function validate_default_config(){

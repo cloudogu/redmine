@@ -223,8 +223,11 @@ then
   create_temporary_admin
   start_redmine_in_background
 
-  SETTINGS="$(echo "${DEFAULT_CONFIGURATION}" |jq ".settings")"
+  SETTINGS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".settings")"
   add_settings "${SETTINGS}"
+
+  TRACKERS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".trackers")"
+  add_trackers "${TRACKERS}"
 
   stop_redmine
   remove_last_temporary_admin
