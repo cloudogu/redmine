@@ -223,9 +223,11 @@ then
   create_temporary_admin
   start_redmine_in_background
 
+  echo "Reading settings default config..."
   SETTINGS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".settings")"
   add_settings "${SETTINGS}"
 
+  echo "Reading trackers default config..."
   TRACKERS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".trackers")"
   add_trackers "${TRACKERS}"
 

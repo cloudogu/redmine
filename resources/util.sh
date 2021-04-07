@@ -94,19 +94,17 @@ function curl_extended_api(){
   local BASE_URL="http://127.0.0.1:3000/redmine/extended_api/v1"
   local API="${1}"
   local METHOD="${2}"
-  local PAYLOAD
-  # Make sure the json is a oneliner for better overview in output
-  PAYLOAD="$(echo "${3}" |jq -c)"
+  local PAYLOAD="${3}"
+  local EXPECTED_RESPONSE_CODE="${4}"
 
   echo "Execute curl to extended_api..."
-
 
   URL="${BASE_URL}/${API}"
 
   local CURL_COMMAND="curl -L -H 'accept: */*' -H 'Content-Type: application/json' -X ${METHOD} -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} --silent --write-out 'HTTPSTATUS:%{http_code}' -d '${PAYLOAD}' ${URL}"
   echo "${CURL_COMMAND}"
   HTTP_RESPONSE=$(bash -c "${CURL_COMMAND}")
-  # shellcheck disable=SC2001 => Doesn't work
+  # shellcheck disable=SC2001 ### Doesn't work
   HTTP_BODY=$(echo "$HTTP_RESPONSE" | sed -e 's/HTTPSTATUS\:.*//g')
   if [ -z "${HTTP_BODY}" ]
   then
@@ -115,31 +113,50 @@ function curl_extended_api(){
   HTTP_STATUS=$(echo "${HTTP_RESPONSE}" | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
 
 
-  RESPONSE="{\"body\": ${HTTP_BODY}, \"status\": ${HTTP_STATUS}}"
-  echo "${RESPONSE}" >> /file.txt
+  RESPONSE="{\"body\": ${HTTP_BODY}, \"status\": ${HTTP_STATUS}, \"expectedStatus\": ${EXPECTED_RESPONSE_CODE}}"
+  echo "${RESPONSE}" |jq
 
+  if [ ! "${HTTP_STATUS}" -eq "${EXPECTED_RESPONSE_CODE}"  ]; then
+    exit 1
+  fi
+}
 
-#  echo "Execute curl to extended_api..."
-#  echo "curl command is: "
-#  local CURL_COMMAND="curl --fail -X '${METHOD}' -L -H 'accept: */*' -H 'Content-Type: application/json' -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} ${BASE_URL}/${API} -d '${PAYLOAD}'"
-#  echo "${CURL_COMMAND}"
-#  bash -c "${CURL_COMMAND}"
+function safe_extended_api_call() {
+  local API="${1}"
+  local METHOD="${2}"
+  local PAYLOAD
+  # Make sure the json is a oneliner for better overview in output
+  PAYLOAD="$(echo "${3}" |jq -c)"
+  local EXPECTED_RESPONSE_CODE="${4:-"200"}"
+
+  local ERROR=""
+  RESPONSE="$(curl_extended_api "${API}" "${METHOD}" "${PAYLOAD}" "${EXPECTED_RESPONSE_CODE}")" || ERROR="error"
+
+  if [ "${ERROR}" != "" ]
+  then
+    echo "Call to extended api failed:"
+    echo "=========================================================================================="
+    echo "${RESPONSE}"
+    echo "=========================================================================================="
+  else
+    echo "Call to '${API}' successful with content: '${PAYLOAD}'"
+  fi
 }
 
 function add_settings(){
-  echo "Apply settings..."
+  echo "============> Apply default config settings..."
   local JSON="${1}"
   echo "Found settings config: ${JSON}"
-  curl_extended_api "settings" "PUT" "${JSON}" || echo "Failed to apply settings: '${JSON}'"
+  safe_extended_api_call "settings" "PUT" "${JSON}" "204" || echo "Failed to apply settings: '${JSON}'"
 }
 
 function add_trackers(){
-  echo "add trackers..."
+  echo "============> Apply default config trackers..."
   local JSON="${1}"
   echo "Found tracker config: ${JSON}"
   echo "${JSON}" |jq -c -r .[] | while IFS= read -r TRACKER ;
   do
-    curl_extended_api "trackers" "POST" "${TRACKER}" || echo "Failed to apply tracker: '${TRACKER}'"
+    safe_extended_api_call "trackers" "POST" "${TRACKER}" "201"|| echo "Failed to apply tracker: '${TRACKER}'"
   done
 }
 
