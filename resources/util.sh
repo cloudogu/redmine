@@ -134,29 +134,57 @@ function safe_extended_api_call() {
 
   if [ "${ERROR}" != "" ]
   then
-    echo "Call to extended api failed:"
-    echo "=========================================================================================="
+    echo "Call to extended api '${API}' failed:"
+    echo "======================================"
     echo "${RESPONSE}"
-    echo "=========================================================================================="
+    echo "======================================"
   else
     echo "Call to '${API}' successful with content: '${PAYLOAD}'"
   fi
 }
 
 function add_settings(){
-  echo "============> Apply default config settings..."
   local JSON="${1}"
+  if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
+  then
+    echo "No settings provided...";
+    return;
+  fi
+
+  echo "============> Apply default config settings..."
   echo "Found settings config: ${JSON}"
-  safe_extended_api_call "settings" "PUT" "${JSON}" "204" || echo "Failed to apply settings: '${JSON}'"
+  safe_extended_api_call "settings" "PUT" "${JSON}" "204"
 }
 
 function add_trackers(){
-  echo "============> Apply default config trackers..."
   local JSON="${1}"
+  if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
+  then
+    echo "No trackers provided...";
+    return;
+  fi
+
+  echo "============> Apply default config trackers..."
   echo "Found tracker config: ${JSON}"
   echo "${JSON}" |jq -c -r .[] | while IFS= read -r TRACKER ;
   do
-    safe_extended_api_call "trackers" "POST" "${TRACKER}" "201"|| echo "Failed to apply tracker: '${TRACKER}'"
+    safe_extended_api_call "trackers" "POST" "${TRACKER}" "201"
+  done
+}
+
+function add_issue_statuses(){
+  local JSON="${1}"
+  if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
+  then
+    echo "No issue statuses provided...";
+    return;
+  fi
+
+  echo "============> Apply default config issue statuses..."
+  echo "Found issue status config: ${JSON}"
+  echo "${JSON}" |jq -c -r .[] | while IFS= read -r ISSUE_STATUS ;
+  do
+    safe_extended_api_call "issue_statuses" "POST" "${ISSUE_STATUS}" "201"
   done
 }
 
