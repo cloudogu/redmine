@@ -1,18 +1,11 @@
 #!/bin/bash
-#set -o errexit
-#set -o nounset
-#set -o pipefail
+set -o errexit
+set -o nounset
+set -o pipefail
 
 echo "setting redmine environment variables..."
 RAILS_ENV=production
 REDMINE_LANG=en
-
-#function log_debug(){
-#  local MSG="${1}"
-#  if [ "${REDMINE_LOGLEVEL}" = ":debug" ]; then
-#    echo "${MSG}"
-#  fi
-#}
 
 function exec_rake() {
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
@@ -74,6 +67,7 @@ function create_temporary_admin() {
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
+  # shellcheck disable=SC1091
   source "/create-admin.sh" "${TMP_ADMIN_NAME}" "${TMP_ADMIN_PASSWORD}"
 }
 
@@ -89,6 +83,7 @@ function remove_last_temporary_admin() {
   if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
   then
     echo "Removing last temporary admin..."
+    # shellcheck disable=SC1091
     source "/remove-user.sh" "${LAST_TMP_ADMIN}"
     doguctl config --rm last_tmp_admin
   fi
