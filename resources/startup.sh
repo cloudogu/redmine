@@ -232,8 +232,12 @@ then
   add_trackers "${TRACKERS}"
 
   echo "Reading issue statuses default config..."
-  ISSUE_STATUSES="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".issue_statuses")"
+  ISSUE_STATUSES="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".issueStatuses")"
   add_issue_statuses "${ISSUE_STATUSES}"
+
+  echo "Reading custom fields default config..."
+  CUSTOM_FIELDS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".customFields")"
+  add_custom_fields "${CUSTOM_FIELDS}"
 
   stop_redmine
   remove_last_temporary_admin

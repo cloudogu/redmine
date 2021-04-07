@@ -134,8 +134,8 @@ function safe_extended_api_call() {
 
   if [ "${ERROR}" != "" ]
   then
-    echo "Call to extended api '${API}' failed:"
     echo "======================================"
+    echo "Call to extended api '${API}' failed. Output:"
     echo "${RESPONSE}"
     echo "======================================"
   else
@@ -151,7 +151,7 @@ function add_settings(){
     return;
   fi
 
-  echo "============> Apply default config settings..."
+  echo "============> Apply default config for settings..."
   echo "Found settings config: ${JSON}"
   safe_extended_api_call "settings" "PUT" "${JSON}" "204"
 }
@@ -164,7 +164,7 @@ function add_trackers(){
     return;
   fi
 
-  echo "============> Apply default config trackers..."
+  echo "============> Apply default config for trackers..."
   echo "Found tracker config: ${JSON}"
   echo "${JSON}" |jq -c -r .[] | while IFS= read -r TRACKER ;
   do
@@ -180,11 +180,27 @@ function add_issue_statuses(){
     return;
   fi
 
-  echo "============> Apply default config issue statuses..."
+  echo "============> Apply default config for issue statuses..."
   echo "Found issue status config: ${JSON}"
   echo "${JSON}" |jq -c -r .[] | while IFS= read -r ISSUE_STATUS ;
   do
     safe_extended_api_call "issue_statuses" "POST" "${ISSUE_STATUS}" "201"
+  done
+}
+
+function add_custom_fields(){
+  local JSON="${1}"
+  if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
+  then
+    echo "No custom fields provided...";
+    return;
+  fi
+
+  echo "============> Apply default config for custom fields..."
+  echo "Found custom field config: ${JSON}"
+  echo "${JSON}" |jq -c -r .[] | while IFS= read -r CUSTOM_FIELD ;
+  do
+    safe_extended_api_call "custom_fields" "POST" "${CUSTOM_FIELD}" "201"
   done
 }
 
