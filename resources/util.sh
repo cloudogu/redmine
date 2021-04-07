@@ -204,6 +204,38 @@ function add_custom_fields(){
   done
 }
 
+function add_workflows(){
+  local JSON="${1}"
+  if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
+  then
+    echo "No workflows provided...";
+    return;
+  fi
+
+  echo "============> Apply default config for workflows..."
+  echo "Found workflows config: ${JSON}"
+  echo "${JSON}" |jq -c -r .[] | while IFS= read -r WORKFLOW ;
+  do
+    safe_extended_api_call "workflows" "POST" "${WORKFLOW}" "201"
+  done
+}
+
+function add_enumerations(){
+  local JSON="${1}"
+  if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
+  then
+    echo "No enumerations provided...";
+    return;
+  fi
+
+  echo "============> Apply default config for enumerations..."
+  echo "Found custom field config: ${JSON}"
+  echo "${JSON}" |jq -c -r .[] | while IFS= read -r ENUMERATION ;
+  do
+    safe_extended_api_call "enumerations" "POST" "${ENUMERATION}" "200"
+  done
+}
+
 function validate_default_config(){
   echo "Validate configuration..."
   echo "${DEFAULT_CONFIGURATION}" |jq

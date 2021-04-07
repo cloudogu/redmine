@@ -239,6 +239,14 @@ then
   CUSTOM_FIELDS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".customFields")"
   add_custom_fields "${CUSTOM_FIELDS}"
 
+  echo "Reading workflows default config..."
+  WORKFLOWS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".workflows")"
+  add_workflows "${WORKFLOWS}"
+
+  echo "Reading workflows default config..."
+  ENUMERATIONS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".enumerations")"
+  add_enumerations "${ENUMERATIONS}"
+
   stop_redmine
   remove_last_temporary_admin
 fi
