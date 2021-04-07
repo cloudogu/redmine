@@ -216,7 +216,7 @@ function add_workflows(){
   echo "Found workflows config: ${JSON}"
   echo "${JSON}" |jq -c -r .[] | while IFS= read -r WORKFLOW ;
   do
-    safe_extended_api_call "workflows" "POST" "${WORKFLOW}" "201"
+    safe_extended_api_call "workflows" "PATCH" "${WORKFLOW}" "200"
   done
 }
 
@@ -238,6 +238,8 @@ function add_enumerations(){
 
 function validate_default_config(){
   echo "Validate configuration..."
+
+  # Check if it is possible to parse json
   echo "${DEFAULT_CONFIGURATION}" |jq
 }
 
@@ -249,4 +251,36 @@ function start_redmine_in_background(){
 function stop_redmine(){
   echo "Stopping redmine..."
   kill "$(cat /usr/share/webapps/redmine/tmp/pids/server.pid)"
+}
+
+function apply_default_configuration(){
+  local DEFAULT_CONFIG="${1}"
+  echo "Archiving etcd key for default configuration..."
+  doguctl config etcd_redmine_config_archived "${DEFAULT_CONFIG}"
+  echo "Removing etcd key for default configuration..."
+  doguctl config --rm etcd_redmine_config
+
+  echo "Reading settings default config..."
+  SETTINGS="$(echo "${DEFAULT_CONFIG}" |jq -c ".settings")"
+  add_settings "${SETTINGS}"
+
+  echo "Reading trackers default config..."
+  TRACKERS="$(echo "${DEFAULT_CONFIG}" |jq -c ".trackers")"
+  add_trackers "${TRACKERS}"
+
+  echo "Reading issue statuses default config..."
+  ISSUE_STATUSES="$(echo "${DEFAULT_CONFIG}" |jq -c ".issueStatuses")"
+  add_issue_statuses "${ISSUE_STATUSES}"
+
+  echo "Reading custom fields default config..."
+  CUSTOM_FIELDS="$(echo "${DEFAULT_CONFIG}" |jq -c ".customFields")"
+  add_custom_fields "${CUSTOM_FIELDS}"
+
+  echo "Reading workflows default config..."
+  WORKFLOWS="$(echo "${DEFAULT_CONFIG}" |jq -c ".workflows")"
+  add_workflows "${WORKFLOWS}"
+
+  echo "Reading enumerations default config..."
+  ENUMERATIONS="$(echo "${DEFAULT_CONFIG}" |jq -c ".enumerations")"
+  add_enumerations "${ENUMERATIONS}"
 }

@@ -220,35 +220,16 @@ remove_last_temporary_admin
 if [ "${DEFAULT_CONFIGURATION}" != "${EMPTY}" ]
 then
   validate_default_config
+
   create_temporary_admin
   start_redmine_in_background
 
-  echo "Reading settings default config..."
-  SETTINGS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".settings")"
-  add_settings "${SETTINGS}"
-
-  echo "Reading trackers default config..."
-  TRACKERS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".trackers")"
-  add_trackers "${TRACKERS}"
-
-  echo "Reading issue statuses default config..."
-  ISSUE_STATUSES="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".issueStatuses")"
-  add_issue_statuses "${ISSUE_STATUSES}"
-
-  echo "Reading custom fields default config..."
-  CUSTOM_FIELDS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".customFields")"
-  add_custom_fields "${CUSTOM_FIELDS}"
-
-  echo "Reading workflows default config..."
-  WORKFLOWS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".workflows")"
-  add_workflows "${WORKFLOWS}"
-
-  echo "Reading workflows default config..."
-  ENUMERATIONS="$(echo "${DEFAULT_CONFIGURATION}" |jq -c ".enumerations")"
-  add_enumerations "${ENUMERATIONS}"
+  apply_default_configuration "${DEFAULT_CONFIGURATION}"
 
   stop_redmine
   remove_last_temporary_admin
+else
+  echo "No default configuration provided. Skipping step..."
 fi
 
 
