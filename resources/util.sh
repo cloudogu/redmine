@@ -65,6 +65,7 @@ function get_setting_value() {
     -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
 }
 
+# Creates an admin user by using the create-admin.sh script
 function create_temporary_admin() {
   echo "Creating temporary admin..."
   TMP_ADMIN_NAME="$(doguctl random)"
@@ -76,6 +77,9 @@ function create_temporary_admin() {
   source "/create-admin.sh" "${TMP_ADMIN_NAME}" "${TMP_ADMIN_PASSWORD}"
 }
 
+# Removes the temporary admin created by 'create_temporary_admin' function.
+# Uses etcd key 'last_tmp_admin' to get the name of the last temporary admin.
+# After successfully removing the admin, the key 'last_tmp_admin' is also removed.
 function remove_last_temporary_admin() {
   # Empty string is not possible with doguctl command
   local DEFAULT="<empty>"
@@ -90,14 +94,26 @@ function remove_last_temporary_admin() {
   fi
 }
 
+# Calls the the api provided by the extended_rest_api plugin.
+# ${1} The api to call (settings, workflows, issue_statuses, custom_fields, trackers)
+# ${2} HTTP Method to call (POST, GET, ...)
+# ${3} The body of the call. Must be valid json.
+# ${4} The expected response code from that api. If nothing else provided, response code 200 is expected.
+#
+# Uses TMP_ADMIN_NAME and TMP_ADMIN_PASSWORD global variables. Must be set before calling this function!
+#
+# Prints out a json with the body, the response code and the expected response code.
+# Exits with 1 if expected and actual response code are not equal.
 function curl_extended_api(){
   local BASE_URL="http://127.0.0.1:3000/redmine/extended_api/v1"
   local API="${1}"
   local METHOD="${2}"
-  local PAYLOAD="${3}"
+  local PAYLOAD
+  # Make sure the json is a oneliner for better overview in output
+  PAYLOAD="$(echo "${3}" |jq -c)"
   local EXPECTED_RESPONSE_CODE="${4}"
 
-  echo "Execute curl to extended_api..."
+  echo "Execute curl to '${API}' of extended_api..."
 
   URL="${BASE_URL}/${API}"
 
@@ -121,12 +137,17 @@ function curl_extended_api(){
   fi
 }
 
+# Calls the the api provided by the extended_rest_api plugin. On error, the error is printed out without exiting the script.
+# ${1} The api to call (settings, workflows, issue_statuses, custom_fields, trackers)
+# ${2} HTTP Method to call (POST, GET, ...)
+# ${3} The body of the call. Must be valid json.
+# ${4} The expected response code from that api. If nothing else provided, response code 200 is expected.
+#
+# Prints out a message un success or the error on failure.
 function safe_extended_api_call() {
   local API="${1}"
   local METHOD="${2}"
-  local PAYLOAD
-  # Make sure the json is a oneliner for better overview in output
-  PAYLOAD="$(echo "${3}" |jq -c)"
+  local PAYLOAD="${3}"
   local EXPECTED_RESPONSE_CODE="${4:-"200"}"
 
   local ERROR=""
@@ -143,6 +164,7 @@ function safe_extended_api_call() {
   fi
 }
 
+# Adds trackers by using the extended_rest_api plugin. The trackers must be provided in arg ${1} as json-array.
 function add_settings(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
@@ -156,6 +178,7 @@ function add_settings(){
   safe_extended_api_call "settings" "PUT" "${JSON}" "204"
 }
 
+# Adds trackers by using the extended_rest_api plugin. The trackers must be provided in arg ${1} as json-array.
 function add_trackers(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
@@ -172,6 +195,7 @@ function add_trackers(){
   done
 }
 
+# Adds issue_statuses by using the extended_rest_api plugin. The issue_statuses must be provided in arg ${1} as json-array.
 function add_issue_statuses(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
@@ -188,6 +212,7 @@ function add_issue_statuses(){
   done
 }
 
+# Adds custom_fields by using the extended_rest_api plugin. The custom_fields must be provided in arg ${1} as json-array.
 function add_custom_fields(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
@@ -204,6 +229,7 @@ function add_custom_fields(){
   done
 }
 
+# Adds workflows by using the extended_rest_api plugin. The workflows must be provided in arg ${1} as json-array.
 function add_workflows(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
@@ -220,6 +246,7 @@ function add_workflows(){
   done
 }
 
+# Adds enumerations by using the extended_rest_api plugin. The enumerations must be provided in arg ${1} as json-array.
 function add_enumerations(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];
@@ -236,25 +263,26 @@ function add_enumerations(){
   done
 }
 
-function validate_default_config(){
-  echo "Validate configuration..."
-
-  # Check if it is possible to parse json
-  echo "${DEFAULT_CONFIGURATION}" |jq
-}
-
+# Starts redmine as daemon. The application should be available almost immediately.
 function start_redmine_in_background(){
   echo "Starting redmine in background..."
   rails server --daemon
 }
 
+# Stops the running redmine instance
 function stop_redmine(){
   echo "Stopping redmine..."
   kill "$(cat /usr/share/webapps/redmine/tmp/pids/server.pid)"
 }
 
+# Applies the default configuration which must be provided in arg ${1} as json.
 function apply_default_configuration(){
   local DEFAULT_CONFIG="${1}"
+
+  echo "Validating default configuration..."
+  # Check if it is possible to parse json
+  echo "${DEFAULT_CONFIGURATION}" |jq >> /dev/null
+
   echo "Archiving etcd key for default configuration..."
   doguctl config etcd_redmine_config_archived "${DEFAULT_CONFIG}"
   echo "Removing etcd key for default configuration..."

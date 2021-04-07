@@ -219,8 +219,6 @@ remove_last_temporary_admin
 
 if [ "${DEFAULT_CONFIGURATION}" != "${EMPTY}" ]
 then
-  validate_default_config
-
   create_temporary_admin
   start_redmine_in_background
 
