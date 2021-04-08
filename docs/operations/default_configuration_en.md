@@ -1,9 +1,9 @@
-# Deploy configuration on dogustart
+# Deploy configuration on dogu start
 
 It is possible to deploy configuration via the etcd. This is possible for the following values:
 
-* change settings
-* create workflows
+* Change settings
+* Create workflows
 * Create enumerations
 * Create custom fields
 * Create trackers
@@ -14,7 +14,6 @@ is enabled.
 
 To apply the configuration, the etcd key `config/redmine/etcd_redmine_config` must be set.
 When the Redmine dogus is restarted, the defined configuration is then applied and this key is then removed.
-# Deploy configuration on dogustart
 
 The last applied configuration is stored in the etcd key `config/redmine/etcd_redmine_config_archived`.
 **Note:** This key is overwritten with every new execution. Only the last used configuration is
@@ -22,9 +21,7 @@ historized.
 
 ## Example configuration
 
-
 In the following a functional example configuration and a rough explanation of the individual fields is deposited.
-fields.
 The structure of the individual sub-items follows exactly the structure given in the `extended_rest_api` plugin structure.
 
 For more information about the API of the `extended_rest_api` plugin:
@@ -104,7 +101,7 @@ To display this graphically, e.g. the [Swagger UI - Dogu](https://github.com/clo
 
 Allows changing global settings.
 
-A Json object in the following format:
+A JSON object in the following format:
 
 ```
 {
@@ -119,18 +116,18 @@ A Json object in the following format:
 
 Enables the creation of new trackers.
 
-A json array with all trackers to be created in the following format:
+A JSON array with all trackers to be created in the following format:
 
 ```
 [
   .....
   {
-    "name":"<tracker 1 name>"
+    "name":"<tracker 1 name>",
     "default_status_id": <issue-status-id>,
     "description":"<description>"
   },
   {
-    "name": "<tracker 2 name>"
+    "name": "<tracker 2 name>",
     "default_status_id": <issue-status-id>,
     "description":"<description>"
   },
@@ -142,7 +139,7 @@ A json array with all trackers to be created in the following format:
 
 Enables the creation of new workflows.
 
-A json array with all workflows to be created in the following format:
+A JSON array with all workflows to be created in the following format:
 
 ```
 [
@@ -172,7 +169,7 @@ A json array with all workflows to be created in the following format:
 
 Enables the creation of new enumerations.
 
-A json array with all enumerations to be created in the following format:
+A JSON array with all enumerations to be created in the following format:
 
 ```
 [
@@ -180,7 +177,7 @@ A json array with all enumerations to be created in the following format:
   {
     "type":"<type of enumeration (e.g. 'IssuePriority')>",
     "name": "<name of enumeration>",
-    "custom_field_values": {.
+    "custom_field_values": {
       "<id of a value>":"<name of a value>"
     }
   },
@@ -192,7 +189,7 @@ A json array with all enumerations to be created in the following format:
 
 Allows creating new Custom Fields.
 
-A json array with all custom fields to be created in the following format:
+A JSON array with all custom fields to be created in the following format:
 
 ```
 [
@@ -201,7 +198,7 @@ A json array with all custom fields to be created in the following format:
     "type":"<type of field, e.g. 'IssueCustomField'>",
     "name":"<name of field>",
     "field_format":"<format of field e.g. 'int'>",
-    "role_ids": [.
+    "role_ids": [
       "<Id of a role>"
     ]
   },

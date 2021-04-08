@@ -16,7 +16,7 @@ Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/etcd_redmine_co
 Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key entfernt.
 
 Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/etcd_redmine_config_archived` gespeichert.
-**Hinweis:** Dieser Key wird bei jeder erneuten ausführung überschrieben. Es ist immer nur die zuletzt angewandte 
+**Hinweis:** Dieser Key wird bei jeder erneuten Ausführung überschrieben. Es ist immer nur die zuletzt angewandte 
 Konfiguration historisiert.
 
 ## Beispielkonfiguration
@@ -27,11 +27,11 @@ Die Struktur der einzelnen Unterpunkte richtet sich exakt nach der in dem `exten
 Struktur.
 
 Für weitere Informationen über die API des `extended_rest_api`-Plugins:
-Mit dem Plugin wird eine eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des
+Mit dem Plugin wird eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des
 Plugins auf [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml) zu finden.
 Alternativ wird diese mit Redmine zusammen ausgeliefert und kann unter `https://<fqdn>/redmine/extended_api/v1/spec` 
 abgerufen werden.
-Um diese grafisch darzustellen, kann z.B das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden. 
+Um diese grafisch darzustellen, kann z. B. das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden. 
 
 ```json
 {
@@ -104,7 +104,7 @@ Um diese grafisch darzustellen, kann z.B das [Swagger UI - Dogu](https://github.
 
 Ermöglicht das Verändern globaler Einstellungen.
 
-Ein Json-Objekt im folgenden Format:
+Ein JSON-Objekt im folgenden Format:
 
 ```
 {
@@ -119,18 +119,18 @@ Ein Json-Objekt im folgenden Format:
 
 Ermöglicht das Anlegen neuer Tracker.
 
-Ein Json-Array mit allen anzulegenden Trackern in folgendem Format:
+Ein JSON-Array mit allen anzulegenden Trackern in folgendem Format:
 
 ```
 [
   .....
   {
-    "name": "<tracker 1 name>"
+    "name": "<tracker 1 name>",
     "default_status_id": <issue-status-id>,
     "description": "<description>"
   },
   {
-    "name": "<tracker 2 name>"
+    "name": "<tracker 2 name>",
     "default_status_id": <issue-status-id>,
     "description": "<description>"
   },
@@ -142,7 +142,7 @@ Ein Json-Array mit allen anzulegenden Trackern in folgendem Format:
 
 Ermöglicht das Anlegen neuer Workflows.
 
-Ein Json-Array mit allen anzulegenden Workflows in folgendem Format:
+Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
 
 ```
 [
@@ -152,7 +152,7 @@ Ein Json-Array mit allen anzulegenden Workflows in folgendem Format:
       "<rollen-id 1>",
       "<rollen-id 2>"
     ],
-    "tracker_id": [      
+    "tracker_id": [
       "<tracker-id 1>",
       "<tracker-id 2>"
     ],
@@ -172,7 +172,7 @@ Ein Json-Array mit allen anzulegenden Workflows in folgendem Format:
 
 Ermöglicht das Anlegen neuer Aufzählungen.
 
-Ein Json-Array mit allen anzulegenden Aufzählungen in folgendem Format:
+Ein JSON-Array mit allen anzulegenden Aufzählungen in folgendem Format:
 
 ```
 [
@@ -190,9 +190,9 @@ Ein Json-Array mit allen anzulegenden Aufzählungen in folgendem Format:
 
 ### Bereich `customFields`
 
-Ermöglicht das Anlegen neuer Benutzerdefinierter Felder.
+Ermöglicht das Anlegen neuer benutzerdefinierter Felder.
 
-Ein Json-Array mit allen anzulegenden Benutzerdefinierten Feldern in folgendem Format:
+Ein JSON-Array mit allen anzulegenden benutzerdefinierten Feldern in folgendem Format:
 
 ```
 [
