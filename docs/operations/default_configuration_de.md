@@ -1,6 +1,6 @@
 # Konfiguration bei Dogustart ausbringen
 
-Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die folgenden Werte möglich:
+Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die folgende Konfiguration möglich:
 
 * Einstellungen verändern
 * Workflows erstellen

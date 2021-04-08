@@ -1,6 +1,6 @@
 # Deploy configuration on dogu start
 
-It is possible to deploy configuration via the etcd. This is possible for the following values:
+It is possible to deploy configuration via the etcd. This is possible for the following configuration:
 
 * Change settings
 * Create workflows

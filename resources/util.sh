@@ -159,7 +159,7 @@ function safe_extended_api_call() {
   fi
 }
 
-# Adds trackers by using the extended_rest_api plugin. The trackers must be provided in arg ${1} as json-array.
+# Adds settings by using the extended_rest_api plugin. The settings must be provided in arg ${1} as json-array.
 function add_settings(){
   local JSON="${1}"
   if [ -z "${JSON}" ] || [ "${JSON}" = "null" ];

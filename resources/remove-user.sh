@@ -11,12 +11,12 @@ begin
   user.destroy unless user.nil?
 rescue => error
   puts error.message
-  raise 'User was not saved'
+  raise 'User was not removed'
 end
 ")"
 
 # There is no way to get an exit code on error. So we check if exception raised text appears and exit manually.
-if [[ "${OUTPUT}" == *"RuntimeError (User was not saved)"* ]]; then
+if [[ "${OUTPUT}" == *"RuntimeError (User was not removed)"* ]]; then
   echo "Could not remove user ${USERNAME} due to error: "
   printf '%s\n' "${OUTPUT#*end}"
   exit 1
