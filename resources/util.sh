@@ -69,6 +69,7 @@ function create_temporary_admin() {
 
   # shellcheck disable=SC1091
   source "/create-admin.sh" "${TMP_ADMIN_NAME}" "${TMP_ADMIN_PASSWORD}"
+  doguctl config "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
 # Removes the temporary admin created by 'create_temporary_admin' function.
