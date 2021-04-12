@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Mechanism to apply configuration at dogu startup via etcd (#49); See [docs](https://github.com/cloudogu/redmine/blob/develop/docs/operations/default_configuration_de.md)
+
 ### Changed
 - install `redmine_extended_rest_api` plugin during docker build (#47)
 - update deprecated bundle install call (#34)
