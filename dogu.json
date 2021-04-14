@@ -51,6 +51,11 @@
       "Validation": {
         "Type": "BINARY_MEASUREMENT"
       }
+    },
+    {
+      "Name": "etcd_redmine_config",
+      "Description": "Applies default configuration to redmine.",
+      "Optional": true
     }
   ],
   "Volumes": [

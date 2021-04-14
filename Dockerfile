@@ -133,7 +133,8 @@ RUN set -eux -o pipefail \
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
- && rm -rf /var/cache/apk/*
+ && rm -rf /var/cache/apk/* \
+ && apk add ruby-irb
 
 # set workdir
 WORKDIR ${WORKDIR}
