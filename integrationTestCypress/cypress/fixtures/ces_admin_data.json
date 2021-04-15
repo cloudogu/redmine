@@ -1,5 +1,5 @@
 {
-  "adminuser": "ces-admin",
-  "adminpassword": "ecosystem2016",
-  "admingroup": "CesAdministrators"
+  "username": "admin",
+  "password": "admin",
+  "admingroup": "admingroup"
 }

@@ -39,8 +39,8 @@ const usermgtGetUser = (username) => {
             method: "GET",
             url: Cypress.config().baseUrl + "/usermgt/api/users/" + username,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         }).then((response) => {
             expect(response.status).to.eq(200)
@@ -66,8 +66,8 @@ const usermgtCreateUser = (username, givenname, surname, displayName, mail, pass
             url: Cypress.config().baseUrl + "/usermgt/api/users/",
             followRedirect: false,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             },
             headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
@@ -99,8 +99,8 @@ const usermgtDeleteUser = (username) => {
             method: "DELETE",
             url: Cypress.config().baseUrl + "/usermgt/api/users/" + username,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         }).then((response) => {
             expect(response.status).to.eq(204)
@@ -120,8 +120,8 @@ const usermgtTryDeleteUser = (username) => {
             url: Cypress.config().baseUrl + "/usermgt/api/users/" + username,
             failOnStatusCode: false,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         })
     })
@@ -143,8 +143,8 @@ const usermgtGetGroup = (name) => {
             url: Cypress.config().baseUrl + "/usermgt/api/groups/" + name,
             followRedirect: false,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         }).then((response) => {
             expect(response.status).to.eq(201)
@@ -166,8 +166,8 @@ const usermgtCreateGroup = (name, description) => {
             url: Cypress.config().baseUrl + "/usermgt/api/groups",
             followRedirect: false,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             },
             headers: {
                 'Content-Type': 'application/json; charset=UTF-8',
@@ -195,8 +195,8 @@ const usermgtDeleteGroup = (groupName) => {
             url: Cypress.config().baseUrl + "/usermgt/api/groups/" + groupName,
             followRedirect: false,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         }).then((response) => {
             expect(response.status).to.eq(204)
@@ -217,8 +217,8 @@ const usermgtTryDeleteGroup = (groupName) => {
             followRedirect: false,
             failOnStatusCode: false,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         })
     })
@@ -236,8 +236,8 @@ const usermgtAddMemberToGroup = (groupName, username) => {
             method: "POST",
             url: Cypress.config().baseUrl + "/usermgt/api/groups/" + groupName + "/members/" + username,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         }).then((response) => {
             expect(response.status).to.eq(204)
@@ -257,8 +257,8 @@ const usermgtRemoveMemberFromGroup = (groupName, username) => {
             method: "DELETE",
             url: Cypress.config().baseUrl + "/usermgt/api/groups/" + groupName + "/members/" + username,
             auth: {
-                'user': admindata.adminuser,
-                'pass': admindata.adminpassword
+                'user': admindata.username,
+                'pass': admindata.password
             }
         }).then((response) => {
             expect(response.status).to.eq(204)

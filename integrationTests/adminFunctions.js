@@ -124,7 +124,7 @@ module.exports = class AdminFunctions{
         await this.driver.wait(until.elementLocated(By.id('username')), 8000);
         await this.driver.findElement(By.id('username')).sendKeys(this.testuserName);
         await this.driver.findElement(By.id('password')).sendKeys(this.testuserPasswort);
-        await this.driver.findElement(By.css('input[name="submit"]')).click();
+        await this.driver.findElement(By.css('button[name="submit"]')).click();
     };
 
     async testuserLogout() {

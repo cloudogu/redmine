@@ -64,11 +64,11 @@ describe('administration rights', () => {
         await driver.wait(until.elementLocated(By.css('a.logout')), 5000);
         await driver.findElement(By.css('a.logout')).click();
         await adminFunctions.giveAdminRightsInRedmine();
-        await adminFunctions.giveAdminRights();
-        await adminFunctions.takeAdminRights();
+        await adminFunctions.giveAdminRights(); // API Call
+        await adminFunctions.takeAdminRights(); // API Call
         await adminFunctions.testuserLogin();
         var adminrights = await adminFunctions.isAdministratorInRedmine();
-        expect(adminrights).toBe(true);
+        expect(adminrights).toBe(true); // This is not true
 
     });
 

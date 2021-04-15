@@ -30,7 +30,7 @@ const redmineGetCurrentUserJsonWithBasic = (username, password) => {
 const redmineGetCurrentUserJsonWithKey = (apikey) => {
     return cy.request({
         method: "GET",
-        url: Cypress.config().baseUrl + "/users/current.json",
+        url: Cypress.config().baseUrl + "/redmine/users/current.json",
         headers: {
             'X-Redmine-API-Key': apikey,
         },
