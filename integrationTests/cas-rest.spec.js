@@ -30,7 +30,7 @@ describe('cas rest tests', () => {
     await request(config.baseUrl)
       .get( config.redmineContextPath + '/users/current.json')
       .set({
-        'X-Redmine-API-Key': apiKey
+        'x-redmine-api-key': apiKey
       })
       .expect(200);
       await driver.quit();
