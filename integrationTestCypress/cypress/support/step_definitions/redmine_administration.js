@@ -60,6 +60,16 @@ Given(/^the user has an internal redmine account with admin privileges granted b
     })
 });
 
+Given(/^the user is logged in to the CES$/, function () {
+    cy.fixture("testuser_data").then(function (testUser) {
+        cy.login(testUser.username, testUser.password)
+    })
+});
+
+Given(/^the user is logged out of the CES$/, function () {
+    cy.redmineLogout()
+});
+
 //
 //
 // When

@@ -104,6 +104,24 @@ const redmineGetCurrentUserJsonWithKey = (apikey) => {
     })
 }
 
+/**
+ * Retrieves the users.json via api request.
+ * @param {String} api_key - The api key of the user used for authorization.
+ * @return the response of the request
+ */
+const redmineGetUsersJson = (api_key) => {
+    return cy.request({
+        method: "GET",
+        url: Cypress.config().baseUrl + "/redmine/users.json",
+        headers: {
+            'X-Redmine-API-Key': api_key,
+        },
+        failOnStatusCode: false
+    })
+}
+
 // /users/current.json
 Cypress.Commands.add("redmineGetCurrentUserJsonWithBasic", redmineGetCurrentUserJsonWithBasic)
 Cypress.Commands.add("redmineGetCurrentUserJsonWithKey", redmineGetCurrentUserJsonWithKey)
+// /users.json
+Cypress.Commands.add("redmineGetUsersJson", redmineGetUsersJson)

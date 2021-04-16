@@ -10,13 +10,13 @@ const {
 //
 //
 
-Given(/^the user is logged in to the CES$/, function () {
+Given(/^the admin is logged in to the CES$/, function () {
     cy.fixture("ces_admin_data").then(function (testUser) {
         cy.login(testUser.username, testUser.password)
     })
 });
 
-Given(/^the user is logged out of the CES$/, function () {
+Given(/^the admin is logged out of the CES$/, function () {
     cy.logout()
 });
 
