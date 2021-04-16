@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://192.168.56.2",
+  "baseUrl": "https://local.cloudogu.com",
   "videoUploadOnPasses": true,
   "videoCompression": false,
   "nonGlobalStepBaseDir": false

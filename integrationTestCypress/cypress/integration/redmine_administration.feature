@@ -1,40 +1,69 @@
 Feature: test
 
   @requires_testuser
-  Scenario: the user is admin in general = admin in redmine
+  Scenario: cas user + no redmine user => login => create normal redmine account
+    Given the user is not member of the admin user group
+    And the user has no internal redmine account
+    And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with default privileges
+
+  @requires_testuser
+  Scenario: cas user (admin) + no redmine user => login => create admin redmine account
     Given the user is member of the admin user group
+    And the user has no internal redmine account
     And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with admin privileges
 
   @requires_testuser
-  Scenario: the user is no admin in general = no admin in redmine
+  Scenario: cas user + internal default redmine user => login => preserves default account
     Given the user is not member of the admin user group
+    And the user has an internal default redmine account
     And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with default privileges
 
   @requires_testuser
-  Scenario: user gets admin rights in redmine
+  Scenario: cas user + internal cas-admin redmine user => login => demote to default redmine account
     Given the user is not member of the admin user group
+    And the user has an internal admin redmine account
     And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with default privileges
 
   @requires_testuser
-  Scenario: the user preserves redmine admin privileges after demotion from user management admin group
+  Scenario: cas user (admin) + internal default redmine user => login => promote to cas-admin redmine account
+    Given the user is member of the admin user group
+    And the user has an internal default redmine account
+    And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with admin privileges
+
+  @requires_testuser
+  Scenario: cas user (admin) + internal cas-admin redmine user => login => preserves admin account
+    Given the user is member of the admin user group
+    And the user has an internal admin redmine account
+    And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with admin privileges
+
+  @requires_testuser
+  Scenario: cas user + internal special-admin redmine user => login => has admin access
     Given the user is not member of the admin user group
-    And the user is not redmine admin
-
-  // user gets admin rights in redmine and then in user management = take rights in user management
-
-  @requires_testuser
-  Scenario: user gets admin rights in redmine = take rights in redmine
+    And the user has an internal redmine account with admin privileges granted by another admin
+    And the user is logged out of the CES
+    When the user logs into the CES
+    Then the user has an internal redmine account with admin privileges
 
   @requires_testuser
-  Scenario: user gets admin rights in redmine and then in usermanagement = take rights in redmine
-
-
-  cas user         + no redmine user => login => create normal redmine account
-  cas user (admin) + no redmine user => login => create admin redmine account
-
-  cas user         + internal redmine user => login => ---
-  cas user         + internal admin redmine user => login => demote to default redmine account
-  //TODO: Was ist hier korrekt? Entziehen der REche oder behalten der Redmine Admin Rechte
-
-  cas user (admin) + internal redmine user => login => promote to admin redmine account
-  cas user (admin) + internal admin redmine user => login => ---
+  Scenario: cas user + internal special-admin redmine user => login/out+promote+login/out+demote+login/out => loses special administrator rights
+    Given the user is not member of the admin user group
+    And the user has an internal redmine account with admin privileges granted by another admin
+    And the user is logged out of the CES
+    When the user is added as a member to the ces admin group
+    And the user logs into the CES
+    And the user logs out of Redmine
+    And the user is removed as a member from the ces admin group
+    And the user logs into the CES
+    Then the user has an internal redmine account with default privileges

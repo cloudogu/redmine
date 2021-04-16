@@ -72,7 +72,6 @@ When(/^the user authenticate via api key$/, function () {
 Then(/^the user receives a json response with valid cas attributes$/, function () {
     expect(authenticationResponse.status).to.eq(200)
     expect(authenticationResponse.body).to.have.property('user')
-    expect(authenticationResponse.body.user).to.have.property('login', 'admin')
     cy.fixture(fixtureUsedToLogin).then(userdata => {
         console.log(JSON.stringify(authenticationResponse.body))
         expect(authenticationResponse.body.user).to.have.property('login', userdata.username)

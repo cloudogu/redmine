@@ -1,5 +1,5 @@
 {
-  "username": "admin",
-  "password": "admin",
-  "admingroup": "admingroup"
+  "username": "cesadmin",
+  "password": "cesadmin",
+  "admingroup": "cesadmin"
 }

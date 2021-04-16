@@ -11,7 +11,7 @@ const {
 //
 
 Given(/^the user is logged in to the CES$/, function () {
-    cy.fixture("valid_testuser_data").then(function (testUser) {
+    cy.fixture("ces_admin_data").then(function (testUser) {
         cy.login(testUser.username, testUser.password)
     })
 });
@@ -32,15 +32,13 @@ When(/^the user opens the dogu start page$/, function () {
 
 When(/^the user types in wrong login credentials$/, function () {
     cy.get('input[type="checkbox"]').click()
-    cy.fixture('valid_testuser_data').then(userdata => {
-        cy.get('input[name="username"]').type("RaNd0mUSR_?123")
-        cy.get('input[name="password"]').type("RaNd0mPWöäü_?123")
-    });
+    cy.get('input[name="username"]').type("RaNd0mUSR_?123")
+    cy.get('input[name="password"]').type("RaNd0mPWöäü_?123")
 });
 
 When(/^the user types in correct login credentials$/, function () {
     cy.get('input[type="checkbox"]').click()
-    cy.fixture('valid_testuser_data').then(userdata => {
+    cy.fixture('ces_admin_data').then(userdata => {
         cy.get('input[name="username"]').type(userdata.username)
         cy.get('input[name="password"]').type(userdata.password)
     });
@@ -51,7 +49,7 @@ When(/^the user presses the login button$/, function () {
 });
 
 When(/^the user clicks the logout button$/, function () {
-    cy.get('a[href="/redmine/logout"]').click()
+    cy.redmineLogout()
     cy.url().should('contain', Cypress.config().baseUrl+"/cas/logout")
 });
 
@@ -65,7 +63,7 @@ When(/^the user opens the CAS logout page$/, function () {
 //
 //
 
-Then(/^the user gets logged in to the dogu$/, function () {
+Then(/^the user is logged in to the dogu$/, function () {
     cy.url().should('contain', Cypress.config().baseUrl+"/redmine")
 });
 

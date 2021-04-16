@@ -2,6 +2,72 @@
 // commands for redmine
 // ***********************************************
 
+// ***********************************************
+// UI commands for redmine
+// ***********************************************
+
+/**
+ * Removes the user from redmine
+ * @param {username} username - The user to delete from redmine
+ */
+const redmineDeleteUser = (username) => {
+    //login as admin
+    cy.loginAdmin()
+
+    // change to users tab
+    cy.visit("/redmine/users")
+    cy.fixture("testuser_data").then(function (testUser) {
+        // select testuser
+        cy.get("a").contains(testUser.username).click()
+
+        // select icon delete
+        cy.get('a[data-method="delete"]').click()
+
+        // fill confirmation username
+        cy.get('input[id="confirm"]').type(testUser.username)
+
+        // confirm delete
+        cy.get('input[name="commit"]').filter(':visible').click()
+    })
+    cy.redmineLogout()
+}
+
+
+/**
+ * Give the redmine account of the given username specific redmine administration privileges.
+ * @param {username} username - The user to grant the specific redmine admin privileges
+ */
+const redmineGiveAdminRights = (username) => {
+    //login as admin
+    cy.loginAdmin()
+
+    // change to users tab
+    cy.visit("/redmine/users")
+    cy.fixture("testuser_data").then(function (testUser) {
+        // select testuser
+        cy.get("a").contains(testUser.username).click()
+    })
+    // click admin box
+    cy.get('input[id="user_admin"]').click()
+    //save changes
+    cy.get('input[type="submit"]').filter(':visible').click({ multiple: true })
+    cy.redmineLogout()
+}
+
+/**
+ * Logs the user out of the ces via the logout button/anchor.
+ */
+const redmineLogout = () => {
+    cy.get('a[href="/redmine/logout"]').click()
+}
+
+Cypress.Commands.add("redmineDeleteUser", redmineDeleteUser)
+Cypress.Commands.add("redmineGiveAdminRights", redmineGiveAdminRights)
+Cypress.Commands.add("redmineLogout", redmineLogout)
+
+// ***********************************************
+// API commands for redmine
+// ***********************************************
 /**
  * Retrieves the user json of the user via a basic authentication. Both user and password need to exist for a successful request.
  * A failed request is not tolerated and fails the test.
