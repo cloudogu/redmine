@@ -19,7 +19,7 @@ Before({tags: "@requires_testuser"}, () => {
  * Deletes the created testuser after every scenario
  */
 After({tags: "@requires_testuser"}, () => {
-    cy.redmineLogout();
+    cy.logout();
 
     cy.fixture("testuser_data").then(function (testUser) {
         cy.log("Removing test user")

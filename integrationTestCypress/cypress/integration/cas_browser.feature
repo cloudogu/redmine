@@ -25,8 +25,7 @@ Feature: Browser-based CAS login and logout functionality
     And the user clicks the logout button
     Then the user is logged out of the dogu
 
-# TODO: fix back channel logout
-#  Scenario: logged in user can log out via cas logout page (back-channel)
-#    Given the user is logged in to the CES
-#    When the user opens the CAS logout page
-#    Then the user is logged out of the dogu
+  Scenario: logged in user can log out via cas logout page (back-channel)
+    Given the user is logged in to the CES
+    When the user opens the CAS logout page
+    Then the user is logged out of the dogu

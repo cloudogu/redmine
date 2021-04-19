@@ -27,7 +27,7 @@ Given(/^the user is member of the admin user group$/, function () {
 Given(/^the user has an internal default redmine account$/, function () {
     cy.fixture("testuser_data").then(function (testUser) {
         cy.login(testUser.username, testUser.password)
-        cy.redmineLogout()
+        cy.logout()
     })
 });
 
@@ -38,12 +38,12 @@ Given(/^the user has an internal admin redmine account$/, function () {
                 if (isAdmin) {
                     // create internal remine acccount
                     cy.login(testUser.username, testUser.password)
-                    cy.redmineLogout()
+                    cy.logout()
                 } else {
                     // promote -> create internal remine acccount -> demote
                     cy.promoteAccountToAdmin(testUser.username)
                     cy.login(testUser.username, testUser.password)
-                    cy.redmineLogout()
+                    cy.logout()
                     cy.demoteAccountToDefault(testUser.username)
                 }
             })
@@ -55,7 +55,7 @@ Given(/^the user has an internal admin redmine account$/, function () {
 Given(/^the user has an internal redmine account with admin privileges granted by another admin$/, function () {
     cy.fixture("testuser_data").then(function (testUser) {
         cy.login(testUser.username, testUser.password)
-        cy.redmineLogout()
+        cy.logout()
         cy.redmineGiveAdminRights(testUser.username)
     })
 });
@@ -88,8 +88,8 @@ When(/^the user is added as a member to the ces admin group$/, function () {
     })
 });
 
-When(/^the user logs out of Redmine$/, function () {
-    cy.redmineLogout()
+When(/^the user logs out of the CES/, function () {
+    cy.logout()
 });
 
 When(/^the user is removed as a member from the ces admin group$/, function () {

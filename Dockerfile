@@ -87,7 +87,7 @@ RUN set -eux -o pipefail \
  && cd .. \
  && rm -rf rubycas-client \
  # install redmine required gems
- && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
+ && echo 'gem "activerecord-session_store", "1.1.3"' >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"

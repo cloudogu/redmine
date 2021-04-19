@@ -1,6 +1,5 @@
 Feature: test
 
-  # TODO: Remove necessity to log into the dogu when back-channel logout is fixed
   @requires_testuser
   Scenario: cas user + no redmine user => login => create normal redmine account
     Given the user is not member of the admin user group
@@ -64,7 +63,7 @@ Feature: test
     And the user is logged out of the CES
     When the user is added as a member to the ces admin group
     And the user logs into the CES
-    And the user logs out of Redmine
+    And the user logs out of the CES
     And the user is removed as a member from the ces admin group
     And the user logs into the CES
     Then the user has an internal redmine account with default privileges
