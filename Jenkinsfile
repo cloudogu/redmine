@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.46.0', 'github.com/cloudogu/dogu-build-lib@v1.2.0', 'github.com/cloudogu/zalenium-build-lib@v2.1.0']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@v1.2.0']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -111,8 +111,27 @@ node('vagrant') {
                 }
 
                 stage('Integration Tests - After Upgrade') {
-                    // Run integration tests again to verify that the upgrade was successful
-                    ecoSystem.runYarnIntegrationTests(15, 'node:8.14.0-stretch', [], params.EnableVideoRecording)
+                    println "cleaning up previous test results..."
+                    sh "rm -rf integrationTests/cypress/videos"
+                    sh "rm -rf integrationTests/cypress/screenshots"
+                    sh "rm -rf integrationTests/cypress-reports"
+
+                    try {
+                        def runID = UUID.randomUUID().toString()
+                        def reportName = "TEST-${runID}-[hash].xml"
+                        def testArgs = "-q --headless --record false --reporter junit --reporter-options mochaFile=cypress-reports/${reportName}"
+                        String externalIP = ecoSystem.externalIP
+                        docker.image("cypress/included:7.1.0").inside("--ipc=host -v ${WORKSPACE}/integrationTests:/integrationTests -w /integrationTests -e XDG_CONFIG_HOME=/integrationTests -e YARN_CACHE_FOLDER=/integrationTests -e CYPRESS_BASE_URL=https://${externalIP} --entrypoint=''") {
+                            sh "cd integrationTests && yarn install && cypress run ${testArgs}"
+                        }
+                    }
+                    finally {
+                        catchError {
+                            println "archiving videos and screenshots from test execution..."
+                            junit allowEmptyResults: true, testResults: 'integrationTests/cypress-reports/TEST-*.xml'
+                            archiveArtifacts "integrationTests/cypress/videos/**/*.mp4"
+                        }
+                    }
                 }
             }
 
