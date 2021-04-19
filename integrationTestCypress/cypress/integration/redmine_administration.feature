@@ -1,5 +1,6 @@
 Feature: test
 
+  # TODO: Remove necessity to log into the dogu when back-channel logout is fixed
   @requires_testuser
   Scenario: cas user + no redmine user => login => create normal redmine account
     Given the user is not member of the admin user group

@@ -67,7 +67,7 @@ Given(/^the user is logged in to the CES$/, function () {
 });
 
 Given(/^the user is logged out of the CES$/, function () {
-    cy.redmineLogout()
+    cy.logout()
 });
 
 //

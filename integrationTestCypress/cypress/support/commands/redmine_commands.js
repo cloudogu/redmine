@@ -7,10 +7,10 @@
 // ***********************************************
 
 /**
- * Removes the user from redmine
+ * Removes the user from redmine via the UI.
  * @param {username} username - The user to delete from redmine
  */
-const redmineDeleteUser = (username) => {
+const redmineDeleteUserViaUI = (username) => {
     //login as admin
     cy.loginAdmin()
 
@@ -48,7 +48,28 @@ const redmineGiveAdminRights = (username) => {
         cy.get("a").contains(testUser.username).click()
     })
     // click admin box
-    cy.get('input[id="user_admin"]').click()
+    cy.get('input[id="user_admin"]').check()
+    //save changes
+    cy.get('input[type="submit"]').filter(':visible').click({ multiple: true })
+    cy.redmineLogout()
+}
+
+/**
+ * Removes the admin privileges from the given redmine account
+ * @param {username} username - The user to remove the specific redmine admin privileges from
+ */
+const redmineRemoveAdminRights = (username) => {
+    //login as admin
+    cy.loginAdmin()
+
+    // change to users tab
+    cy.visit("/redmine/users")
+    cy.fixture("testuser_data").then(function (testUser) {
+        // select testuser
+        cy.get("a").contains(testUser.username).click()
+    })
+    // click admin box
+    cy.get('input[id="user_admin"]').uncheck()
     //save changes
     cy.get('input[type="submit"]').filter(':visible').click({ multiple: true })
     cy.redmineLogout()
@@ -61,9 +82,10 @@ const redmineLogout = () => {
     cy.get('a[href="/redmine/logout"]').click()
 }
 
-Cypress.Commands.add("redmineDeleteUser", redmineDeleteUser)
+Cypress.Commands.add("redmineDeleteUserViaUI", redmineDeleteUserViaUI)
 Cypress.Commands.add("redmineGiveAdminRights", redmineGiveAdminRights)
 Cypress.Commands.add("redmineLogout", redmineLogout)
+Cypress.Commands.add("redmineRemoveAdminRights", redmineRemoveAdminRights)
 
 // ***********************************************
 // API commands for redmine
@@ -120,8 +142,36 @@ const redmineGetUsersJson = (api_key) => {
     })
 }
 
+/**
+ * Deletes a user from redmine.
+ * @param {String} username - The username of the user.
+ */
+const redmineDeleteUser = (username) => {
+    cy.fixture("ces_admin_data.json").then(function (admindata) {
+        cy.redmineGetCurrentUserJsonWithBasic(admindata.username, admindata.password).then((response) => {
+            expect(response.status).to.eq(200)
+
+            for (var user in response.body.users) {
+                if (user.login === "username") {
+                    return cy.request({
+                        method: "GET",
+                        url: Cypress.config().baseUrl + "/redmine/users/"+user.id+".json",
+                        auth: {
+                            'user': admindata.username,
+                            'pass': admindata.password
+                        },
+                        failOnStatusCode: false
+                    })
+                }
+            }
+        })
+    })
+}
+
 // /users/current.json
 Cypress.Commands.add("redmineGetCurrentUserJsonWithBasic", redmineGetCurrentUserJsonWithBasic)
 Cypress.Commands.add("redmineGetCurrentUserJsonWithKey", redmineGetCurrentUserJsonWithKey)
 // /users.json
 Cypress.Commands.add("redmineGetUsersJson", redmineGetUsersJson)
+// /users/id.json
+Cypress.Commands.add("redmineDeleteUser", redmineDeleteUser)

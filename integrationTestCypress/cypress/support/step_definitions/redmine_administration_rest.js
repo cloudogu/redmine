@@ -26,7 +26,7 @@ When(/^the user request the user\.json from Redmine via API key$/, function () {
             let api_key = response.body.user.api_key
             console.log(JSON.stringify(response.body.user))
             cy.redmineGetUsersJson(api_key).then(function (usersResponse) {
-                authenticationResponse=usersResponse
+                authenticationResponse = usersResponse
             })
         })
 
@@ -34,6 +34,11 @@ When(/^the user request the user\.json from Redmine via API key$/, function () {
 });
 
 
+When(/^the admin removes the admin privileges from the user via redmine$/, function () {
+    cy.fixture("testuser_data").then(function (testUser) {
+        cy.redmineRemoveAdminRights(testUser.username)
+    })
+});
 //
 //
 // Then
@@ -42,6 +47,7 @@ When(/^the user request the user\.json from Redmine via API key$/, function () {
 Then(/^the user receives the user\.json as response$/, function () {
     expect(authenticationResponse.status).to.eq(200)
 });
+
 Then(/^the user receives an unauthorized access response$/, function () {
     expect(authenticationResponse.status).to.eq(403)
 });
