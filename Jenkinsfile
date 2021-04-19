@@ -4,16 +4,6 @@ import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
 
-node('docker'){
-    stage('Checkout') {
-        checkout scm
-    }
-    stage('Lint') {
-        lintDockerfile()
-        shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh")
-    }
-}
-
 node('vagrant') {
     String doguName = "redmine"
     Git git = new Git(this, "cesmarvin")
@@ -37,6 +27,18 @@ node('vagrant') {
         ])
 
         EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
+
+        stage('Checkout') {
+            checkout scm
+        }
+
+        stage('Lint') {
+            lintDockerfile()
+        }
+
+        stage('Shell-Check') {
+            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh")
+        }
 
         try {
 
