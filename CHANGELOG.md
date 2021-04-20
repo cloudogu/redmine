@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - update deprecated bundle install call (#34)
 - Upgrade base image to 3.12.4-1
 - Upgrade Redmine to 4.2.0; #50
+- Upgrade Cas Plugin to version 1.3.0; #50
+- Switched the integration tests to Cypress; #50
 
 ## [v4.1.1-2] - 2021-01-06
 ### Added
