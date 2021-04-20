@@ -1,4 +1,4 @@
-Feature: test
+Feature: Administrative Procedures
 
   @requires_testuser
   Scenario: cas user + no redmine user => login => create normal redmine account

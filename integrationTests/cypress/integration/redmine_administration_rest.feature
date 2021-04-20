@@ -1,6 +1,5 @@
-Feature: test
+Feature: Administrative Procedures via API
 
-  # TODO: Remove necessity to log into the dogu when back-channel logout is fixed
   @requires_testuser
   Scenario: cas user (admin) => access users.json with api key => success
     Given the user is member of the admin user group
