@@ -146,7 +146,7 @@ const redmineGetUsersJson = (apiKey) => {
  * Deletes a user from redmine.
  * @param {String} username - The username of the user.
  */
-const redmineDeleteUser = (username) => {
+const redmineDeleteUser = (username, exitOnFail = false) => {
     cy.fixture("ces_admin_data.json").then(function (admindata) {
 
         cy.redmineGetCurrentUserJsonWithBasic(admindata.username, admindata.password).then((responseApiKey) => {
@@ -154,16 +154,20 @@ const redmineDeleteUser = (username) => {
             cy.redmineGetUsersJson(responseApiKey.body.user.api_key).then((response) => {
                 expect(response.status).to.eq(200)
 
-                for (var user in response.body.users) {
-                    if (user.login === username) {
+                const users = response.body.users;
+
+                for (let i in users) {
+                    console.log("user this is : " + JSON.stringify(users[i]));
+                    if (users[i].login === username) {
+                        console.log("delete user: " + JSON.stringify(users[i]));
                         return cy.request({
-                            method: "GET",
-                            url: Cypress.config().baseUrl + "/redmine/users/" + user.id + ".json",
+                            method: "DELETE",
+                            url: Cypress.config().baseUrl + "/redmine/users/" + users[i].id + ".json",
                             auth: {
                                 'user': admindata.username,
                                 'pass': admindata.password
                             },
-                            failOnStatusCode: false
+                            failOnStatusCode: exitOnFail
                         })
                     }
                 }

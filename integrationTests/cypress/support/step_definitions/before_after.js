@@ -24,6 +24,6 @@ After({tags: "@requires_testuser"}, () => {
     cy.fixture("testuser_data").then(function (testUser) {
         cy.log("Removing test user")
         cy.usermgtDeleteUser(testUser.username)
-        cy.redmineDeleteUser(testUser.username)
+        cy.redmineDeleteUser(testUser.username, true)
     })
 });
