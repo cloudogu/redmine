@@ -16,19 +16,18 @@ const redmineDeleteUserViaUI = (username) => {
 
     // change to users tab
     cy.visit("/redmine/users")
-    cy.fixture("testuser_data").then(function (testUser) {
-        // select testuser
-        cy.get("a").contains(testUser.username).click()
 
-        // select icon delete
-        cy.get('a[data-method="delete"]').click()
+    // select testuser
+    cy.get("a").contains(username).click()
 
-        // fill confirmation username
-        cy.get('input[id="confirm"]').type(testUser.username)
+    // select icon delete
+    cy.get('a[data-method="delete"]').click()
 
-        // confirm delete
-        cy.get('input[name="commit"]').filter(':visible').click()
-    })
+    // fill confirmation username
+    cy.get('input[id="confirm"]').type(username)
+
+    // confirm delete
+    cy.get('input[name="commit"]').filter(':visible').click()
     cy.redmineLogout()
 }
 
@@ -43,14 +42,15 @@ const redmineGiveAdminRights = (username) => {
 
     // change to users tab
     cy.visit("/redmine/users")
-    cy.fixture("testuser_data").then(function (testUser) {
-        // select testuser
-        cy.get("a").contains(testUser.username).click()
-    })
+
+    // select testuser
+    cy.get("a").contains(username).click()
+
     // click admin box
     cy.get('input[id="user_admin"]').check()
+
     //save changes
-    cy.get('input[type="submit"]').filter(':visible').click({ multiple: true })
+    cy.get('input[type="submit"]').filter(':visible').click({multiple: true})
     cy.redmineLogout()
 }
 
@@ -64,14 +64,14 @@ const redmineRemoveAdminRights = (username) => {
 
     // change to users tab
     cy.visit("/redmine/users")
-    cy.fixture("testuser_data").then(function (testUser) {
-        // select testuser
-        cy.get("a").contains(testUser.username).click()
-    })
+
+    // select testuser
+    cy.get("a").contains(username).click()
+
     // click admin box
     cy.get('input[id="user_admin"]').uncheck()
     //save changes
-    cy.get('input[type="submit"]').filter(':visible').click({ multiple: true })
+    cy.get('input[type="submit"]').filter(':visible').click({multiple: true})
     cy.redmineLogout()
 }
 
@@ -112,15 +112,15 @@ const redmineGetCurrentUserJsonWithBasic = (username, password) => {
 /**
  * Retrieves the user json of the user via an api key authentication. The api key needs to exist for a successful request.
  * A failed request is not tolerated and fails the test.
- * @param {String} apikey - The api key of the user.
+ * @param {String} apiKey - The api key of the user.
  * @returns a promise for the request
  */
-const redmineGetCurrentUserJsonWithKey = (apikey) => {
+const redmineGetCurrentUserJsonWithKey = (apiKey) => {
     return cy.request({
         method: "GET",
         url: Cypress.config().baseUrl + "/redmine/users/current.json",
         headers: {
-            'X-Redmine-API-Key': apikey,
+            'X-Redmine-API-Key': apiKey,
         },
         failOnStatusCode: false
     })
@@ -128,15 +128,15 @@ const redmineGetCurrentUserJsonWithKey = (apikey) => {
 
 /**
  * Retrieves the users.json via api request.
- * @param {String} api_key - The api key of the user used for authorization.
+ * @param {String} apiKey - The api key of the user used for authorization.
  * @return the response of the request
  */
-const redmineGetUsersJson = (api_key) => {
+const redmineGetUsersJson = (apiKey) => {
     return cy.request({
         method: "GET",
         url: Cypress.config().baseUrl + "/redmine/users.json",
         headers: {
-            'X-Redmine-API-Key': api_key,
+            'X-Redmine-API-Key': apiKey,
         },
         failOnStatusCode: false
     })
@@ -148,22 +148,26 @@ const redmineGetUsersJson = (api_key) => {
  */
 const redmineDeleteUser = (username) => {
     cy.fixture("ces_admin_data.json").then(function (admindata) {
-        cy.redmineGetCurrentUserJsonWithBasic(admindata.username, admindata.password).then((response) => {
-            expect(response.status).to.eq(200)
 
-            for (var user in response.body.users) {
-                if (user.login === "username") {
-                    return cy.request({
-                        method: "GET",
-                        url: Cypress.config().baseUrl + "/redmine/users/"+user.id+".json",
-                        auth: {
-                            'user': admindata.username,
-                            'pass': admindata.password
-                        },
-                        failOnStatusCode: false
-                    })
+        cy.redmineGetCurrentUserJsonWithBasic(admindata.username, admindata.password).then((responseApiKey) => {
+            expect(responseApiKey.status).to.eq(200)
+            cy.redmineGetUsersJson(responseApiKey.body.user.api_key).then((response) => {
+                expect(response.status).to.eq(200)
+
+                for (var user in response.body.users) {
+                    if (user.login === username) {
+                        return cy.request({
+                            method: "GET",
+                            url: Cypress.config().baseUrl + "/redmine/users/" + user.id + ".json",
+                            auth: {
+                                'user': admindata.username,
+                                'pass': admindata.password
+                            },
+                            failOnStatusCode: false
+                        })
+                    }
                 }
-            }
+            })
         })
     })
 }

@@ -2,11 +2,11 @@
 
 # Setup for the integration tests
 
-This section describes the steps required to properly run the integration tests for Portainer.
+This section describes the steps required to properly run the integration tests for Redmine.
 
 ## Requirements
 
-* It is necessary to install the program `yarn
+* It is necessary to install the program `yarn`
 
 ## Configuration
 

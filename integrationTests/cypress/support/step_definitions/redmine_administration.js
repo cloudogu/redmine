@@ -33,20 +33,18 @@ Given(/^the user has an internal default redmine account$/, function () {
 
 Given(/^the user has an internal admin redmine account$/, function () {
     cy.fixture("testuser_data").then(function (testUser) {
-        cy.fixture("ces_admin_data.json").then(function (adminData) {
-            cy.isCesAdmin(testUser.username).then(function (isAdmin) {
-                if (isAdmin) {
-                    // create internal remine acccount
-                    cy.login(testUser.username, testUser.password)
-                    cy.logout()
-                } else {
-                    // promote -> create internal remine acccount -> demote
-                    cy.promoteAccountToAdmin(testUser.username)
-                    cy.login(testUser.username, testUser.password)
-                    cy.logout()
-                    cy.demoteAccountToDefault(testUser.username)
-                }
-            })
+        cy.isCesAdmin(testUser.username).then(function (isAdmin) {
+            if (isAdmin) {
+                // create internal remine acccount
+                cy.login(testUser.username, testUser.password)
+                cy.logout()
+            } else {
+                // promote -> create internal remine acccount -> demote
+                cy.promoteAccountToAdmin(testUser.username)
+                cy.login(testUser.username, testUser.password)
+                cy.logout()
+                cy.demoteAccountToDefault(testUser.username)
+            }
         })
     })
 });
@@ -103,6 +101,7 @@ When(/^the user is removed as a member from the ces admin group$/, function () {
 // Then
 //
 //
+
 Then(/^the user has an internal redmine account with default privileges$/, function () {
     cy.fixture('testuser_data').then(userdata => {
         cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password).then(function (response) {

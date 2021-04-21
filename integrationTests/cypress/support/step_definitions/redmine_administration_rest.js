@@ -1,18 +1,10 @@
 const {
-    Given,
     When,
     Then
 } = require("cypress-cucumber-preprocessor/steps");
 
 // The response is used to verify the outcome of a request
 let authenticationResponse = null
-
-//
-//
-// Given
-//
-//
-
 
 //
 //

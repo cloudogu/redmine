@@ -26,7 +26,7 @@ Given(/^the admin is logged out of the CES$/, function () {
 //
 //
 
-When(/^the user opens the dogu start page$/, function () {
+When(/^the user opens the redmine dogu start page$/, function () {
     cy.visit("/redmine")
 });
 

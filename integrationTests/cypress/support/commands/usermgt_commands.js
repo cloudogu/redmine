@@ -53,13 +53,13 @@ const usermgtGetUser = (username) => {
  * Creates the user defined in in the given user data object parameter.
  * A failed request is not tolerated and fails the test.
  * @param {String} username - The username for the user.
- * @param {String} givenname - The real given name of the user.
+ * @param {String} givenName - The real given name of the user.
  * @param {String} surname - The real surname of the user.
  * @param {String} displayName - The displayname for the user.
  * @param {String} mail - The E-Mail for the user.
  * @param {String} password - The password for the user.
  */
-const usermgtCreateUser = (username, givenname, surname, displayName, mail, password) => {
+const usermgtCreateUser = (username, givenName, surname, displayName, mail, password) => {
     cy.fixture("ces_admin_data.json").then(function (admindata) {
         cy.request({
             method: "POST",
@@ -74,7 +74,7 @@ const usermgtCreateUser = (username, givenname, surname, displayName, mail, pass
             },
             body: {
                 'username': username,
-                'givenname': givenname,
+                'givenname': givenName,
                 'surname': surname,
                 'displayName': displayName,
                 'mail': mail,

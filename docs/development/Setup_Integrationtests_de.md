@@ -1,6 +1,6 @@
 # Setup für die Integrationstests
 
-In diesem Abschnitt werden die benötigten Schritte beschrieben um die Integrationstests für Portainer korrekt ausführen zu können.
+In diesem Abschnitt werden die benötigten Schritte beschrieben um die Integrationstests für Redmine korrekt ausführen zu können.
 
 ## Voraussetzungen
 

@@ -4,7 +4,7 @@
 let doguName = "redmine"
 
 /**
- * Log the test user in the cas.
+ * Logs a given user in the cas.
  * @param {String} username - The username of the user.
  * @param {String} password - The password for the user.
  */
@@ -47,7 +47,7 @@ const logout = () => {
 const clickWarpMenuCheckboxIfPossible = () => {
     cy.get('div[id="warp-menu-container"]').then(function (container) {
         let warpContainer = container.children( ".warp-menu-column-tooltip")
-        if (warpContainer.length == 1) {
+        if (warpContainer.length === 1) {
             cy.get('input[type="checkbox"]').click(true)
         }
     })
@@ -61,7 +61,7 @@ const isCesAdmin = (username) => {
     cy.fixture("ces_admin_data.json").then(function (adminData) {
         cy.usermgtGetUser(username).then(function (response) {
             for (var element of response.memberOf) {
-                if (element == adminData.admingroup) {
+                if (element === adminData.admingroup) {
                     return true
                 }
             }
