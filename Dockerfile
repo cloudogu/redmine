@@ -1,5 +1,5 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.11.6-3
+FROM registry.cloudogu.com/official/base:3.12.4-1
 
 LABEL NAME="official/redmine" \
    VERSION="4.1.1-2" \
@@ -8,8 +8,8 @@ LABEL NAME="official/redmine" \
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
 
 # set environment variables
-ENV REDMINE_VERSION=4.1.1 \
-    CAS_PLUGIN_VERSION=1.2.15 \
+ENV REDMINE_VERSION=4.2.0 \
+    CAS_PLUGIN_VERSION=1.3.1 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
     EXTENDED_REST_API_PLUGIN_VERSION=1.0.0 \
     RUBYCASVERSION=2.3.15 \
@@ -18,8 +18,8 @@ ENV REDMINE_VERSION=4.1.1 \
     WORKDIR=/usr/share/webapps/redmine \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
-    REDMINE_TARGZ_SHA256=05faafe764330f2d77b0aacddf9d8ddce579c3d26bb8e03a7d6e7ff461f1cdda \
-    CAS_PLUGIN_TARGZ_SHA256=05f4a1c2b838f5f71e0a23824683d74fd5c14ebd444e263f4f636e82bc0e146b \
+    REDMINE_TARGZ_SHA256=295864c580afa2a926e7a17f2ad10693f9b7a6d9f1ef523edb96b2368e7f07e5 \
+    CAS_PLUGIN_TARGZ_SHA256=8f6c9273bded0e8f689c325d44acc12e48df33176f4b172a59ac03077e742170 \
     EXTENDED_REST_API_TARGZ_SHA256=eedd4c8a9a707a8ac0f499d79c686ed8faf8bc603118a54c18e4829faaeee320 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
@@ -87,7 +87,7 @@ RUN set -eux -o pipefail \
  && cd .. \
  && rm -rf rubycas-client \
  # install redmine required gems
- && echo 'gem "activerecord-session_store"' >> ${WORKDIR}/Gemfile \
+ && echo 'gem "activerecord-session_store", "1.1.3"' >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
