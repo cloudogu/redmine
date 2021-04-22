@@ -3,6 +3,18 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+echo "                                     ./////,                    "
+echo "                                 ./////==//////*                "
+echo "                                ////.  ___   ////.              "
+echo "                         ,**,. ////  ,////A,  */// ,**,.        "
+echo "                    ,/////////////*  */////*  *////////////A    "
+echo "                   ////'        \VA.   '|'   .///'       '///*  "
+echo "                  *///  .*///*,         |         .*//*,   ///* "
+echo "                  (///  (//////)**--_./////_----*//////)   ///) "
+echo "                   V///   '°°°°      (/////)      °°°°'   ////  "
+echo "                    V/////(////////\. '°°°' ./////////(///(/'   "
+echo "                       'V/(/////////////////////////////V'      "
+
 SETUP_DONE_KEY="startup/setup_done"
 
 # import util functions:
@@ -198,6 +210,26 @@ else
 
   doguctl config "${SETUP_DONE_KEY}" "true"
 fi
+
+EMPTY="<empty>"
+DEFAULT_CONFIGURATION=$(doguctl config --default "${EMPTY}" etcd_redmine_config)
+
+# The last tmp admin will be removed in any case to make sure it does not exist whenever redmine has started
+remove_last_temporary_admin
+
+if [ "${DEFAULT_CONFIGURATION}" != "${EMPTY}" ]
+then
+  create_temporary_admin
+  start_redmine_in_background
+
+  apply_default_configuration "${DEFAULT_CONFIGURATION}"
+
+  stop_redmine
+  remove_last_temporary_admin
+else
+  echo "No default configuration provided. Skipping step..."
+fi
+
 
 # install manual installed plugins
 install_plugins
