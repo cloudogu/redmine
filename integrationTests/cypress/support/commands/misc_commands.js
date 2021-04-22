@@ -2,19 +2,26 @@
 // commands for the login/logout flow
 // ***********************************************
 let doguName = "redmine"
-
+const MAX_RETRIES = 3
 /**
  * Logs a given user in the cas.
  * @param {String} username - The username of the user.
  * @param {String} password - The password for the user.
  */
-const login = (username, password) => {
+const login = (username, password, retryCount = 0) => {
     cy.visit("/" + doguName)
     cy.clickWarpMenuCheckboxIfPossible()
 
     cy.get('input[name="username"]').type(username)
     cy.get('input[name="password"]').type(password)
     cy.get('button[name="submit"]').click()
+
+    cy.wait(1000)
+
+    if(window.location.href.includes("cas/login") && retryCount < MAX_RETRIES){
+        ++retryCount
+        cy.login(username, password, retryCount)
+    }
 }
 
 

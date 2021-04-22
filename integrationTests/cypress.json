@@ -5,8 +5,8 @@
   "nonGlobalStepBaseDir": false,
 
   "retries": {
-    "runMode": 4,
-    "openMode": 4
+    "runMode": 0,
+    "openMode": 0
   }
 }
 
