@@ -16,12 +16,12 @@ const login = (username, password, retryCount = 0) => {
     cy.get('input[name="password"]').type(password)
     cy.get('button[name="submit"]').click()
 
-    cy.wait(1000)
-
-    if(window.location.href.includes("cas/login") && retryCount < MAX_RETRIES){
-        ++retryCount
-        cy.login(username, password, retryCount)
-    }
+    cy.url().then(function (url) {
+        if(url.includes("cas/login") && retryCount < MAX_RETRIES){
+            ++retryCount
+            cy.login(username, password, retryCount)
+        }
+    })
 }
 
 
