@@ -10,7 +10,6 @@ let doguName = "redmine"
  */
 const login = (username, password) => {
     cy.visit("/" + doguName)
-
     cy.clickWarpMenuCheckboxIfPossible()
 
     cy.get('input[name="username"]').type(username)
@@ -28,9 +27,7 @@ const loginAdmin = () => {
 
         cy.clickWarpMenuCheckboxIfPossible()
 
-        cy.get('input[name="username"]').type(admin.username)
-        cy.get('input[name="password"]').type(admin.password)
-        cy.get('button[name="submit"]').click()
+        cy.login(admin.username, admin.password);
     })
 }
 
@@ -46,7 +43,7 @@ const logout = () => {
  */
 const clickWarpMenuCheckboxIfPossible = () => {
     cy.get('div[id="warp-menu-container"]').then(function (container) {
-        let warpContainer = container.children( ".warp-menu-column-tooltip")
+        let warpContainer = container.children(".warp-menu-column-tooltip")
         if (warpContainer.length === 1) {
             cy.get('input[type="checkbox"]').click(true)
         }

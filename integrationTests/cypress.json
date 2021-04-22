@@ -2,5 +2,11 @@
   "baseUrl": "https://192.168.56.2",
   "videoUploadOnPasses": true,
   "videoCompression": false,
-  "nonGlobalStepBaseDir": false
+  "nonGlobalStepBaseDir": false,
+
+  "retries": {
+    "runMode": 4,
+    "openMode": 4
+  }
 }
+
