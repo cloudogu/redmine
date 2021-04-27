@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@v1.2.0']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@3013dc78']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -22,6 +22,8 @@ node('vagrant') {
                 // Parameter to activate dogu upgrade test on demand
                 parameters([
                     booleanParam(defaultValue: false, description: 'Test dogu upgrade from latest release or optionally from defined version below', name: 'TestDoguUpgrade'),
+                    booleanParam(defaultValue: true, description: 'Enables cypress to record video of the integration tests.', name: 'EnableVideoRecording'),
+                    booleanParam(defaultValue: true, description: 'Enables cypress to take screenshots of failing integration tests.', name: 'EnableScreenshotRecording'),
                     string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest'),
                 ])
         ])
@@ -69,27 +71,7 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                println "cleaning up previous test results..."
-                sh "rm -rf integrationTests/cypress/videos"
-                sh "rm -rf integrationTests/cypress/screenshots"
-                sh "rm -rf integrationTests/cypress-reports"
-
-                try {
-                    def runID = UUID.randomUUID().toString()
-                    def reportName = "TEST-${runID}-[hash].xml"
-                    def testArgs = "-q --headless --record false --reporter junit --reporter-options mochaFile=cypress-reports/${reportName}"
-                    String externalIP = ecoSystem.externalIP
-                    docker.image("cypress/included:7.1.0").inside("--ipc=host -v ${WORKSPACE}/integrationTests:/integrationTests -w /integrationTests -e XDG_CONFIG_HOME=/integrationTests -e YARN_CACHE_FOLDER=/integrationTests -e CYPRESS_BASE_URL=https://${externalIP} --entrypoint=''") {
-                        sh "cd integrationTests && yarn install && cypress run ${testArgs}"
-                    }
-                }
-                finally {
-                    catchError {
-                        println "archiving videos and screenshots from test execution..."
-                        junit allowEmptyResults: true, testResults: 'integrationTests/cypress-reports/TEST-*.xml'
-                        archiveArtifacts "integrationTests/cypress/videos/**/*.mp4"
-                    }
-                }
+                ecoSystem.runCypressIntegrationTests("cypress/included:7.1.0", params.EnableVideoRecording, params.EnableScreenshotRecording)
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade){
@@ -113,27 +95,7 @@ node('vagrant') {
                 }
 
                 stage('Integration Tests - After Upgrade') {
-                    println "cleaning up previous test results..."
-                    sh "rm -rf integrationTests/cypress/videos"
-                    sh "rm -rf integrationTests/cypress/screenshots"
-                    sh "rm -rf integrationTests/cypress-reports"
-
-                    try {
-                        def runID = UUID.randomUUID().toString()
-                        def reportName = "TEST-${runID}-[hash].xml"
-                        def testArgs = "-q --headless --record false --reporter junit --reporter-options mochaFile=cypress-reports/${reportName}"
-                        String externalIP = ecoSystem.externalIP
-                        docker.image("cypress/included:7.1.0").inside("--ipc=host -v ${WORKSPACE}/integrationTests:/integrationTests -w /integrationTests -e XDG_CONFIG_HOME=/integrationTests -e YARN_CACHE_FOLDER=/integrationTests -e CYPRESS_BASE_URL=https://${externalIP} --entrypoint=''") {
-                            sh "cd integrationTests && yarn install && cypress run ${testArgs}"
-                        }
-                    }
-                    finally {
-                        catchError {
-                            println "archiving videos and screenshots from test execution..."
-                            junit allowEmptyResults: true, testResults: 'integrationTests/cypress-reports/TEST-*.xml'
-                            archiveArtifacts "integrationTests/cypress/videos/**/*.mp4"
-                        }
-                    }
+                    ecoSytem.runCypressIntegrationTests("cypress/included:7.1.0", params.EnableVideoRecording, params.EnableScreenshotRecording)
                 }
             }
 

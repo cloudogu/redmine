@@ -3,9 +3,10 @@ const {
     When,
     Then
 } = require("cypress-cucumber-preprocessor/steps");
+const env = require('@cloudogu/dogu-integration-test-library/lib/environment_variables')
 
 // By default we assume the user to have valid credentials
-let fixtureUsedToLogin = "ces_admin_data"
+let fixtureUsedToLogin = "admin"
 // The response is used to verify the outcome of a request
 let apikeyUsedForLogin = null
 // The response is used to verify the outcome of a request
@@ -18,7 +19,7 @@ let authenticationResponse = null
 //
 
 Given(/^the user has valid login credentials$/, function () {
-    fixtureUsedToLogin = "ces_admin_data"
+    fixtureUsedToLogin = "admin"
 });
 
 Given(/^the user has invalid login credentials$/, function () {
@@ -26,15 +27,20 @@ Given(/^the user has invalid login credentials$/, function () {
 });
 
 Given(/^the user has a valid api key$/, function () {
-
-    fixtureUsedToLogin = "ces_admin_data"
-
-    cy.fixture("ces_admin_data").then(userdata => {
-        cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password).then(function (response) {
+    if (fixtureUsedToLogin === "admin") {
+        cy.redmineGetCurrentUserJsonWithBasic(env.GetAdminUsername(), env.GetAdminPassword()).then(function (response) {
+            console.log(response)
             expect(response.status).to.eq(200)
             apikeyUsedForLogin = response.body.user.api_key
         })
-    });
+    } else {
+        cy.fixture(fixtureUsedToLogin).then(userdata => {
+            cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password).then(function (response) {
+                expect(response.status).to.eq(200)
+                apikeyUsedForLogin = response.body.user.api_key
+            })
+        });
+    }
 
 });
 
@@ -50,11 +56,17 @@ Given(/^the user has an invalid api key$/, function () {
 //
 
 When(/^the user authenticate via basic authentication$/, function () {
-    cy.fixture(fixtureUsedToLogin).then(userdata => {
-        cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password).then(function (response) {
+    if (fixtureUsedToLogin === "admin") {
+        cy.redmineGetCurrentUserJsonWithBasic(env.GetAdminUsername(), env.GetAdminPassword()).then(function (response) {
             authenticationResponse = response
         })
-    });
+    } else {
+        cy.fixture(fixtureUsedToLogin).then(userdata => {
+            cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password).then(function (response) {
+                authenticationResponse = response
+            })
+        });
+    }
 });
 
 When(/^the user authenticate via api key$/, function () {
@@ -72,10 +84,13 @@ When(/^the user authenticate via api key$/, function () {
 Then(/^the user receives a json response with valid cas attributes$/, function () {
     expect(authenticationResponse.status).to.eq(200)
     expect(authenticationResponse.body).to.have.property('user')
-    cy.fixture(fixtureUsedToLogin).then(userdata => {
-        console.log(JSON.stringify(authenticationResponse.body))
-        expect(authenticationResponse.body.user).to.have.property('login', userdata.username)
-    });
+    if (fixtureUsedToLogin === "admin") {
+        expect(authenticationResponse.body.user).to.have.property('login', env.GetAdminUsername())
+    } else {
+        cy.fixture(fixtureUsedToLogin).then(userdata => {
+            expect(authenticationResponse.body.user).to.have.property('login', userdata.username)
+        });
+    }
 });
 
 Then(/^the user receives a (\d+) response$/, function () {

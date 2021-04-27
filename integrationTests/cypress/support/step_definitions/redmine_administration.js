@@ -3,6 +3,7 @@ const {
     When,
     Then
 } = require("cypress-cucumber-preprocessor/steps");
+const env = require('@cloudogu/dogu-integration-test-library/lib/environment_variables')
 
 //
 //
@@ -35,11 +36,11 @@ Given(/^the user has an internal admin redmine account$/, function () {
     cy.fixture("testuser_data").then(function (testUser) {
         cy.isCesAdmin(testUser.username).then(function (isAdmin) {
             if (isAdmin) {
-                // create internal remine acccount
+                // create internal redmine account
                 cy.login(testUser.username, testUser.password)
                 cy.logout()
             } else {
-                // promote -> create internal remine acccount -> demote
+                // promote -> create internal redmine account -> demote
                 cy.promoteAccountToAdmin(testUser.username)
                 cy.login(testUser.username, testUser.password)
                 cy.logout()
@@ -94,6 +95,10 @@ When(/^the user is removed as a member from the ces admin group$/, function () {
     cy.fixture("testuser_data").then(function (testUser) {
         cy.demoteAccountToDefault(testUser.username)
     })
+});
+
+When(/^the user clicks the logout button$/, function () {
+    cy.redmineLogout()
 });
 
 //
