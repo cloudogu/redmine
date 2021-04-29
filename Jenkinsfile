@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@3013dc78']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@126f5468']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -95,7 +95,7 @@ node('vagrant') {
                 }
 
                 stage('Integration Tests - After Upgrade') {
-                    ecoSytem.runCypressIntegrationTests("cypress/included:7.1.0", params.EnableVideoRecording, params.EnableScreenshotRecording)
+                    ecoSystem.runCypressIntegrationTests("cypress/included:7.1.0", params.EnableVideoRecording, params.EnableScreenshotRecording)
                 }
             }
 

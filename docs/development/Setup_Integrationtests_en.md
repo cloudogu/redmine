@@ -1,6 +1,6 @@
 # Setup for the integration tests
 
-This section describes the steps required to properly run the integration tests for Redmine.
+This section describes the steps required to properly run the integration tests.
 
 ## Requirements
 
