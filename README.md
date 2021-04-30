@@ -14,6 +14,8 @@
 
 **Website:** http://www.redmine.org
 
+**Docs:** http://www.redmine.org/guide
+
 **Dependencies:** postgresql, cas, nginx, postfix
 
 ## Installation in the Cloudogu EcoSystem
