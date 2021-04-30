@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@6ffa678d']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.47.0', 'github.com/cloudogu/dogu-build-lib@bb941a8a']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -13,7 +13,7 @@ node('vagrant') {
     GitHub github = new GitHub(this, git)
     Changelog changelog = new Changelog(this)
 
-    timestamps{
+    timestamps {
         properties([
                 // Keep only the last x builds to preserve space
                 buildDiscarder(logRotator(numToKeepStr: '10')),
@@ -21,10 +21,10 @@ node('vagrant') {
                 disableConcurrentBuilds(),
                 // Parameter to activate dogu upgrade test on demand
                 parameters([
-                    booleanParam(defaultValue: false, description: 'Test dogu upgrade from latest release or optionally from defined version below', name: 'TestDoguUpgrade'),
-                    booleanParam(defaultValue: true, description: 'Enables cypress to record video of the integration tests.', name: 'EnableVideoRecording'),
-                    booleanParam(defaultValue: true, description: 'Enables cypress to take screenshots of failing integration tests.', name: 'EnableScreenshotRecording'),
-                    string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest'),
+                        booleanParam(defaultValue: false, description: 'Test dogu upgrade from latest release or optionally from defined version below', name: 'TestDoguUpgrade'),
+                        booleanParam(defaultValue: true, description: 'Enables cypress to record video of the integration tests.', name: 'EnableVideoRecording'),
+                        booleanParam(defaultValue: true, description: 'Enables cypress to take screenshots of failing integration tests.', name: 'EnableScreenshotRecording'),
+                        string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest'),
                 ])
         ])
 
@@ -50,7 +50,7 @@ node('vagrant') {
 
             stage('Setup') {
                 ecoSystem.loginBackend('cesmarvin-setup')
-                ecoSystem.setup([ additionalDependencies: [ 'official/postgresql' ] ])
+                ecoSystem.setup([additionalDependencies: ['official/postgresql']])
 
             }
 
@@ -71,15 +71,16 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                ecoSystem.runCypressIntegrationTests("cypress/included:7.1.0", params.EnableVideoRecording, params.EnableScreenshotRecording)
+                ecoSystem.runCypressIntegrationTests([enableVideo      : params.EnableVideoRecording,
+                                                      enableScreenshots: params.EnableScreenshotRecording])
             }
 
-            if (params.TestDoguUpgrade != null && params.TestDoguUpgrade){
+            if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
                 stage('Upgrade dogu') {
                     // Remove new dogu that has been built and tested above
                     ecoSystem.purgeDogu(doguName)
 
-                    if (params.OldDoguVersionForUpgradeTest != '' && !params.OldDoguVersionForUpgradeTest.contains('v')){
+                    if (params.OldDoguVersionForUpgradeTest != '' && !params.OldDoguVersionForUpgradeTest.contains('v')) {
                         println "Installing user defined version of dogu: " + params.OldDoguVersionForUpgradeTest
                         ecoSystem.installDogu("official/" + doguName + " " + params.OldDoguVersionForUpgradeTest)
                     } else {
@@ -95,7 +96,8 @@ node('vagrant') {
                 }
 
                 stage('Integration Tests - After Upgrade') {
-                    ecoSystem.runCypressIntegrationTests("cypress/included:7.1.0", params.EnableVideoRecording, params.EnableScreenshotRecording)
+                    ecoSystem.runCypressIntegrationTests([enableVideo      : params.EnableVideoRecording,
+                                                          enableScreenshots: params.EnableScreenshotRecording])
                 }
             }
 
@@ -110,7 +112,7 @@ node('vagrant') {
                     ecoSystem.push("/dogu")
                 }
 
-                stage ('Add Github-Release'){
+                stage('Add Github-Release') {
                     github.createReleaseWithChangelog(releaseVersion, changelog)
                 }
             }
