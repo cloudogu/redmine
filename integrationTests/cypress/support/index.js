@@ -4,3 +4,4 @@ doguTestLibrary.registerCommands()
 
 // local commands
 import './commands/redmine_gui'
+import './commands/required_commands_for_dogu_lib'

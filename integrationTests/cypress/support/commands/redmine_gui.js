@@ -78,6 +78,8 @@ const redmineLogout = () => {
     cy.get('a[href="/redmine/logout"]').click()
 }
 
+
+
 Cypress.Commands.add("redmineDeleteUserViaUI", redmineDeleteUserViaUI)
 Cypress.Commands.add("redmineGiveAdminRights", redmineGiveAdminRights)
 Cypress.Commands.add("redmineLogout", redmineLogout)
