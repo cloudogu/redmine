@@ -5,6 +5,7 @@ const {
 } = require("cypress-cucumber-preprocessor/steps");
 const env = require('@cloudogu/dogu-integration-test-library/lib/environment_variables')
 
+
 //
 //
 // Given
@@ -17,4 +18,15 @@ Given(/^the user has an internal redmine account with admin privileges granted b
         cy.logout()
         cy.redmineGiveAdminRights(testUser.username)
     })
+});
+
+//
+//
+// When
+//
+//
+
+When(/^the admin logs into redmine$/, function () {
+    cy.login(env.GetAdminUsername(), env.GetAdminPassword())
+    cy.logout()
 });

@@ -57,12 +57,12 @@ Given(/^the user has an invalid api key$/, function () {
 
 When(/^the user authenticate via basic authentication$/, function () {
     if (fixtureUsedToLogin === "admin") {
-        cy.redmineGetCurrentUserJsonWithBasic(env.GetAdminUsername(), env.GetAdminPassword()).then(function (response) {
+        cy.redmineGetCurrentUserJsonWithBasic(env.GetAdminUsername(), env.GetAdminPassword(), false).then(function (response) {
             authenticationResponse = response
         })
     } else {
         cy.fixture(fixtureUsedToLogin).then(userdata => {
-            cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password).then(function (response) {
+            cy.redmineGetCurrentUserJsonWithBasic(userdata.username, userdata.password, false).then(function (response) {
                 authenticationResponse = response
             })
         });
@@ -70,7 +70,7 @@ When(/^the user authenticate via basic authentication$/, function () {
 });
 
 When(/^the user authenticate via api key$/, function () {
-    cy.redmineGetCurrentUserJsonWithKey(apikeyUsedForLogin).then(function (response) {
+    cy.redmineGetCurrentUserJsonWithKey(apikeyUsedForLogin, false).then(function (response) {
         authenticationResponse = response
     })
 });
