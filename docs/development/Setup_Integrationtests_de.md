@@ -1,6 +1,6 @@
 # Setup für die Integrationstests
 
-In diesem Abschnitt werden die benötigten Schritte beschrieben um die Integrationstests für Redmine korrekt ausführen zu können.
+In diesem Abschnitt werden die benötigten Schritte beschrieben um die Integrationstests korrekt ausführen zu können.
 
 ## Voraussetzungen
 
@@ -12,13 +12,29 @@ Damit alle Integrationstests auch einwandfrei funktionieren, müssen vorher eini
 
 **integrationTests/cypress.json** [[Link zur Datei](../../integrationTests/cypress.json)]
 
-In dieser Datei muss die base-URL auf das Hostsystem angepasst werden.
-Dafür muss das Feld `baseUrl` auf die Host-FQDN angepasst werden (`https://local.cloudogu.com`)
-
-**integrationTests/cypress/fixtures/ces_admin_data.json** [[Link zur Datei](../../integrationTests/cypress/fixtures/ces_admin_data.json)]
-
-In der `ces_admin_data.json` müssen die LoginInformation eines CES-Admin in den Feldern `adminuser` und `adminpassword` eingetragen werden.
-Ebenfalls muss die derzeitige admin Gruppe im Feld `admingroup` anageben werden.
+1) Es muss die base-URL auf das Hostsystem angepasst werden.
+   Dafür muss das Feld `baseUrl` auf die Host-FQDN angepasst werden (`https://local.cloudogu.com`)
+2) Es müssen noch weitere Aspekte konfiguriert werden. 
+   Diese werdeb als Umgebungsvariablen in der `cypress.json` gesetzt:
+- `DoguName` - Bestimmt den Namen des jetzigen Dogus und wir beim Routing benutzt.
+- `MaxLoginRetries` - Bestimmt die Anzahl der Loginversuche, bevor ein Test fehlschlägt.
+- `AdminUsername` - Der Benutzername des CES-Admins.
+- `AdminPassword` - Das Passwort des CES-Admins.
+- `AdminGroup` - Die Benutzergruppe für CES-Administratoren.
+  
+Eine Beispiel-`cypress.json` sieht folgendermaßen aus:
+```json
+{
+  "baseUrl": "https://192.168.56.2",
+  "env": {
+    "DoguName": "redmine",
+    "MaxLoginRetries": 3,
+    "AdminUsername":  "ces-admin",
+    "AdminPassword":  "ecosystem2016",
+    "AdminGroup":  "CesAdministrators"
+  }
+}
+```
 
 ## Starten der Integrationstests
 
