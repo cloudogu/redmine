@@ -44,36 +44,36 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   },
   "issueStatuses": [
     {
-      "name": "New",
+      "name": "New Status",
       "is_closed": false
     },
     {
-      "name": "In Progress",
+      "name": "In Progress Status",
       "is_closed": false
     },
     {
-      "name": "Review",
+      "name": "Review Status",
       "is_closed": false
     },
     {
-      "name": "Done",
+      "name": "Done Status",
       "is_closed": true
     }
   ],
   "trackers": [
     {
-      "name": "Bug",
-      "default_status_name": "New",
+      "name": "Bug Tracker",
+      "default_status_name": "New Status",
       "description": "It's just a bug."
     },
     {
-      "name": "User Story",
-      "default_status_name": "New",
+      "name": "User Story Tracker",
+      "default_status_name": "New Status",
       "description": "It's just a User Story"
     },
     {
-      "name": "Task",
-      "default_status_name": "New",
+      "name": "Task Tracker",
+      "default_status_name": "New Status",
       "description": "It's just a Task."
     }
   ],
@@ -86,9 +86,9 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
         "1"
       ],
       "tracker_ids": [
-        "Bug",
-        "User Story",
-        "Task"
+        "Bug Tracker",
+        "User Story Tracker",
+        "Task Tracker"
       ]
     },
     {
@@ -99,9 +99,9 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
         "1"
       ],
       "tracker_ids": [
-        "Bug",
-        "User Story",
-        "Task"
+        "Bug Tracker",
+        "User Story Tracker",
+        "Task Tracker"
       ]
     }
   ],
@@ -120,7 +120,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
     },
     {
       "type": "IssuePriority",
-      "name": "Immediate"
+      "name": "Super Immediate"
     },
     {
       "type": "IssuePriority",
@@ -134,52 +134,52 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
         "2"
       ],
       "tracker_names": [
-        "Bug",
-        "User Story",
-        "Task"
+        "Bug Tracker",
+        "User Story Tracker",
+        "Task Tracker"
       ],
       "transitions": {
-        "New": {
-          "In Progress": {
+        "New Status": {
+          "In Progress Status": {
             "always": "1"
           },
-          "Review": {
+          "Review Status": {
             "always": "1"
           },
-          "Done": {
+          "Done Status": {
             "always": "1"
           }
         },
-        "In Progress": {
-          "Review": {
+        "In Progress Status": {
+          "Review Status": {
             "always": "1"
           },
-          "Done": {
+          "Done Status": {
             "always": "1"
           },
-          "New": {
+          "New Status": {
             "always": "0"
           }
         },
-        "Review": {
-          "In Progress": {
+        "Review Status": {
+          "In Progress Status": {
             "always": "1"
           },
-          "Done": {
+          "Done Status": {
             "always": "1"
           },
-          "New": {
+          "New Status": {
             "always": "0"
           }
         },
-        "Done": {
-          "In Progress": {
+        "Done Status": {
+          "In Progress Status": {
             "always": "0"
           },
-          "Done": {
+          "Done Status": {
             "always": "0"
           },
-          "New": {
+          "New Status": {
             "always": "0"
           }
         }
