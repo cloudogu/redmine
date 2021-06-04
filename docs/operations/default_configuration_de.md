@@ -12,86 +12,175 @@ Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die fol
 Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus' ist, dass die REST-API in den Einstellungen
 aktiviert ist.
 
-Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/etcd_redmine_config` gesetzt werden.
-Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key entfernt.
+Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/default_data/new_configuration` gesetzt werden.
+Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
+entfernt.
 
-Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/etcd_redmine_config_archived` gespeichert.
-**Hinweis:** Dieser Key wird bei jeder erneuten Ausführung überschrieben. Es ist immer nur die zuletzt angewandte 
-Konfiguration historisiert.
+Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/default_data/archived/<Zeitstempel>`
+gespeichert.
+
+Wurden Ticket-Status, Benutzerdefinierte Felder oder Tracker angelegt, so werden die IDs dieser Felder in dem
+Key `config/redmine/default_data/creation_ids` gespeichert, damit ein Mapping zwischen der ID und dem Namen der
+Felder für das weitere Anlegen von Feldern geschehen kann. Der Key bleibt für weitere Zugriffe erhalten und wird bei
+jedem weiteren Zugriff ergänzt.
 
 ## Beispielkonfiguration
 
-Im Folgenden ist eine funktionsfähige Beispielkonfiguration und eine grobe Erklärung der einzelnen 
-Felder hinterlegt.
-Die Struktur der einzelnen Unterpunkte richtet sich exakt nach der in dem `extended_rest_api`-Plugin vorgegebenen
-Struktur.
+Im Folgenden ist eine funktionsfähige Beispielkonfiguration und eine grobe Erklärung der einzelnen Felder hinterlegt.
+Die Konfiguration orientiert sich sehr stark an der API des extended_rest_api-Plugins.
 
 Für weitere Informationen über die API des `extended_rest_api`-Plugins:
-Mit dem Plugin wird eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des
-Plugins auf [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml) zu finden.
-Alternativ wird diese mit Redmine zusammen ausgeliefert und kann unter `https://<fqdn>/redmine/extended_api/v1/spec` 
-abgerufen werden.
-Um diese grafisch darzustellen, kann z. B. das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden. 
+Mit dem Plugin wird eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des Plugins
+auf [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml) zu finden.
+Alternativ wird diese mit Redmine zusammen ausgeliefert und kann
+unter `https://<fqdn>/redmine/extended_api/v1/spec`
+abgerufen werden. Um diese grafisch darzustellen, kann z. B.
+das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
 
 ```json
 {
   "settings": {
-    "app_title": "My application name"
+    "app_title": "Updated Redmine"
   },
+  "issueStatuses": [
+    {
+      "name": "New",
+      "is_closed": false
+    },
+    {
+      "name": "In Progress",
+      "is_closed": false
+    },
+    {
+      "name": "Review",
+      "is_closed": false
+    },
+    {
+      "name": "Done",
+      "is_closed": true
+    }
+  ],
   "trackers": [
     {
-      "name": "new feature tracker",
-      "default_status_id": 1,
-      "description": "my description"
+      "name": "Bug",
+      "default_status_name": "New",
+      "description": "It's just a bug."
     },
     {
-      "name": "new feature tracker 2",
-      "default_status_id": 1,
-      "description": "my description"
+      "name": "User Story",
+      "default_status_name": "New",
+      "description": "It's just a User Story"
     },
     {
-      "name": "new feature tracker 3",
-      "default_status_id": 1,
-      "description": "my description"
+      "name": "Task",
+      "default_status_name": "New",
+      "description": "It's just a Task."
     }
   ],
   "customFields": [
     {
       "type": "IssueCustomField",
-      "name": "Super Points X3",
+      "name": "Story Points",
       "field_format": "int",
       "role_ids": [
         "1"
+      ],
+      "tracker_ids": [
+        "Bug",
+        "User Story",
+        "Task"
       ]
-    }
-  ],
-  "issueStatuses": [
+    },
     {
-      "name": "One-X",
-      "is_closed": true
+      "type": "IssueCustomField",
+      "name": "Extended description",
+      "field_format": "text",
+      "role_ids": [
+        "1"
+      ],
+      "tracker_ids": [
+        "Bug",
+        "User Story",
+        "Task"
+      ]
     }
   ],
   "enumerations": [
     {
       "type": "IssuePriority",
-      "name": "Example Name",
-      "custom_field_values": {
-        "20": "content for custom field with id 20"
-      }
+      "name": "Not important at all"
+    },
+    {
+      "type": "IssuePriority",
+      "name": "A little bit important"
+    },
+    {
+      "type": "IssuePriority",
+      "name": "Very important"
+    },
+    {
+      "type": "IssuePriority",
+      "name": "Immediate"
+    },
+    {
+      "type": "IssuePriority",
+      "name": "Yesterday"
     }
   ],
   "workflows": [
     {
       "role_id": [
-        "1"
+        "1",
+        "2"
       ],
-      "tracker_id": [
-        "1"
+      "tracker_names": [
+        "Bug",
+        "User Story",
+        "Task"
       ],
       "transitions": {
-        "123": {
-          "1": {
+        "New": {
+          "In Progress": {
             "always": "1"
+          },
+          "Review": {
+            "always": "1"
+          },
+          "Done": {
+            "always": "1"
+          }
+        },
+        "In Progress": {
+          "Review": {
+            "always": "1"
+          },
+          "Done": {
+            "always": "1"
+          },
+          "New": {
+            "always": "0"
+          }
+        },
+        "Review": {
+          "In Progress": {
+            "always": "1"
+          },
+          "Done": {
+            "always": "1"
+          },
+          "New": {
+            "always": "0"
+          }
+        },
+        "Done": {
+          "In Progress": {
+            "always": "0"
+          },
+          "Done": {
+            "always": "0"
+          },
+          "New": {
+            "always": "0"
           }
         }
       }
@@ -115,74 +204,16 @@ Ein JSON-Objekt im folgenden Format:
 }
 ```
 
-### Bereich `trackers`
+### Bereich `issueStatuses`
 
-Ermöglicht das Anlegen neuer Tracker.
-
-Ein JSON-Array mit allen anzulegenden Trackern in folgendem Format:
+Ermöglicht das Anlegen neuer Ticket-Status.
 
 ```
-[
+[ 
   .....
   {
-    "name": "<tracker 1 name>",
-    "default_status_id": <issue-status-id>,
-    "description": "<description>"
-  },
-  {
-    "name": "<tracker 2 name>",
-    "default_status_id": <issue-status-id>,
-    "description": "<description>"
-  },
-  .....
-]
-```
-
-### Bereich `workflows`
-
-Ermöglicht das Anlegen neuer Workflows.
-
-Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
-
-```
-[
-  .....
-  {
-    "role_id": [
-      "<rollen-id 1>",
-      "<rollen-id 2>"
-    ],
-    "tracker_id": [
-      "<tracker-id 1>",
-      "<tracker-id 2>"
-    ],
-    "transitions": {
-      "123": {
-        "1": {
-          "always": "1"
-        }
-      }
-    }
-  },
-  .....
-]
-```
-
-### Bereich `enumerations`
-
-Ermöglicht das Anlegen neuer Aufzählungen.
-
-Ein JSON-Array mit allen anzulegenden Aufzählungen in folgendem Format:
-
-```
-[
-  .....
-  {
-    "type": "<Typ der Aufzählung (z.B 'IssuePriority')>",
-    "name": "<Name der Aufzählung>",
-    "custom_field_values": {
-      "<id eines wertes>": "<name eines Wertes>"
-    }
+    "name": "<Name des Ticket-Status>",
+    "is_closed": <true|false>
   },
   .....
 ]
@@ -209,17 +240,99 @@ Ein JSON-Array mit allen anzulegenden benutzerdefinierten Feldern in folgendem F
 ]
 ```
 
-### Bereich `issueStatuses`
+### Bereich `enumerations`
 
-Ermöglicht das Anlegen neuer Ticket-Status.
+Ermöglicht das Anlegen neuer Aufzählungen.
+
+Ein JSON-Array mit allen anzulegenden Aufzählungen in folgendem Format:
 
 ```
-[ 
+[
   .....
   {
-    "name": "<Name des Ticket-Status>",
-    "is_closed": <true|false>
+    "type": "<Typ der Aufzählung (z.B 'IssuePriority')>",
+    "name": "<Name der Aufzählung>",
+    "custom_field_values": {
+      "<id eines custom-fields | name eines custom-fields>": "<name eines Wertes>"
+      "<id eines custom-fields | name eines custom-fields>": "<name eines Wertes>"
+    }
   },
   .....
 ]
 ```
+
+#### Besonderheit der `custom_field_values`
+
+Der Eintrag `custom_field_values` ist ein Json-Objekt, bei welchem der Key entweder der id eines Benutzerdefinierten
+Feldes oder aber dem Namen entspricht. Der Name kann aber nur dann verwendet werden, wenn das custom-field zuvor über
+den hier beschriebenen Mechanismus angelegt worden ist.
+
+### Bereich `trackers`
+
+Ermöglicht das Anlegen neuer Tracker.
+
+Ein JSON-Array mit allen anzulegenden Trackern in folgendem Format:
+
+```
+[
+  .....
+  {
+    "name": "<tracker 1 name>",
+    "default_status_id": <issue-status-id>,
+    "description": "<description>"
+  },
+  {
+    "name": "<tracker 2 name>",
+    "default_status_name": "<issue-status-name>",
+    "description": "<description>"
+  },
+  .....
+]
+```
+
+#### Besonderheit des Feldes `default_status_name`
+
+Statt des Feldes `default_status_id` kann alternativ das Feld `default_status_name` angegeben werden. Dies funktioniert
+allerdings nur dann, wenn der Ticket-Status vorher über den hier beschriebenen Mechanismus angelegt worden ist.
+
+### Bereich `workflows`
+
+Ermöglicht das Anlegen neuer Workflows.
+
+Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
+
+```
+[
+  .....
+  {
+    "role_id": [
+      "<rollen-id 1>",
+      "<rollen-id 2>"
+    ],
+    "tracker_id": [
+      "<tracker-id 1>",
+      "<tracker-id 2>"
+    ],
+    "transitions": {
+      "<from-issue-status-id>": {
+        "<to-issue-status-id>": {
+          "always": "1"
+        }
+      },
+      "<from-issue-status-name>": {
+        "<to-issue-status-name>": {
+          "always": "1"
+        }
+      }
+    }
+  },
+  .....
+]
+```
+
+#### Besonderheit `transitions`
+
+In diesem Bereich werden die Übergänge zwischen Ticket-Status definiert. Dafür kann sowohl die ID eines Ticket-Status
+verwendet werden als auch der Name. Der Name kann aber nur dann verwendet werden, wenn der Ticket-Status zuvor über den
+hier beschriebenen Mechanismus angelegt wurde.
+
