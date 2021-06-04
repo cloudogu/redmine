@@ -17,7 +17,7 @@ When(/^the user request the user\.json from Redmine via API key$/, function () {
         cy.redmineGetCurrentUserJsonWithBasic(testUser.username, testUser.password).then(function (response) {
             let api_key = response.body.user.api_key
             console.log(JSON.stringify(response.body.user))
-            cy.redmineGetUsersJson(api_key).then(function (usersResponse) {
+            cy.redmineGetUsersJson(api_key, false).then(function (usersResponse) {
                 authenticationResponse = usersResponse
             })
         })

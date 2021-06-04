@@ -1,12 +1,13 @@
 {
   "baseUrl": "https://192.168.56.2",
-  "videoUploadOnPasses": true,
+  "env": {
+    "DoguName": "redmine",
+    "MaxLoginRetries": 3,
+    "AdminUsername":  "ces-admin",
+    "AdminPassword":  "ecosystem2016",
+    "AdminGroup":  "CesAdministrators"
+  },
   "videoCompression": false,
-  "nonGlobalStepBaseDir": false,
-
-  "retries": {
-    "runMode": 0,
-    "openMode": 0
-  }
+  "nonGlobalStepBaseDir": false
 }
 
