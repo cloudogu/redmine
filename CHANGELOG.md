@@ -71,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update [rubycas-client plugin](https://github.com/cloudogu/rubycas-client) to v2.3.15
 
 ### Removed
-- Gem activerecord-deprecated_finders was removed as it is not maintained in Rails 5 any more. See https://github.com/rails/activerecord-deprecated_finders
+- Gem activerecord-deprecated_finders was removed as it is not maintained in Rails 5 any more.
 
 ## [v3.4.11-1] - 2019-09-04
 ### Changed
