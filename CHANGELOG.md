@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.1-1] - 2021-06-28
+### Changed
+- Upgrade redmine to 4.2.1; #59
+
 ## [v4.2.0-2] - 2021-06-04
 ### Changed
 - updated the import of the default-config mechanism (#57)
