@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+Add RAILS_RELATIVE_URL_ROOT environment variable to startup.sh
+
 ## [v4.2.1-1] - 2021-06-28
 ### Changed
 - Upgrade redmine to 4.2.1; #59
