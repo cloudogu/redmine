@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- update version of CAS plugin to 1.4.3 #61
+- update version of CAS plugin to 1.4.4 #61
 
 ### Added
 - Add RAILS_RELATIVE_URL_ROOT environment variable to startup.sh
