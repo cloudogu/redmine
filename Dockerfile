@@ -2,7 +2,7 @@
 FROM registry.cloudogu.com/official/base:3.12.4-1
 
 LABEL NAME="official/redmine" \
-   VERSION="4.2.1-1" \
+   VERSION="4.2.1-2" \
    maintainer="robert.auer@cloudogu.com"
 
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
