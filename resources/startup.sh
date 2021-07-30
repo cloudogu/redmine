@@ -243,4 +243,4 @@ doguctl state "ready"
 
 # Start redmine
 echo "Starting redmine..."
-exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} puma -e ${RAILS_ENV} -p 3000"
+exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
