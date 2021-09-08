@@ -1,3 +1,4 @@
+# DO NOT EDIT! These feature files are provided by the dogu integration test library.
 Feature: Browser-based CAS login and logout functionality
 
   @requires_testuser
@@ -20,7 +21,7 @@ Feature: Browser-based CAS login and logout functionality
     When the user opens the dogu start page
     And the user types in wrong login credentials
     And the user clicks the login button
-    Then the login page informs the user about invalid credentials
+    Then the login page informs the user about not recognizing the given user account
 
   @requires_testuser
   Scenario: logged in user can log out via logout button (front-channel)

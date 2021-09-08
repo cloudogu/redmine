@@ -1,4 +1,5 @@
-Feature: Browser-based CAS login and logout functionality
+# DO NOT EDIT! These feature files are provided by the dogu integration test library.
+Feature: Automatic grant of privileges when logging into a dogu
 
   @requires_testuser
   Scenario: ces user with default privileges has default privileges in the dogu

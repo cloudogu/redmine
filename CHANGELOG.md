@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.1-3] - 2021-09-08
+### Changed
+- update version of CAS plugin to 1.4.6 #63
+
 ## [v4.2.1-2] - 2021-07-30
 ### Changed
 - update version of CAS plugin to 1.4.4 #61
