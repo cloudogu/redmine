@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.2-1] - 2021-10-11
+### Changed
+- Upgrade Redmine to 4.2.2; #66
+- Upgrade base image to 3.14.2-2
+
 ## [v4.2.1-3] - 2021-09-08
 ### Changed
 - update version of CAS plugin to 1.4.6 #63
