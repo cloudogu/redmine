@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@v1.48.0', 'github.com/cloudogu/dogu-build-lib@v1.4.1']) _
+@Library(['github.com/cloudogu/ces-build-lib@v1.48.0', 'github.com/cloudogu/dogu-build-lib@v1.5.1']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -71,8 +71,11 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                ecoSystem.runCypressIntegrationTests([enableVideo      : params.EnableVideoRecording,
-                                                      enableScreenshots: params.EnableScreenshotRecording])
+                ecoSystem.runCypressIntegrationTests([
+                    cypressImage:"cypress/included:8.7.0",
+                    enableVideo: params.EnableVideoRecording,
+                    enableScreenshots: params.EnableScreenshotRecording
+                ])
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -92,12 +95,17 @@ node('vagrant') {
                     ecoSystem.upgradeDogu(ecoSystem)
 
                     // Wait for upgraded dogu to get healthy
-                    ecoSystem.verify("/dogu")
+                    ecoSystem.waitForDogu(doguName)
+                    ecoSystem.waitUntilAvailable(doguName)
                 }
 
                 stage('Integration Tests - After Upgrade') {
-                    ecoSystem.runCypressIntegrationTests([enableVideo      : params.EnableVideoRecording,
-                                                          enableScreenshots: params.EnableScreenshotRecording])
+                    // Run integration tests again to verify that the upgrade was successful
+                    ecoSystem.runCypressIntegrationTests([
+                        cypressImage:"cypress/included:8.7.0",
+                        enableVideo: params.EnableVideoRecording,
+                        enableScreenshots: params.EnableScreenshotRecording
+                    ])
                 }
             }
 
