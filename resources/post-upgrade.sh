@@ -13,9 +13,13 @@ set -o pipefail
 # import util variables:
 # - RAILS_ENV
 # - REDMINE_LANG
-#
+
+# shellcheck disable=SC1090
 # shellcheck disable=SC1091
-source /util.sh
+source "${STARTUP_DIR}/util.sh"
+# shellcheck disable=SC1090
+# shellcheck disable=SC1091
+source "${STARTUP_DIR}/pre-upgrade.sh"
 
 function run_postupgrade() {
   FROM_VERSION="${1}"
@@ -33,6 +37,10 @@ function run_postupgrade() {
     DELETE_DUPLICATE_STATEMENT="DELETE FROM settings WHERE id IN (SELECT id FROM settings WHERE NOT id IN (SELECT max(id) FROM settings GROUP BY name HAVING count(*) > 1) AND name IN (SELECT name FROM settings GROUP BY name HAVING count(name) > 1))"
     echo "post-upgrade: Deleting duplicate settings in database..."
     sql "${DELETE_DUPLICATE_STATEMENT}"
+  fi
+
+  if versionXLessThanY "${FROM_VERSION}" "4.2.2-1" ; then
+    migratePluginsBackToNewPluginsVolume
   fi
 
   echo "Making sure config/secrets.yml exists..."
@@ -60,6 +68,21 @@ function run_postupgrade() {
   doguctl state "upgrade done"
 
   echo "Redmine post-upgrade done"
+}
+
+# moves plugins which were moved from a pre-upgrade script back to the original path which although resides on a
+# different mount point.
+#
+# Global variables:
+# - MIGRATION_TMP_DIR - from pre-upgrade script
+# - REDMINE_WORK_DIR - from pre-upgrade script
+function migratePluginsBackToNewPluginsVolume() {
+  echo "Move plugins back to new plugin volume..."
+
+  mv "${MIGRATION_TMP_DIR}/*" "${REDMINE_WORK_DIR}/plugins"
+  rmdir "${MIGRATION_TMP_DIR}"
+
+  echo "Migrating plugins finished successfully."
 }
 
 # make the script only run when executed, not when sourced from bats tests)

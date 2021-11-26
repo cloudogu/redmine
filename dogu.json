@@ -79,6 +79,13 @@
       "Owner": "1000",
       "Group": "1000",
       "NeedsBackup": false
+    },
+    {
+      "Name": "plugins",
+      "Path": "/usr/share/webapps/redmine/plugins",
+      "Owner": "1000",
+      "Group": "1000",
+      "NeedsBackup": true
     }
   ],
   "ServiceAccounts": [
