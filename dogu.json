@@ -15,10 +15,21 @@
   "Url": "http://www.redmine.org",
   "Image": "registry.cloudogu.com/official/redmine",
   "Dependencies": [
-    "postgresql",
-    "cas",
-    "nginx",
-    "postfix"
+    {
+      "type": "dogu",
+      "name": "postgresql"
+    },{
+      "type": "dogu",
+      "name": "cas"
+    },
+    {
+      "type": "dogu",
+      "name": "nginx"
+    },
+    {
+      "type": "dogu",
+      "name": "postfix"
+    }
   ],
   "Configuration": [
     {
