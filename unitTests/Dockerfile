@@ -5,4 +5,3 @@ FROM ${BATS_BASE_IMAGE}:${BATS_TAG}
 
 # Make bash more findable by scripts and tests
 RUN apk add make git bash
-COPY ./usr/bin/create-ca-certificates.sh /usr/bin/create-ca-certificates.sh
