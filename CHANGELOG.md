@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade to Redmine 4.2.3; #69
 - Upgrade dogu.json to v2 format
 - Upgrade to dogu-build-lib v1.5.1
+- Upgrade dogu-integration-test-library to v2.0.0
+- Upgrade cypress to v8.7.0
 
 ## [v4.2.2-1] - 2021-10-11
 ### Changed
