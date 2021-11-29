@@ -3,8 +3,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck disable=SC1090
 # shellcheck disable=SC1091
-source /default-config.sh
+source "${STARTUP_DIR}"/default-config.sh
 
 echo "setting redmine environment variables..."
 RAILS_ENV=production
