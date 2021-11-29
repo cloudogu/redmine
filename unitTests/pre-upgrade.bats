@@ -7,6 +7,8 @@ load '/workspace/target/bats_libs/bats-assert/load.bash'
 load '/workspace/target/bats_libs/bats-mock/load.bash'
 
 setup() {
+  export STARTUP_DIR=/workspace/resources
+  export WORKDIR=/workspace
   doguctl="$(mock_create)"
   export doguctl
   export PATH="${PATH}:${BATS_TMPDIR}"
@@ -14,6 +16,8 @@ setup() {
 }
 
 teardown() {
+  unset STARTUP_DIR
+  unset WORKDIR
   rm "${BATS_TMPDIR}/doguctl"
 }
 
