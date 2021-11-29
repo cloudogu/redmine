@@ -77,7 +77,7 @@ function install_plugins(){
 
   PLUGINS=$(ls "${PLUGIN_STORE}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
-    install_plugin "${PLUGIN_PACKAGE}"
+    echo "installing ${PLUGIN_PACKAGE}"
   done
 
   # install missing gems only if external plugins are going to install
@@ -91,24 +91,6 @@ function install_plugins(){
   echo "running plugin migrations..."
   exec_rake redmine:plugins:migrate
   echo "plugin migrations... done"
-}
-
-# installs or upgrades the given plugin
-function install_plugin(){
-  NAME="${1}"
-  SOURCE="${PLUGIN_STORE}/${NAME}"
-  TARGET="${PLUGIN_DIRECTORY}/${NAME}"
-
-  if [ ! -d "${SOURCE}" ]; then
-    exit 1
-  fi
-
-  echo "install plugin ${NAME}"
-  if [ -d "${TARGET}" ]; then
-    rm -rf "${TARGET}"
-  fi
-
-  cp -rf "${SOURCE}" "${TARGET}"
 }
 
 echo "render config.ru template"

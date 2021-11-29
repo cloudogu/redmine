@@ -34,7 +34,7 @@ function movePluginsToTempDir() {
   echo "Move plugins to temporary directory..."
 
   mkdir -p "${MIGRATION_TMP_DIR}"
-  mv "${REDMINE_WORK_DIR}/plugins" "${MIGRATION_TMP_DIR}"
+  find "${REDMINE_WORK_DIR}"/plugins/* -maxdepth 0 -type d -exec mv '{}' "${MIGRATION_TMP_DIR}" \;
 
   echo "Moving plugins finished. The plugins will be moved back during the post-upgrade."
 }

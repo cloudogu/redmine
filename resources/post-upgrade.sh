@@ -79,7 +79,7 @@ function run_postupgrade() {
 function migratePluginsBackToNewPluginsVolume() {
   echo "Move plugins back to new plugin volume..."
 
-  mv "${MIGRATION_TMP_DIR}/*" "${REDMINE_WORK_DIR}/plugins"
+  mv "${MIGRATION_TMP_DIR}"/* "${REDMINE_WORK_DIR}/plugins"
   rmdir "${MIGRATION_TMP_DIR}"
 
   echo "Migrating plugins finished successfully."
