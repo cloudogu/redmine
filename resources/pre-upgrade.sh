@@ -21,7 +21,7 @@ function run_preupgrade() {
   echo "Set registry flag so startup script waits for post-upgrade to finish..."
   doguctl state "upgrading"
 
-  if versionXLessThanY "${FROM_VERSION}" "4.2.2-1" ; then
+  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
     movePluginsToTempDir
   fi
 

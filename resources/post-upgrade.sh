@@ -39,7 +39,7 @@ function run_postupgrade() {
     sql "${DELETE_DUPLICATE_STATEMENT}"
   fi
 
-  if versionXLessThanY "${FROM_VERSION}" "4.2.2-1" ; then
+  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
     migratePluginsBackToNewPluginsVolume
   fi
 
