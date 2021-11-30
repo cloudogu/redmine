@@ -12,16 +12,16 @@ load '/workspace/target/bats_libs/bats-file/load.bash'
 setup() {
   export STARTUP_DIR=/workspace/resources
   export WORKDIR=/workspace
-  doguctl="$(mock_create)"
-  export doguctl
+  rake="$(mock_create)"
+  export rake
   export PATH="${PATH}:${BATS_TMPDIR}"
-  ln -s "${doguctl}" "${BATS_TMPDIR}/doguctl"
+  ln -s "${rake}" "${BATS_TMPDIR}/rake"
 }
 
 teardown() {
   unset STARTUP_DIR
   unset WORKDIR
-  rm "${BATS_TMPDIR}/doguctl"
+  rm "${BATS_TMPDIR}/rake"
 }
 
 @test "checkDeprecatedPluginDir() should print a warning if directories exist in the deprecated plugin directory" {
@@ -90,3 +90,27 @@ teardown() {
   assert_file_exist "${PLUGIN_DIRECTORY}/${pluginName}/${aPluginFileName}"
 }
 
+@test "install_plugins() should install 1 plugin and call rake afterwards" {
+  mock_set_status "${rake}" 0
+
+  source /workspace/resources/startup.sh
+
+  export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
+  aPluginDirectory="$(mktemp -d -p "${DEFAULT_PLUGIN_DIRECTORY}")"
+  aPluginFile="$(mktemp -p "${aPluginDirectory}")"
+  pluginName="$(basename "${aPluginDirectory}")"
+  aPluginFileName="$(basename "${aPluginFile}")"
+  export PLUGIN_DIRECTORY="$(mktemp -d)"
+
+  run install_plugins
+
+  assert_success
+  assert_line "installing plugins..."
+  assert_line "install plugin ${pluginName}"
+  assert_line "running plugin migrations..."
+  assert_line "plugin migrations... done"
+  assert_dir_exist "${PLUGIN_DIRECTORY}/${pluginName}"
+  assert_file_exist "${PLUGIN_DIRECTORY}/${pluginName}/${aPluginFileName}"
+  assert_equal "$(mock_get_call_num "${rake}")" "1"
+  assert_equal "$(mock_get_call_args "${rake}" "1")" "--trace -f /workspace/Rakefile redmine:plugins:migrate"
+}

@@ -10,6 +10,9 @@ source "${STARTUP_DIR}"/default-config.sh
 echo "setting redmine environment variables..."
 RAILS_ENV=production
 REDMINE_LANG=en
+DATABASE_USER=
+DATABASE_USER_PASSWORD=
+DATABASE_DB=
 
 function exec_rake() {
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
@@ -43,11 +46,6 @@ function render_database_yml_template() {
 function render_configuration_yml_template() {
     doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 }
-
-echo "get data for database connection"
-DATABASE_USER=$(doguctl config -e sa-postgresql/username)
-DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
-DATABASE_DB=$(doguctl config -e sa-postgresql/database)
 
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
@@ -146,3 +144,15 @@ function wait_for_redmine_to_get_healthy() {
     echo "Redmine endpoint is available"
   fi
 }
+
+function runUtil() {
+  echo "get data for database connection"
+  DATABASE_USER=$(doguctl config -e sa-postgresql/username)
+  DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
+  DATABASE_DB=$(doguctl config -e sa-postgresql/database)
+}
+
+# make the script only run when executed, not when sourced from bats tests)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  runUtil
+fi
