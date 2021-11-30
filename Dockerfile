@@ -112,7 +112,7 @@ RUN set -eux -o pipefail \
  && mkdir "${WORKDIR}/defaultPlugins/redmine_activerecord_session_store" \
  && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
  && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
+ && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/defaultPlugins/redmine_activerecord_session_store" \
  && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
  ###
  # install redmine_extended_rest_api plugin
