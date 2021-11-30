@@ -1,5 +1,5 @@
 #! /bin/bash
-# Bind an unbound BATS variable that fails all tests when combined with 'set -o nounset'
+# Bind an unbound BATS variables that fail all tests when combined with 'set -o nounset'
 export BATS_TEST_START_TIME="0"
 export BATSLIB_FILE_PATH_REM=""
 export BATSLIB_FILE_PATH_ADD=""
@@ -76,10 +76,10 @@ teardown() {
 @test "install_plugin() should install a bundled plugin that is absent" {
   source /workspace/resources/startup.sh
   export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
-  aPluginDirectory="$(mktemp -d -p ${DEFAULT_PLUGIN_DIRECTORY})"
-  aPluginFile="$(mktemp -p ${aPluginDirectory})"
+  aPluginDirectory="$(mktemp -d -p "${DEFAULT_PLUGIN_DIRECTORY}")"
+  aPluginFile="$(mktemp -p "${aPluginDirectory}")"
   pluginName="$(basename "${aPluginDirectory}")"
-  aPluginFileName="$(basename ${aPluginFile})"
+  aPluginFileName="$(basename "${aPluginFile}")"
   export PLUGIN_DIRECTORY="$(mktemp -d)"
 
   run install_plugin "${pluginName}"
