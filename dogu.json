@@ -16,16 +16,20 @@
   "Image": "registry.cloudogu.com/official/redmine",
   "Dependencies": [
     {
-      "type": "postgresql"
+      "type": "dogu",
+      "name": "postgresql"
     },
     {
-      "type": "cas"
+      "type": "dogu",
+      "name": "cas"
     },
     {
-      "type": "nginx"
+      "type": "dogu",
+      "name": "nginx"
     },
     {
-      "type": "postfix"
+      "type": "dogu",
+      "name": "postfix"
     }
   ],
   "Configuration": [
