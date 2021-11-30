@@ -67,11 +67,11 @@ function setDoguLogLevel() {
 }
 
 function install_plugins(){
-  echo "installing plugins"
+  echo "installing plugins..."
 
   checkDeprecatedPluginDir
 
-  PLUGINS=$(ls "${DEPRECATED_PLUGIN_STORE}")
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
     install_plugin "${PLUGIN_PACKAGE}"
   done
