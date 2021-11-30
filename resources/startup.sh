@@ -16,7 +16,10 @@ echo "                    V/////(////////\. '°°°' ./////////(///(/'   "
 echo "                       'V/(/////////////////////////////V'      "
 
 SETUP_DONE_KEY="startup/setup_done"
-PLUGIN_STORE="/var/tmp/redmine/plugins"
+# DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
+# them from the plugin directory
+DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
+DEPRECATED_PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
 # import util functions:
@@ -68,9 +71,9 @@ function install_plugins(){
 
   checkDeprecatedPluginDir
 
-  PLUGINS=$(ls "${PLUGIN_STORE}")
+  PLUGINS=$(ls "${DEPRECATED_PLUGIN_STORE}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
-    echo "installing ${PLUGIN_PACKAGE}"
+    install_plugin "${PLUGIN_PACKAGE}"
   done
 
   # install missing gems only if external plugins are going to install
@@ -86,9 +89,29 @@ function install_plugins(){
   echo "plugin migrations... done"
 }
 
+# installs or upgrades the given plugin
+function install_plugin(){
+  NAME="${1}"
+  SOURCE="${DEFAULT_PLUGIN_DIRECTORY}/${NAME}"
+  TARGET="${PLUGIN_DIRECTORY}/${NAME}"
+
+  if [ ! -d "${SOURCE}" ]; then
+    echo "ERROR: ${SOURCE} is not a directory. Skipping this plugin..."
+    return
+  fi
+
+  if [ -d "${TARGET}" ]; then
+    echo "Plugin ${TARGET} already exists. Skip restoring the plugin..."
+    return
+  fi
+
+  echo "install plugin ${NAME}"
+  cp -rf "${SOURCE}" "${TARGET}"
+}
+
 function checkDeprecatedPluginDir() {
-  if [[ -n "$(ls -A "${PLUGIN_STORE}")" ]]; then
-     echo "WARNING: Found plugins in the deprecated plugin directory ${PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
+  if [[ -n "$(ls -A "${DEPRECATED_PLUGIN_STORE}")" ]]; then
+     echo "WARNING: Found plugins in the deprecated plugin directory ${DEPRECATED_PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
   fi
 }
 
