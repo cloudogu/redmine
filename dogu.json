@@ -75,7 +75,7 @@
       "NeedsBackup": true
     },
     {
-      "Name": "plugins_prod",
+      "Name": "plugins",
       "Path": "/var/tmp/redmine/plugins",
       "Owner": "1000",
       "Group": "1000",
@@ -89,7 +89,7 @@
       "NeedsBackup": false
     },
     {
-      "Name": "plugins",
+      "Name": "plugins_prod",
       "Path": "/usr/share/webapps/redmine/plugins",
       "Owner": "1000",
       "Group": "1000",
