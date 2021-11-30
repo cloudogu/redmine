@@ -27,8 +27,12 @@ To add a new plugin, just copy the directory of the new plugin to Redmine's plug
 
 ## Removing plugins
 
-Removing a Redmine plugin is easy. To remove a plugin, delete or move the directory of the corresponding plugin from Redmine's plugin directory. The next time the Dogu restarts, the plugin removal will take effect.
 
-**Caution:**
+Removing a Redmine plugin is simple. To remove a plugin, one deletes or moves the directory of the corresponding plugin from Redmine's plugin directory. The next time Dogu is restarted, the removal will take effect.
 
-When removing plugins, be very careful not to empty or delete Redmine's entire plugin directory. Also, critical infrastructure plugins (especially the Redmine CAS plugin / `redmine_cas`) must not be deleted, as this will result in a broken dogu. A common characteristic is an unfamiliar login screen or the inability to log in to Redmine via CAS.
+When removing plugins, one should refrain from emptying or deleting Redmine's entire plugin directory. To rule out a defect after the restart, the following infrastructure-relevant plugins are backed up in the container image so that they can be restored if necessary:
+- redmine_cas
+- redmine_extended_rest_api
+- redmine_activerecord_session_store
+
+The `startup.sh` takes over the installation of the plugins in case one or more of the plugin directories have been deleted or moved.

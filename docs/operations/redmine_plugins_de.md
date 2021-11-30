@@ -29,6 +29,9 @@ Um ein neues Plugin hinzuzufügen, muss lediglich das Verzeichnis des neuen Plug
 
 Ein Redmine-Plugin zu entfernen ist einfach. Um ein Plugin zu entfernen, löscht oder verschiebt man das Verzeichnis des entsprechenden Plugins aus Redmines Plugin-Verzeichnis. Beim nächsten Dogu-Neustart tritt die Entfernung in Kraft.
 
-**Vorsicht:**
+Beim Entfernen von Plugins sollte verzichtet werden, Redmines gesamtes Plugin-Verzeichnis zu leeren oder zu löschen. Um einen Defekt nach dem Neustart auszuschließen, liegen die folgenden infrastruktur-relevanten Plugins gesichert im Container-Image vor, so dass sie bei Bedarf wiederhergestellt werden können:
+- redmine_cas
+- redmine_extended_rest_api
+- redmine_activerecord_session_store
 
-Beim Entfernen von Plugins sollte dringendst darauf geachtet werden, nicht Redmines gesamtes Plugin-Verzeichnis zu leeren oder zu löschen. Auch kritische Infrastruktur-Plugins (insbesondere das Redmine-CAS-Plugin / `redmine_cas`) darf nicht gelöscht werden, da dies ein defektes Dogu zur Folge haben wird. Ein übliches Kennzeichen ist eine ungewohnte Anmeldemaske oder die Unfähigkeit, sich per CAS an Redmine anzumelden.
+Die `startup.sh` übernimmt die Installation der Plugins, falls eines oder mehrere der Plugin-Verzeichnisse gelöscht oder verschoben wurden.
