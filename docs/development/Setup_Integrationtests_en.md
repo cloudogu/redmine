@@ -47,4 +47,13 @@ The integration tests can be started in two ways:
 1. `yarn cypress open` starts an interactive window where you can run, visually observe and debug the tests.
    This mode is especially useful when developing new tests and finding bugs.
 
-Translated with www.DeepL.com/Translator (free version)
+## Updating included tests from the test library
+
+From time to time it is necessary to update the test library `@cloudogu/dogu-integration-test-library` in order to
+apply changes outside the dogu scope, f. i. when CAS has changed.
+
+Update the test library with the following call and don't forget to commit any changes to the tests.
+
+```bash
+yarn run updateTests
+```
