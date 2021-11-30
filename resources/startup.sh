@@ -101,7 +101,7 @@ function install_plugin(){
   fi
 
   if [ -d "${TARGET}" ]; then
-    echo "Plugin ${TARGET} already exists. Skip restoring the plugin..."
+    echo "Plugin ${NAME} already exists. Skip restoring the plugin..."
     return
   fi
 
