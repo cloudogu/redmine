@@ -2,8 +2,8 @@
 FROM registry.cloudogu.com/official/base:3.14.2-2
 
 LABEL NAME="official/redmine" \
-   VERSION="4.2.2-1" \
-   maintainer="robert.auer@cloudogu.com"
+   VERSION="4.2.2-2" \
+   maintainer="hello@cloudogu.com"
 
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
 
@@ -25,7 +25,8 @@ ENV REDMINE_VERSION=4.2.2 \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
     RAILS_RELATIVE_URL_ROOT=/redmine \
     CLOUDOGU_THEME_VERSION=2.9.1-1 \
-    THEME_TARGZ_SHA256=b541030c7351a4f71561e8ac409fbcc257978c9de75816bcbcdcd199f7446cfb
+    THEME_TARGZ_SHA256=b541030c7351a4f71561e8ac409fbcc257978c9de75816bcbcdcd199f7446cfb \
+    STARTUP_DIR=/
 
 # copy resource files
 COPY resources/ /
@@ -94,37 +95,40 @@ RUN set -eux -o pipefail \
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
  && mkdir -p "${WORKDIR}/plugins" \
+ && mkdir -p "${WORKDIR}/defaultPlugins" \
  # install cas plugin
- && mkdir "${WORKDIR}/plugins/redmine_cas" \
+ && mkdir "${WORKDIR}/defaultPlugins/redmine_cas" \
  && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar -C "${WORKDIR}/plugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
+ && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
- # install Cloudogu theme
+  # install Cloudogu theme
  && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
  && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
  && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/public/themes/Cloudogu" \
  && rm v${CLOUDOGU_THEME_VERSION}.tar.gz \
  # install redmine_activerecord_session_store to be able to invalidate sessions after cas logout
- && mkdir "${WORKDIR}/plugins/redmine_activerecord_session_store" \
+ && mkdir "${WORKDIR}/defaultPlugins/redmine_activerecord_session_store" \
  && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \
  && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/plugins/redmine_activerecord_session_store" \
+ && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${WORKDIR}/defaultPlugins/redmine_activerecord_session_store" \
  && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
  ###
  # install redmine_extended_rest_api plugin
  ###
- && mkdir "${WORKDIR}/plugins/redmine_extended_rest_api" \
+ && mkdir "${WORKDIR}/defaultPlugins/redmine_extended_rest_api" \
  && wget -O v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
     "https://github.com/cloudogu/redmine_extended_rest_api/archive/v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz" \
  && echo "${EXTENDED_REST_API_TARGZ_SHA256} *v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && SUB_DIR="redmine_extended_rest_api-${EXTENDED_REST_API_PLUGIN_VERSION}/src/" \
- && tar -C "${WORKDIR}/plugins/redmine_extended_rest_api" --strip-components=2 -xvf v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz "${SUB_DIR}" \
+ && tar -C "${WORKDIR}/defaultPlugins/redmine_extended_rest_api" --strip-components=2 -xvf v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz "${SUB_DIR}" \
  && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
- && find "${WORKDIR}/plugins/redmine_extended_rest_api" -name 'Gemfile*' -type f -delete \
+ && find "${WORKDIR}/defaultPlugins/redmine_extended_rest_api" -name 'Gemfile*' -type f -delete \
  && cd ${WORKDIR} \
- # install required and plugin gems
+ # install required and plugin gems \
+ # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
+ && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
  && bundle config set --local without 'development test' \
  && bundle install \
@@ -142,7 +146,7 @@ WORKDIR ${WORKDIR}
 # expose application port
 EXPOSE 3000
 
-HEALTHCHECK CMD [ $(doguctl healthy redmine; echo $?) == 0 ]
+HEALTHCHECK CMD doguctl healthy redmine || exit 1
 
 # start
 CMD ["/startup.sh"]

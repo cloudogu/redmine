@@ -16,6 +16,11 @@ echo "                    V/////(////////\. '°°°' ./////////(///(/'   "
 echo "                       'V/(/////////////////////////////V'      "
 
 SETUP_DONE_KEY="startup/setup_done"
+# DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
+# them from the plugin directory
+DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
+DEPRECATED_PLUGIN_STORE="/var/tmp/redmine/plugins"
+PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
 # import util functions:
 # - create_secrets_yml
@@ -28,28 +33,17 @@ SETUP_DONE_KEY="startup/setup_done"
 # - RAILS_ENV
 # - REDMINE_LANG
 #
+
+sourceUtilExitCode=0
+# shellcheck disable=SC1090
 # shellcheck disable=SC1091
-source /util.sh
-
-# check whether post-upgrade script is still running
-while [[ "$(doguctl state)" == "upgrading" ]]; do
-  echo "Upgrade script is running. Waiting..."
-  sleep 3
-done
-
-doguctl state "installing"
-
-echo "get variables for templates"
-FQDN=$(doguctl config --global fqdn)
-DOMAIN=$(doguctl config --global domain)
-ADMIN_GROUP=$(doguctl config --global 'admin_group')
-MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
-
-echo "get plugin locations"
-PLUGIN_STORE="/var/tmp/redmine/plugins"
-PLUGIN_DIRECTORY="${WORKDIR}/plugins"
-
-HOSTNAME_SETTING="${FQDN}/redmine"
+source "${STARTUP_DIR}"/util.sh || sourceUtilExitCode=$?
+if [[ ${sourceUtilExitCode} -ne 0 ]]; then
+  echo "ERROR: An error occurred while sourcing util functions.";
+  doguctl state "ErrorSourceUtilFunctions"
+  sleep 300
+  exit 2
+fi
 
 function setDoguLogLevel() {
   echo "Mapping dogu specific log level..."
@@ -73,20 +67,20 @@ function setDoguLogLevel() {
 }
 
 function install_plugins(){
-  echo "installing plugins"
+  echo "installing plugins..."
 
-  PLUGINS=$(ls "${PLUGIN_STORE}")
-  for PLUGIN_PACKAGE in ${PLUGINS}; do
-    install_plugin "${PLUGIN_PACKAGE}"
-  done
+  checkDeprecatedPluginDir
 
-  # install missing gems only if external plugins are going to install
-  if [ "x${PLUGINS}" != "x" ]; then
-    echo "install missing gems ..."
-    RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install
-    echo "missing gems ... installed"
-  fi
+  installBundledPluginsIfNecessary
 
+  # Installing Gems needs either an internet connection for pulling Gem dependencies or
+  # all required Gems in the Gem path.
+  installPluginGems
+
+  runPluginMigration
+}
+
+function runPluginMigration() {
   # run migrations always, because core plugins need also a db migration
   echo "running plugin migrations..."
   exec_rake redmine:plugins:migrate
@@ -96,151 +90,207 @@ function install_plugins(){
 # installs or upgrades the given plugin
 function install_plugin(){
   NAME="${1}"
-  SOURCE="${PLUGIN_STORE}/${NAME}"
+  SOURCE="${DEFAULT_PLUGIN_DIRECTORY}/${NAME}"
   TARGET="${PLUGIN_DIRECTORY}/${NAME}"
 
   if [ ! -d "${SOURCE}" ]; then
-    exit 1
+    echo "ERROR: ${SOURCE} is not a directory. Skipping this plugin..."
+    return
+  fi
+
+  if [ -d "${TARGET}" ]; then
+    echo "Plugin ${NAME} already exists. Skip restoring the plugin..."
+    return
   fi
 
   echo "install plugin ${NAME}"
-  if [ -d "${TARGET}" ]; then
-    rm -rf "${TARGET}"
-  fi
-
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
-echo "render config.ru template"
-render_config_ru_template
+function installBundledPluginsIfNecessary() {
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
 
-echo "render database.yml template"
-render_database_yml_template
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    install_plugin "${PLUGIN_PACKAGE}"
+  done
+}
 
-setDoguLogLevel
+function installPluginGems() {
+  # Install missing gems if new plugins are going to be installed.
+  # Otherwise bundle will detect that there are no changes and thus no new gems are needed
+  echo "install missing gems ..."
+  
+  rakeExitCode=0
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install || rakeExitCode=$?
+  if [[ ${rakeExitCode} -ne 0 ]]; then
+    echo "ERROR: Rake bund installed returned with an error during the gem installation for new plugins"
+    sleep 300
+    exit 1
+  fi
+  
+  echo "missing gems ... installed"
+}
 
-# Make sure secrets.yml exists
-create_secrets_yml
+function checkDeprecatedPluginDir() {
+  if [[ -n "$(ls -A "${DEPRECATED_PLUGIN_STORE}")" ]]; then
+     echo "WARNING: Found plugins in the deprecated plugin directory ${DEPRECATED_PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
+  fi
+}
 
-# export variables for auth_source_cas.rb
-export FQDN
-export ADMIN_GROUP
+function runMain() {
+  # check whether post-upgrade script is still running
+  while [[ "$(doguctl state)" == "upgrading" ]]; do
+    echo "Upgrade script is running. Waiting..."
+    sleep 3
+  done
 
-# wait until postgresql passes all health checks
-echo "wait until postgresql passes all health checks"
-if ! doguctl healthy --wait --timeout 120 postgresql; then
-  echo "timeout reached by waiting of postgresql to get healthy"
-  exit 1
-fi
+  doguctl state "installing"
 
-# wait some more time for PostgreSQL so the next check wont fail
-# TODO: check why the if statement below sometimes fails if there is no sleep
-sleep 10
+  echo "get variables for templates"
+  FQDN=$(doguctl config --global fqdn)
+  DOMAIN=$(doguctl config --global domain)
+  ADMIN_GROUP=$(doguctl config --global 'admin_group')
+  MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
 
-SETUP_DONE=$(doguctl config "${SETUP_DONE_KEY}" --default "false")
-# Check if Redmine has been installed already
-if [[ "${SETUP_DONE}" == "true" ]]; then
-  echo "Redmine (database) has been installed already."
-  # update FQDN in settings
-  # we need to update the fqdn on every start, because of possible changes
-  sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
+  HOSTNAME_SETTING="${FQDN}/redmine"
 
-  echo "Get cas plugin config values..."
+  echo "render config.ru template"
+  render_config_ru_template
 
-  # Get the configured value for the redmine cas plugin config
-  OLD_SETTINGS="$(get_setting_value "plugin_redmine_cas")"
+  echo "render database.yml template"
+  render_database_yml_template
 
-  # Extract the value for the redirect_enabled config
-  VALUE_REDIRECT_SETTING="$(echo "${OLD_SETTINGS}" |grep "redirect_enabled: '" |sed "s/^[^']*'\([^']*\)'.*$/\1/g" || echo "0")"
+  setDoguLogLevel
 
-  # Value: 1 => true / not existing => false
-  # Even value: 0 would still be true. This is why this step is necessary.
-  REDIRECT_SETTINGS="redirect_enabled: 1 \\n"
-  if [ "${VALUE_REDIRECT_SETTING}" != "1" ]
-  then
-    REDIRECT_SETTINGS=""
+  # Make sure secrets.yml exists
+  create_secrets_yml
+
+  # export variables for auth_source_cas.rb
+  export FQDN
+  export ADMIN_GROUP
+
+  # wait until postgresql passes all health checks
+  echo "wait until postgresql passes all health checks"
+  if ! doguctl healthy --wait --timeout 120 postgresql; then
+    echo "timeout reached by waiting of postgresql to get healthy"
+    exit 1
   fi
 
-  echo "Updating cas plugin settings..."
+  # wait some more time for PostgreSQL so the next check wont fail
+  # TODO: check why the if statement below sometimes fails if there is no sleep
+  sleep 10
 
-  # Reason for this update: The cas plugin config should not be configurable. This lock out the user and make the dogu unusable.
-  # This is why the config is overridden at each start. The only flag that must be configurable is the redirect_enabled flag.
-  sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\n${REDIRECT_SETTINGS}cas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" >/dev/null 2>&1
-else
+  SETUP_DONE=$(doguctl config "${SETUP_DONE_KEY}" --default "false")
+  # Check if Redmine has been installed already
+  if [[ "${SETUP_DONE}" == "true" ]]; then
+    echo "Redmine (database) has been installed already."
+    # update FQDN in settings
+    # we need to update the fqdn on every start, because of possible changes
+    sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
 
-  # Create the database structure
-  echo "Creating database structure..."
-  exec_rake db:migrate
+    echo "Get cas plugin config values..."
 
-  # insert default configuration data into database
-  echo "Inserting default configuration data into database..."
-  exec_rake redmine:load_default_data
+    # Get the configured value for the redmine cas plugin config
+    OLD_SETTINGS="$(get_setting_value "plugin_redmine_cas")"
 
-  echo "Writing cas plugin settings to database..."
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
+    # Extract the value for the redirect_enabled config
+    VALUE_REDIRECT_SETTING="$(echo "${OLD_SETTINGS}" |grep "redirect_enabled: '" |sed "s/^[^']*'\([^']*\)'.*$/\1/g" || echo "0")"
 
-  # Enabling REST API
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('rest_api_enabled', 1, now());"
+    # Value: 1 => true / not existing => false
+    # Even value: 0 would still be true. This is why this step is necessary.
+    REDIRECT_SETTINGS="redirect_enabled: 1 \\n"
+    if [ "${VALUE_REDIRECT_SETTING}" != "1" ]
+    then
+      REDIRECT_SETTINGS=""
+    fi
 
-  # Insert auth_sources record for AuthSourceCas authentication source
-  sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
+    echo "Updating cas plugin settings..."
 
-  # write url settings to database
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\\r\\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
+    # Reason for this update: The cas plugin config should not be configurable. This lock out the user and make the dogu unusable.
+    # This is why the config is overridden at each start. The only flag that must be configurable is the redirect_enabled flag.
+    sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\n${REDIRECT_SETTINGS}cas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" >/dev/null 2>&1
+  else
 
-  # set default email address
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','${MAIL_ADDRESS}', now());"
+    # Create the database structure
+    echo "Creating database structure..."
+    exec_rake db:migrate
 
-  # set theme to cloudogu, do this only on installation not on a upgrade
-  # because the user should be able to change the theme
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('ui_theme','Cloudogu', now());"
+    # insert default configuration data into database
+    echo "Inserting default configuration data into database..."
+    exec_rake redmine:load_default_data
 
-  # enable gravatar
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_enabled', 1, now());"
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_default', 'identicon', now());"
+    echo "Writing cas plugin settings to database..."
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
 
-  # we use markdown as default format, however it can be changed
-  sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'markdown', now());"
+    # Enabling REST API
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('rest_api_enabled', 1, now());"
 
-  # Remove default admin account
-  sql "DELETE FROM users WHERE login='admin';"
+    # Insert auth_sources record for AuthSourceCas authentication source
+    sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
 
-  doguctl config "${SETUP_DONE_KEY}" "true"
+    # write url settings to database
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\\r\\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
+
+    # set default email address
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','${MAIL_ADDRESS}', now());"
+
+    # set theme to cloudogu, do this only on installation not on a upgrade
+    # because the user should be able to change the theme
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('ui_theme','Cloudogu', now());"
+
+    # enable gravatar
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_enabled', 1, now());"
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_default', 'identicon', now());"
+
+    # we use markdown as default format, however it can be changed
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'markdown', now());"
+
+    # Remove default admin account
+    sql "DELETE FROM users WHERE login='admin';"
+
+    doguctl config "${SETUP_DONE_KEY}" "true"
+  fi
+
+  trigger_imports || true
+
+  # install manual installed plugins
+  install_plugins
+
+  # Create links
+  if [ ! -e "${WORKDIR}"/public/redmine ]; then
+    ln -s "${WORKDIR}" "${WORKDIR}"/public/
+  fi
+  if [ ! -e "${WORKDIR}"/stylesheets ]; then
+    ln -s "${WORKDIR}"/public/* "${WORKDIR}"
+  fi
+
+  echo "Generate configuration.yml from template"
+  render_configuration_yml_template
+
+  # remove old pid
+  RPID="${WORKDIR}/tmp/pids/server.pid"
+  if [ -f "${RPID}" ]; then
+    rm -f "${RPID}"
+  fi
+
+  # make sure temp, file and log folders are writable
+  # TODO should tmp be a volume, because of performance?
+  mkdir -p tmp tmp/pdf public/plugin_assets
+  chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
+  chmod -R 755 files log tmp public/plugin_assets
+
+  doguctl state "ready"
+
+  # Start redmine
+  echo "Starting redmine..."
+  exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
+}
+
+# make the script only run when executed, not when sourced from bats tests)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  runUtil
+  runMain
 fi
-
-trigger_imports || true
-
-# install manual installed plugins
-install_plugins
-
-# Create links
-if [ ! -e "${WORKDIR}"/public/redmine ]; then
-  ln -s "${WORKDIR}" "${WORKDIR}"/public/
-fi
-if [ ! -e "${WORKDIR}"/stylesheets ]; then
-  ln -s "${WORKDIR}"/public/* "${WORKDIR}"
-fi
-
-echo "Generate configuration.yml from template"
-render_configuration_yml_template
-
-# remove old pid
-RPID="${WORKDIR}/tmp/pids/server.pid"
-if [ -f "${RPID}" ]; then
-  rm -f "${RPID}"
-fi
-
-# make sure temp, file and log folders are writable
-# TODO should tmp be a volume, because of performance?
-mkdir -p tmp tmp/pdf public/plugin_assets
-chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
-chmod -R 755 files log tmp public/plugin_assets
-
-doguctl state "ready"
-
-# Start redmine
-echo "Starting redmine..."
-exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
