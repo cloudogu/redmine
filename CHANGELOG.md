@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Allow plugin deletion without direct container interaction (#68)
+  - see also [the docs](docs/operations/redmine_plugins_en.md)
+- Add new plugin volume `plugins_prod` for direct plugin interaction (#68)
+- Add Shell unit tests
+
+### Removed
+- Deprecated the volume for plugin provisioning `plugins` (#68)
+  - see also [the docs](docs/operations/redmine_plugins_en.md)
+
+### Changed
+- Update image maintainer address
+- Switch to dogu v2 syntax which allows for fine-grained dependency management
 
 ## [v4.2.2-1] - 2021-10-11
 ### Changed
