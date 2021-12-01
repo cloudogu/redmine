@@ -49,8 +49,8 @@ Die Integrationstests können auf zwei Arten gestartet werden:
 
 ## Integrationstest von der Testbibliothek aktualisieren
 
-Von Zeit zu Zeit ist es notwendig, die Testbibliothek `@cloudogu/dogu-integration-test-library` zu aktualisieren, um
-um Änderungen außerhalb des dogu-Bereichs zu übernehmen, z. B. wenn sich CAS geändert hat.
+Von Zeit zu Zeit ist es notwendig, die Testbibliothek `@cloudogu/dogu-integration-test-library` zu aktualisieren, um 
+Änderungen außerhalb des dogu-Bereichs zu übernehmen, z. B. wenn sich CAS geändert hat.
 
 Aktualisieren Sie die Testbibliothek mit dem folgenden Aufruf und vergessen Sie nicht, alle Änderungen an den Tests zu übernehmen.
 

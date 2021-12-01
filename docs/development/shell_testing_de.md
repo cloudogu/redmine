@@ -10,7 +10,7 @@ Um testbare Shell-Skripte zu schreiben, sollten diese Aspekte beachtet werden:
 
 ## Globale Umgebungsvariable `STARTUP_DIR`
 
-Die globale Umgebungsvariable `STARTUP_DIR` zeigt auf das Verzeichnis, in dem sich die Produktionsskripte (auch bekannt als " script-under-test") befinden. Innerhalb des dogu-Containers ist dies normalerweise `/`. Aber während des Testens ist es einfacher, es aus Gründen der Berechtigung an einen anderen Ort zu legen.
+Die globale Umgebungsvariable `STARTUP_DIR` zeigt auf das Verzeichnis, in dem sich die Produktionsskripte (auch bekannt als "script-under-test") befinden. Innerhalb des dogu-Containers ist dies normalerweise `/`. Aber während des Testens ist es einfacher, es aus Gründen der Berechtigung an einen anderen Ort zu legen.
 
 Ein zweiter Grund ist, dass die Skripte, die getestet werden, andere Skripte aufrufen. Absolute Pfade machen das Testen ziemlich schwer. Sourcen Sie neue Skripte wie folgt, damit die Tests reibungslos ablaufen können:
 
@@ -29,8 +29,8 @@ Es ist eher unüblich, ein _Scripts-under-test_ wie `startup.sh` ganz alleine au
 Die gute Nachricht ist, dass das Testen einzelner Funktionen mit diesen kleinen Teilen möglich ist:
 
 1. Sourcing-Ausführungsgarantien verwenden
-1. Führen Sie Binärdateien und logischen Code nur innerhalb von Funktionen aus
-1. Sourcen mit (dynamischen, aber fixierten) Umgebungsvariablen
+2. Führen Sie Binärdateien und logischen Code nur innerhalb von Funktionen aus
+3. Sourcen mit (dynamischen, aber fixierten) Umgebungsvariablen
 
 ### Execution guards work verwenden
 

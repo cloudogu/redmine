@@ -5,8 +5,8 @@ Redmine can be extended with plugins. The management on the file level is simple
 ## Adding new plugins
 
 New plugins must be located as a directory below Redmine's plugin directory. The paths are
-- in the container `/usr/share/webapps/redmine/plugins`
-- in the Cloudogu EcoSystem `/var/lib/ces/redmine/volumes/plugins`.
+- in the container `/usr/share/webapps/redmine/plugins_prod`
+- in the Cloudogu EcoSystem `/var/lib/ces/redmine/volumes/plugins_prod`.
 
 Example directory view using the CAS plugin:
 
@@ -31,7 +31,7 @@ New plugins will most likely require additional Gem dependencies. Usually, these
 
 In Cloudogu EcoSystem instances without Internet access, this step is therefore **not easily possible**. One possible solution would be to copy the dependencies to the Ruby-Gem cache inside the container using `docker cp` and so on. Currently the cache is located at `/usr/lib/ruby/gems/2.7.0`, but the location may change in further releases. See `docker exec redmine gem environment` for more information.
 
-For plugins included in the dogu, no internet connection is needed, since this was already done in the during image building and Ruby apparently does not complain if the sums are correct.
+For plugins included in the dogu, no internet connection is needed, since this was already done during image building and Ruby apparently does not complain if the sums are correct.
 
 ## Removing plugins
 

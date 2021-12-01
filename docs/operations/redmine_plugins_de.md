@@ -5,8 +5,8 @@ Redmine lässt sich mit Plugins erweitern. Dabei ist die Verwaltung auf Dateiebe
 ## Neue Plugins hinzufügen
 
 Neue Plugins müssen als Verzeichnis unterhalb von Redmines Plugin-Verzeichnis liegen. Die Pfade lauten 
-- im Container `/usr/share/webapps/redmine/plugins`
-- im Cloudogu EcoSystem `/var/lib/ces/redmine/volumes/plugins`
+- im Container `/usr/share/webapps/redmine/plugins_prod`
+- im Cloudogu EcoSystem `/var/lib/ces/redmine/volumes/plugins_prod`
 
 Beispielhafte Verzeichnisansicht anhand des CAS-Plugins:
 
@@ -31,7 +31,7 @@ Neue Plugins benötigen sehr wahrscheinlich weitere Gem-Abhängigkeiten. In der 
 
 In Cloudogu EcoSystem-Instanzen ohne Internetzugang ist daher dieser Schritt **nicht ohne weiteres möglich**. Eine Lösungsmöglichkeit wäre das Kopieren der Abhängigkeiten in den Ruby-Gem-Cache innerhalb des Containers mit `docker cp` udgl. Aktuell liegt der Cache unter `/usr/lib/ruby/gems/2.7.0`, dies kann sich jedoch in weiteren Versionen ändern. `docker exec redmine gem environment` liefert hierzu weitere Informationen.
 
-Für im Dogu mitgelieferte Plugins ist keine Internetverbindung nötig, da dies im während des Imagebaus bereits durchgeführt wurde und Ruby sich offenbar nicht beschwert, wenn die Summen stimmen. Dies ist auch der Grund, warum die Plugins im Image sowohl unter `${WORKDIR}/plugins` als auch unter `${WORKDIR}/defaultPlugins` liegen. 
+Für im Dogu mitgelieferte Plugins ist keine Internetverbindung nötig, da dies während des Imagebaus bereits durchgeführt wurde und Ruby sich offenbar nicht beschwert, wenn die Summen stimmen. Dies ist auch der Grund, warum die Plugins im Image sowohl unter `${WORKDIR}/plugins` als auch unter `${WORKDIR}/defaultPlugins` liegen. 
 
 ## Plugins entfernen
 

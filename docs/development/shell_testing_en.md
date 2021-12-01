@@ -29,8 +29,8 @@ It is rather uncommon to run a _scripts-under-test_ like `startup.sh` all on its
 The good news is that testing single functions is possible with these little parts:
 
 1. Use sourcing execution guards
-1. Run binaries and logic code only inside functions
-1. Source with (dynamic yet fixed-up) environment variables
+2. Run binaries and logic code only inside functions
+3. Source with (dynamic yet fixed-up) environment variables
 
 ### Use sourcing execution guards
 
