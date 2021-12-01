@@ -25,6 +25,14 @@ Example directory view using the CAS plugin:
 
 To add a new plugin, just copy the directory of the new plugin to Redmine's plugin directory. The next time the Dogu restarts, the plugin change will take effect.
 
+### Ruby Gem and an Internet connection
+
+New plugins will most likely require additional Gem dependencies. Usually, these are delivered via https://rubygems.org.
+
+In Cloudogu EcoSystem instances without Internet access, this step is therefore **not easily possible**. One possible solution would be to copy the dependencies to the Ruby-Gem cache inside the container using `docker cp` and so on. Currently the cache is located at `/usr/lib/ruby/gems/2.7.0`, but the location may change in further releases. See `docker exec redmine gem environment` for more information.
+
+For plugins included in the dogu, no internet connection is needed, since this was already done in the during image building and Ruby apparently does not complain if the sums are correct.
+
 ## Removing plugins
 
 

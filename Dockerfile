@@ -102,7 +102,7 @@ RUN set -eux -o pipefail \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
- # install Cloudogu theme
+  # install Cloudogu theme
  && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
  && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
  && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
@@ -126,7 +126,9 @@ RUN set -eux -o pipefail \
  && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
  && find "${WORKDIR}/defaultPlugins/redmine_extended_rest_api" -name 'Gemfile*' -type f -delete \
  && cd ${WORKDIR} \
- # install required and plugin gems
+ # install required and plugin gems \
+ # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
+ && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
  && bundle config set --local without 'development test' \
  && bundle install \

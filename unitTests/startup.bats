@@ -14,14 +14,18 @@ setup() {
   export WORKDIR=/workspace
   rake="$(mock_create)"
   export rake
+  bundle="$(mock_create)"
+  export bundle
   export PATH="${PATH}:${BATS_TMPDIR}"
   ln -s "${rake}" "${BATS_TMPDIR}/rake"
+  ln -s "${bundle}" "${BATS_TMPDIR}/bundle"
 }
 
 teardown() {
   unset STARTUP_DIR
   unset WORKDIR
   rm "${BATS_TMPDIR}/rake"
+  rm "${BATS_TMPDIR}/bundle"
 }
 
 @test "checkDeprecatedPluginDir() should print a warning if directories exist in the deprecated plugin directory" {
@@ -92,6 +96,7 @@ teardown() {
 
 @test "install_plugins() should install 1 plugin and call rake afterwards" {
   mock_set_status "${rake}" 0
+  mock_set_status "${bundle}" 0
 
   source /workspace/resources/startup.sh
 
@@ -113,4 +118,6 @@ teardown() {
   assert_file_exist "${PLUGIN_DIRECTORY}/${pluginName}/${aPluginFileName}"
   assert_equal "$(mock_get_call_num "${rake}")" "1"
   assert_equal "$(mock_get_call_args "${rake}" "1")" "--trace -f /workspace/Rakefile redmine:plugins:migrate"
+  assert_equal "$(mock_get_call_num "${bundle}")" "1"
+  assert_equal "$(mock_get_call_args "${bundle}" "1")" "install"
 }

@@ -71,18 +71,16 @@ function install_plugins(){
 
   checkDeprecatedPluginDir
 
-  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
-  for PLUGIN_PACKAGE in ${PLUGINS}; do
-    install_plugin "${PLUGIN_PACKAGE}"
-  done
+  installBundledPluginsIfNecessary
 
-  # install missing gems only if external plugins are going to install
-  if [ "x${PLUGINS}" != "x" ]; then
-    echo "install missing gems ..."
-    RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install
-    echo "missing gems ... installed"
-  fi
+  # Installing Gems needs either an internet connection for pulling Gem dependencies or
+  # all required Gems in the Gem path.
+  installPluginGems
 
+  runPluginMigration
+}
+
+function runPluginMigration() {
   # run migrations always, because core plugins need also a db migration
   echo "running plugin migrations..."
   exec_rake redmine:plugins:migrate
@@ -107,6 +105,30 @@ function install_plugin(){
 
   echo "install plugin ${NAME}"
   cp -rf "${SOURCE}" "${TARGET}"
+}
+
+function installBundledPluginsIfNecessary() {
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    install_plugin "${PLUGIN_PACKAGE}"
+  done
+}
+
+function installPluginGems() {
+  # Install missing gems if new plugins are going to be installed.
+  # Otherwise bundle will detect that there are no changes and thus no new gems are needed
+  echo "install missing gems ..."
+  
+  rakeExitCode=0
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install || rakeExitCode=$?
+  if [[ ${rakeExitCode} -ne 0 ]]; then
+    echo "ERROR: Rake bund installed returned with an error during the gem installation for new plugins"
+    sleep 300
+    exit 1
+  fi
+  
+  echo "missing gems ... installed"
 }
 
 function checkDeprecatedPluginDir() {
