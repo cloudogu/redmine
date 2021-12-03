@@ -70,7 +70,7 @@ node('vagrant') {
                 ecoSystem.verify("/dogu")
             }
 
-            stage('Integration tests') {[
+            stage('Integration tests') {
                 ecoSystem.runCypressIntegrationTests([
                     enableVideo: params.EnableVideoRecording,
                     cypressImage: "cypress/included:8.6.0",
