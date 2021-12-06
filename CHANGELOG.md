@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Update rest api plugin to v1.1.0
+- Update documentation for default config mechanism
+- Make default config mechanism use new features from rest api plugin v1.1.0
+
 ## [v4.2.2-2] - 2021-12-01
 ### Added
 - Allow plugin deletion without direct container interaction (#68)
