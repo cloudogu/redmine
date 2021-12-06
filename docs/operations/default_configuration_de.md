@@ -3,6 +3,7 @@
 Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die folgende Konfiguration möglich:
 
 * Einstellungen verändern
+* Rollen erstellen oder verändern
 * Workflows erstellen
 * Aufzählungen erstellen
 * Custom-Fields erstellen
@@ -19,10 +20,8 @@ entfernt.
 Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/default_data/archived/<Zeitstempel>`
 gespeichert.
 
-Wurden Ticket-Status, Benutzerdefinierte Felder oder Tracker angelegt, so werden die IDs dieser Felder in dem
-Key `config/redmine/default_data/creation_ids` gespeichert, damit ein Mapping zwischen der ID und dem Namen der
-Felder für das weitere Anlegen von Feldern geschehen kann. Der Key bleibt für weitere Zugriffe erhalten und wird bei
-jedem weiteren Zugriff ergänzt.
+Bei jedem Import werden ID's und Namen von Rollen, Ticket-Status und Tracker von der Datenbank der aktuellen Instanz abgefragt.
+Dies ermöglicht die Verwendung der genannten Objekte bei der Erstellung von beliebigen Feldern.
 
 ## Beispielkonfiguration
 
@@ -42,66 +41,103 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   "settings": {
     "app_title": "Updated Redmine"
   },
+  "roles": [
+    {
+      "name": "User",
+      "permissions": [
+        "add_project",
+        "edit_project",
+        "close_project",
+        "select_project_modules",
+        "manage_members",
+        "manage_versions",
+        "add_subprojects",
+        "manage_public_queries",
+        "save_queries",
+        "view_messages",
+        "add_messages",
+        "view_calendar",
+        "view_documents",
+        "view_files",
+        "manage_files",
+        "view_gantt",
+        "view_issues",
+        "add_issues",
+        "edit_issues",
+        "manage_issue_relations",
+        "add_issue_notes",
+        "view_news",
+        "comment_news",
+        "view_changesets",
+        "browse_repository",
+        "view_time_entries",
+        "log_time",
+        "view_wiki_pages",
+        "view_wiki_edits",
+        "edit_wiki_pages"
+      ]
+    }
+  ],
   "issueStatuses": [
     {
-      "name": "New Status",
+      "name": "New Issue",
       "is_closed": false
     },
     {
-      "name": "In Progress Status",
+      "name": "Issue in Progress",
       "is_closed": false
     },
     {
-      "name": "Review Status",
+      "name": "Issue in Review",
       "is_closed": false
     },
     {
-      "name": "Done Status",
+      "name": "Issue done",
       "is_closed": true
     }
   ],
   "trackers": [
     {
-      "name": "Bug Tracker",
-      "default_status_name": "New Status",
+      "name": "Bug tracker",
+      "default_status_name": "New Issue",
       "description": "It's just a bug."
     },
     {
       "name": "User Story Tracker",
-      "default_status_name": "New Status",
+      "default_status_name": "New Issue",
       "description": "It's just a User Story"
     },
     {
-      "name": "Task Tracker",
-      "default_status_name": "New Status",
+      "name": "Task tracker",
+      "default_status_name": "New Issue",
       "description": "It's just a Task."
     }
   ],
   "customFields": [
     {
       "type": "IssueCustomField",
-      "name": "Story Points",
+      "name": "Story Points Field",
       "field_format": "int",
-      "role_ids": [
-        "1"
+      "role_names": [
+        "User"
       ],
-      "tracker_ids": [
-        "Bug Tracker",
+      "tracker_names": [
+        "Bug tracker",
         "User Story Tracker",
-        "Task Tracker"
+        "Task tracker"
       ]
     },
     {
       "type": "IssueCustomField",
       "name": "Extended description",
       "field_format": "text",
-      "role_ids": [
-        "1"
+      "role_names": [
+        "User"
       ],
-      "tracker_ids": [
-        "Bug Tracker",
+      "tracker_names": [
+        "Bug tracker",
         "User Story Tracker",
-        "Task Tracker"
+        "Task tracker"
       ]
     }
   ],
@@ -120,7 +156,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
     },
     {
       "type": "IssuePriority",
-      "name": "Super Immediate"
+      "name": "Very Immediate"
     },
     {
       "type": "IssuePriority",
@@ -129,57 +165,57 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   ],
   "workflows": [
     {
-      "role_id": [
-        "1",
-        "2"
+      "role_names": [
+        "User",
+        "Anonymous"
       ],
       "tracker_names": [
-        "Bug Tracker",
+        "Bug tracker",
         "User Story Tracker",
-        "Task Tracker"
+        "Task tracker"
       ],
       "transitions": {
-        "New Status": {
-          "In Progress Status": {
+        "New Issue": {
+          "Issue in Progress": {
             "always": "1"
           },
-          "Review Status": {
+          "Issue in Review": {
             "always": "1"
           },
-          "Done Status": {
+          "Issue done": {
             "always": "1"
           }
         },
-        "In Progress Status": {
-          "Review Status": {
+        "Issue in Progress": {
+          "Issue in Review": {
             "always": "1"
           },
-          "Done Status": {
+          "Issue done": {
             "always": "1"
           },
-          "New Status": {
+          "New Issue": {
             "always": "0"
           }
         },
-        "Review Status": {
-          "In Progress Status": {
+        "Issue in Review": {
+          "Issue in Progress": {
             "always": "1"
           },
-          "Done Status": {
+          "Issue done": {
             "always": "1"
           },
-          "New Status": {
+          "New Issue": {
             "always": "0"
           }
         },
-        "Done Status": {
-          "In Progress Status": {
+        "Issue done": {
+          "Issue in Progress": {
             "always": "0"
           },
-          "Done Status": {
+          "Issue done": {
             "always": "0"
           },
-          "New Status": {
+          "New Issue": {
             "always": "0"
           }
         }
@@ -202,6 +238,26 @@ Ein JSON-Objekt im folgenden Format:
   "<name der einstellung 2>": "<wert 2>",
   ......
 }
+```
+
+### Bereich `roles`
+
+Ermöglicht das Anlegen oder Verändern von Rollen.
+
+Ein JSON-Objekt im folgenden Format:
+
+```
+[
+  .....
+  {
+    "name": "<Name der Rolle>",
+    "permissions": [
+      "<Wert>",
+      ...
+    ]
+  },
+  .....
+]
 ```
 
 ### Bereich `issueStatuses`
@@ -305,13 +361,13 @@ Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
 [
   .....
   {
-    "role_id": [
-      "<rollen-id 1>",
-      "<rollen-id 2>"
+    "role_names": [
+      "<rollen-name 1>",
+      "<rollen-name 2>"
     ],
-    "tracker_id": [
-      "<tracker-id 1>",
-      "<tracker-id 2>"
+    "tracker_names": [
+      "<tracker-name 1>",
+      "<tracker-name 2>"
     ],
     "transitions": {
       "<from-issue-status-id>": {
@@ -329,10 +385,4 @@ Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
   .....
 ]
 ```
-
-#### Besonderheit `transitions`
-
-In diesem Bereich werden die Übergänge zwischen Ticket-Status definiert. Dafür kann sowohl die ID eines Ticket-Status
-verwendet werden als auch der Name. Der Name kann aber nur dann verwendet werden, wenn der Ticket-Status zuvor über den
-hier beschriebenen Mechanismus angelegt wurde.
 
