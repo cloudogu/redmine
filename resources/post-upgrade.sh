@@ -55,11 +55,11 @@ function run_postupgrade() {
   echo "Generating configuration.yml from template..."
   render_configuration_yml_template
 
+  echo "Installing plugins..."
+  install_plugins
+
   echo "Migrating database..."
   exec_rake db:migrate
-
-  echo "Migrating plugins..."
-  exec_rake redmine:plugins:migrate
 
   echo "Clearing cache..."
   exec_rake tmp:cache:clear

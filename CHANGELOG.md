@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.2-3] - 2021-12-06
+### Changed
+- Install missing plugin gems in post-upgrade (#71)
+  - moved install_plugins function from startup.sh to util.sh
+
 ## [v4.2.2-2] - 2021-12-01
 ### Added
 - Allow plugin deletion without direct container interaction (#68)
