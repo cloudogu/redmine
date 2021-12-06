@@ -101,7 +101,7 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
   ],
   "trackers": [
     {
-      "name": "Bugtracker",
+      "name": "Bug tracker",
       "default_status_name": "New Issue",
       "description": "It's just a bug."
     },
@@ -111,7 +111,7 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
       "description": "It's just a User Story"
     },
     {
-      "name": "Tasktracker",
+      "name": "Task tracker",
       "default_status_name": "New Issue",
       "description": "It's just a Task."
     }
@@ -125,9 +125,9 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
         "User"
       ],
       "tracker_names": [
-        "Bugtracker",
+        "Bug tracker",
         "User Story Tracker",
-        "Tasktracker"
+        "Task tracker"
       ]
     },
     {
@@ -138,9 +138,9 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
         "User"
       ],
       "tracker_names": [
-        "Bugtracker",
+        "Bug tracker",
         "User Story Tracker",
-        "Tasktracker"
+        "Task tracker"
       ]
     }
   ],
@@ -173,9 +173,9 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
         "Anonymous"
       ],
       "tracker_names": [
-        "Bugtracker",
+        "Bug tracker",
         "User Story Tracker",
-        "Tasktracker"
+        "Task tracker"
       ],
       "transitions": {
         "New Issue": {
