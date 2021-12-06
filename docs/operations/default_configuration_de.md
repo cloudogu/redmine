@@ -3,6 +3,7 @@
 Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die folgende Konfiguration möglich:
 
 * Einstellungen verändern
+* Rollen erstellen oder verändern
 * Workflows erstellen
 * Aufzählungen erstellen
 * Custom-Fields erstellen
@@ -12,17 +13,15 @@ Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die fol
 Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus' ist, dass die REST-API in den Einstellungen
 aktiviert ist.
 
-Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/default_data/new_configuration` gesetzt werden.
-Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
+Zum Anwenden der Konfiguration muss der etcd-Key `config/easyredmine/default_data/new_configuration` gesetzt werden.
+Beim Neustart des EasyRedmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
 entfernt.
 
-Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/default_data/archived/<Zeitstempel>`
+Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/easyredmine/default_data/archived/<Zeitstempel>`
 gespeichert.
 
-Wurden Ticket-Status, Benutzerdefinierte Felder oder Tracker angelegt, so werden die IDs dieser Felder in dem
-Key `config/redmine/default_data/creation_ids` gespeichert, damit ein Mapping zwischen der ID und dem Namen der
-Felder für das weitere Anlegen von Feldern geschehen kann. Der Key bleibt für weitere Zugriffe erhalten und wird bei
-jedem weiteren Zugriff ergänzt.
+Bei jedem Import werden ID's und Namen von Rollen, Ticket-Status und Tracker von der Datenbank der aktuellen Instanz abgefragt.
+Dies ermöglicht die Verwendung der genannten Objekte bei der Erstellung von beliebigen Feldern.
 
 ## Beispielkonfiguration
 
@@ -32,48 +31,85 @@ Die Konfiguration orientiert sich sehr stark an der API des extended_rest_api-Pl
 Für weitere Informationen über die API des `extended_rest_api`-Plugins:
 Mit dem Plugin wird eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des Plugins
 auf [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml) zu finden.
-Alternativ wird diese mit Redmine zusammen ausgeliefert und kann
-unter `https://<fqdn>/redmine/extended_api/v1/spec`
+Alternativ wird diese mit EasyRedmine zusammen ausgeliefert und kann
+unter `https://<fqdn>/easyredmine/extended_api/v1/spec`
 abgerufen werden. Um diese grafisch darzustellen, kann z. B.
 das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
 
 ```json
 {
   "settings": {
-    "app_title": "Updated Redmine"
+    "app_title": "Updated EasyRedmine"
   },
+  "roles": [
+    {
+      "name": "User",
+      "permissions": [
+        "add_project",
+        "edit_project",
+        "close_project",
+        "select_project_modules",
+        "manage_members",
+        "manage_versions",
+        "add_subprojects",
+        "manage_public_queries",
+        "save_queries",
+        "view_messages",
+        "add_messages",
+        "view_calendar",
+        "view_documents",
+        "view_files",
+        "manage_files",
+        "view_gantt",
+        "view_issues",
+        "add_issues",
+        "edit_issues",
+        "manage_issue_relations",
+        "add_issue_notes",
+        "view_news",
+        "comment_news",
+        "view_changesets",
+        "browse_repository",
+        "view_time_entries",
+        "log_time",
+        "view_wiki_pages",
+        "view_wiki_edits",
+        "edit_wiki_pages"
+      ]
+    }
+  ],
   "issueStatuses": [
     {
-      "name": "New Status",
+      "name": "New",
       "is_closed": false
     },
     {
-      "name": "In Progress Status",
+      "name": "In Progress",
       "is_closed": false
     },
     {
-      "name": "Review Status",
+      "name": "Review",
       "is_closed": false
     },
     {
-      "name": "Done Status",
+      "name": "Done",
       "is_closed": true
     }
   ],
   "trackers": [
     {
-      "name": "Bug Tracker",
-      "default_status_name": "New Status",
+      "name": "Bug",
+      "default_status_name": "New",
       "description": "It's just a bug."
     },
     {
-      "name": "User Story Tracker",
-      "default_status_name": "New Status",
+      "name": "User Story",
+      "default_status_name": "New",
       "description": "It's just a User Story"
     },
     {
-      "name": "Task Tracker",
-      "default_status_name": "New Status",
+      "name": "Task",
+      "default_status_name": "New",
       "description": "It's just a Task."
     }
   ],
@@ -82,26 +118,26 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
       "type": "IssueCustomField",
       "name": "Story Points",
       "field_format": "int",
-      "role_ids": [
-        "1"
+      "role_names": [
+        "User"
       ],
-      "tracker_ids": [
-        "Bug Tracker",
-        "User Story Tracker",
-        "Task Tracker"
+      "tracker_names": [
+        "Bug",
+        "User Story",
+        "Task"
       ]
     },
     {
       "type": "IssueCustomField",
       "name": "Extended description",
       "field_format": "text",
-      "role_ids": [
-        "1"
+      "role_names": [
+        "User"
       ],
-      "tracker_ids": [
-        "Bug Tracker",
-        "User Story Tracker",
-        "Task Tracker"
+      "tracker_names": [
+        "Bug",
+        "User Story",
+        "Task"
       ]
     }
   ],
@@ -120,7 +156,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
     },
     {
       "type": "IssuePriority",
-      "name": "Super Immediate"
+      "name": "Immediate"
     },
     {
       "type": "IssuePriority",
@@ -129,57 +165,57 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   ],
   "workflows": [
     {
-      "role_id": [
-        "1",
-        "2"
+      "role_names": [
+        "User",
+        "Anonymous"
       ],
       "tracker_names": [
-        "Bug Tracker",
-        "User Story Tracker",
-        "Task Tracker"
+        "Bug",
+        "User Story",
+        "Task"
       ],
       "transitions": {
-        "New Status": {
-          "In Progress Status": {
+        "New": {
+          "In Progress": {
             "always": "1"
           },
-          "Review Status": {
+          "Review": {
             "always": "1"
           },
-          "Done Status": {
+          "Done": {
             "always": "1"
           }
         },
-        "In Progress Status": {
-          "Review Status": {
+        "In Progress": {
+          "Review": {
             "always": "1"
           },
-          "Done Status": {
+          "Done": {
             "always": "1"
           },
-          "New Status": {
+          "New": {
             "always": "0"
           }
         },
-        "Review Status": {
-          "In Progress Status": {
+        "Review": {
+          "In Progress": {
             "always": "1"
           },
-          "Done Status": {
+          "Done": {
             "always": "1"
           },
-          "New Status": {
+          "New": {
             "always": "0"
           }
         },
-        "Done Status": {
-          "In Progress Status": {
+        "Done": {
+          "In Progress": {
             "always": "0"
           },
-          "Done Status": {
+          "Done": {
             "always": "0"
           },
-          "New Status": {
+          "New": {
             "always": "0"
           }
         }
@@ -202,6 +238,26 @@ Ein JSON-Objekt im folgenden Format:
   "<name der einstellung 2>": "<wert 2>",
   ......
 }
+```
+
+### Bereich `roles`
+
+Ermöglicht das Anlegen oder Verändern von Rollen.
+
+Ein JSON-Objekt im folgenden Format:
+
+```
+[
+  .....
+  {
+    "name": "<Name der Rolle>",
+    "permissions": [
+      "<Wert>",
+      ...
+    ]
+  },
+  .....
+]
 ```
 
 ### Bereich `issueStatuses`
@@ -305,13 +361,13 @@ Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
 [
   .....
   {
-    "role_id": [
-      "<rollen-id 1>",
-      "<rollen-id 2>"
+    "role_names": [
+      "<rollen-name 1>",
+      "<rollen-name 2>"
     ],
-    "tracker_id": [
-      "<tracker-id 1>",
-      "<tracker-id 2>"
+    "tracker_names": [
+      "<tracker-name 1>",
+      "<tracker-name 2>"
     ],
     "transitions": {
       "<from-issue-status-id>": {
@@ -329,10 +385,4 @@ Ein JSON-Array mit allen anzulegenden Workflows in folgendem Format:
   .....
 ]
 ```
-
-#### Besonderheit `transitions`
-
-In diesem Bereich werden die Übergänge zwischen Ticket-Status definiert. Dafür kann sowohl die ID eines Ticket-Status
-verwendet werden als auch der Name. Der Name kann aber nur dann verwendet werden, wenn der Ticket-Status zuvor über den
-hier beschriebenen Mechanismus angelegt wurde.
 
