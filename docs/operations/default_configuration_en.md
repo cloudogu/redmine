@@ -367,7 +367,7 @@ A JSON array with all workflows to be created in the following format:
   .....
   {
     { "role_names": [
-      "<role_name 1>",
+      "<role-name 1>",
       "<role-name 2>"
     ],
     "tracker_names": [
