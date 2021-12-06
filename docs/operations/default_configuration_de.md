@@ -13,11 +13,11 @@ Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die fol
 Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus' ist, dass die REST-API in den Einstellungen
 aktiviert ist.
 
-Zum Anwenden der Konfiguration muss der etcd-Key `config/easyredmine/default_data/new_configuration` gesetzt werden.
+Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/default_data/new_configuration` gesetzt werden.
 Beim Neustart des EasyRedmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
 entfernt.
 
-Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/easyredmine/default_data/archived/<Zeitstempel>`
+Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/default_data/archived/<Zeitstempel>`
 gespeichert.
 
 Bei jedem Import werden ID's und Namen von Rollen, Ticket-Status und Tracker von der Datenbank der aktuellen Instanz abgefragt.
@@ -32,7 +32,7 @@ Für weitere Informationen über die API des `extended_rest_api`-Plugins:
 Mit dem Plugin wird eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des Plugins
 auf [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml) zu finden.
 Alternativ wird diese mit EasyRedmine zusammen ausgeliefert und kann
-unter `https://<fqdn>/easyredmine/extended_api/v1/spec`
+unter `https://<fqdn>/redmine/extended_api/v1/spec`
 abgerufen werden. Um diese grafisch darzustellen, kann z. B.
 das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
 

@@ -12,10 +12,10 @@ It is possible to deploy configuration via the etcd. This is possible for the fo
 
 Note: For this mechanism to work, the REST API must be enabled in the settings.
 
-To apply the configuration, the etcd key `config/easyredmine/default_data/new_configuration` must be set. At
+To apply the configuration, the etcd key `config/redmine/default_data/new_configuration` must be set. At
 restart of the EasyRedmine-Dogu, the defined configuration will be applied and afterwards this key will be removed.
 
-The last applied configuration is stored in the etcd key `config/easyredmine/default_data/archived/<timestamp>`.
+The last applied configuration is stored in the etcd key `config/redmine/default_data/archived/<timestamp>`.
 
 During each import, IDs and names of roles, ticket statuses and trackers are queried from the database of the current instance.
 This enables the use of the mentioned objects when creating any fields.
@@ -34,7 +34,7 @@ For more information about the API of the `extended_rest_api` plugin:
 An Openapi 3.0 definition for the API is shipped with the plugin. This can be found on the plugin's page
 on [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml).
 Alternatively, it is shipped with EasyRedmine and can be found at
-at `https://<fqdn>/easyredmine/extended_api/v1/spec`.
+at `https://<fqdn>/redmine/extended_api/v1/spec`.
 can be retrieved. To display them graphically, you can use e.g.
 the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
 
