@@ -179,10 +179,11 @@ function runMain() {
     doguctl config "${SETUP_DONE_KEY}" "true"
   fi
 
-  trigger_imports || true
 
   # install manual installed plugins
   install_plugins
+
+  trigger_imports || true
 
   # Create links
   if [ ! -e "${WORKDIR}"/public/redmine ]; then
