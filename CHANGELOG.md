@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.2-4] - 2021-12-06
 ### Changed
 - Update rest api plugin to v1.1.0
 - Update documentation for default config mechanism
