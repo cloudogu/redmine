@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - moved install_plugins function from startup.sh to util.sh
 
 ## [v4.2.2-2] - 2021-12-01
+
+If you have installed additional plugins to Redmine, please skip this version and upgrade to v4.2.2-3 instead!
+
 ### Added
 - Allow plugin deletion without direct container interaction (#68)
   - see also [the docs](docs/operations/redmine_plugins_en.md)
