@@ -80,7 +80,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   ],
   "issueStatuses": [
     {
-      "name": "New issue",
+      "name": "New Issue",
       "is_closed": false
     },
     {
@@ -92,24 +92,24 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
       "is_closed": false
     },
     {
-      "name": "Issue Done",
+      "name": "Issue done",
       "is_closed": true
     }
   ],
   "trackers": [
     {
       "name": "Bugtracker",
-      "default_status_name": "New",
+      "default_status_name": "New Issue",
       "description": "It's just a bug."
     },
     {
-      "name": "User Story tracker",
-      "default_status_name": "New",
+      "name": "User Story Tracker",
+      "default_status_name": "New Issue",
       "description": "It's just a User Story"
     },
     {
       "name": "Tasktracker",
-      "default_status_name": "New",
+      "default_status_name": "New Issue",
       "description": "It's just a Task."
     }
   ],
@@ -122,22 +122,22 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
         "User"
       ],
       "tracker_names": [
-        "Bug",
-        "User Story",
-        "Task"
+        "Bugtracker",
+        "User Story Tracker",
+        "Tasktracker"
       ]
     },
     {
       "type": "IssueCustomField",
-      "name": "Extended description field",
+      "name": "Extended description",
       "field_format": "text",
       "role_names": [
         "User"
       ],
       "tracker_names": [
-        "Bug",
-        "User Story",
-        "Task"
+        "Bugtracker",
+        "User Story Tracker",
+        "Tasktracker"
       ]
     }
   ],
@@ -170,52 +170,52 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
         "Anonymous"
       ],
       "tracker_names": [
-        "Bug",
-        "User Story",
-        "Task"
+        "Bugtracker",
+        "User Story Tracker",
+        "Tasktracker"
       ],
       "transitions": {
-        "New": {
-          "In Progress": {
+        "New Issue": {
+          "Issue in Progress": {
             "always": "1"
           },
-          "Review": {
+          "Issue in Review": {
             "always": "1"
           },
-          "Done": {
+          "Issue done": {
             "always": "1"
           }
         },
-        "In Progress": {
-          "Review": {
+        "Issue in Progress": {
+          "Issue in Review": {
             "always": "1"
           },
-          "Done": {
+          "Issue done": {
             "always": "1"
           },
-          "New": {
+          "New Issue": {
             "always": "0"
           }
         },
-        "Review": {
-          "In Progress": {
+        "Issue in Review": {
+          "Issue in Progress": {
             "always": "1"
           },
-          "Done": {
+          "Issue done": {
             "always": "1"
           },
-          "New": {
+          "New Issue": {
             "always": "0"
           }
         },
-        "Done": {
-          "In Progress": {
+        "Issue done": {
+          "Issue in Progress": {
             "always": "0"
           },
-          "Done": {
+          "Issue done": {
             "always": "0"
           },
-          "New": {
+          "New Issue": {
             "always": "0"
           }
         }
