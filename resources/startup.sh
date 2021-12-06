@@ -16,11 +16,7 @@ echo "                    V/////(////////\. '°°°' ./////////(///(/'   "
 echo "                       'V/(/////////////////////////////V'      "
 
 SETUP_DONE_KEY="startup/setup_done"
-# DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
-# them from the plugin directory
-DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
-DEPRECATED_PLUGIN_STORE="/var/tmp/redmine/plugins"
-PLUGIN_DIRECTORY="${WORKDIR}/plugins"
+
 
 # import util functions:
 # - create_secrets_yml
@@ -64,77 +60,6 @@ function setDoguLogLevel() {
     ;;
   esac
   doguctl template /usr/share/webapps/redmine/config/additional_environment.rb.tpl /usr/share/webapps/redmine/config/additional_environment.rb
-}
-
-function install_plugins(){
-  echo "installing plugins..."
-
-  checkDeprecatedPluginDir
-
-  installBundledPluginsIfNecessary
-
-  # Installing Gems needs either an internet connection for pulling Gem dependencies or
-  # all required Gems in the Gem path.
-  installPluginGems
-
-  runPluginMigration
-}
-
-function runPluginMigration() {
-  # run migrations always, because core plugins need also a db migration
-  echo "running plugin migrations..."
-  exec_rake redmine:plugins:migrate
-  echo "plugin migrations... done"
-}
-
-# installs or upgrades the given plugin
-function install_plugin(){
-  NAME="${1}"
-  SOURCE="${DEFAULT_PLUGIN_DIRECTORY}/${NAME}"
-  TARGET="${PLUGIN_DIRECTORY}/${NAME}"
-
-  if [ ! -d "${SOURCE}" ]; then
-    echo "ERROR: ${SOURCE} is not a directory. Skipping this plugin..."
-    return
-  fi
-
-  if [ -d "${TARGET}" ]; then
-    echo "Plugin ${NAME} already exists. Skip restoring the plugin..."
-    return
-  fi
-
-  echo "install plugin ${NAME}"
-  cp -rf "${SOURCE}" "${TARGET}"
-}
-
-function installBundledPluginsIfNecessary() {
-  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
-
-  for PLUGIN_PACKAGE in ${PLUGINS}; do
-    install_plugin "${PLUGIN_PACKAGE}"
-  done
-}
-
-function installPluginGems() {
-  # Install missing gems if new plugins are going to be installed.
-  # Otherwise bundle will detect that there are no changes and thus no new gems are needed
-  echo "install missing gems ..."
-  
-  rakeExitCode=0
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install || rakeExitCode=$?
-  if [[ ${rakeExitCode} -ne 0 ]]; then
-    echo "ERROR: Rake bund installed returned with an error during the gem installation for new plugins"
-    sleep 300
-    exit 1
-  fi
-  
-  echo "missing gems ... installed"
-}
-
-function checkDeprecatedPluginDir() {
-  if [[ -n "$(ls -A "${DEPRECATED_PLUGIN_STORE}")" ]]; then
-     echo "WARNING: Found plugins in the deprecated plugin directory ${DEPRECATED_PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
-  fi
 }
 
 function runMain() {
