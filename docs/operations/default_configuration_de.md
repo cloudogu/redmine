@@ -14,7 +14,7 @@ Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus' ist, das
 aktiviert ist.
 
 Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/default_data/new_configuration` gesetzt werden.
-Beim Neustart des EasyRedmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
+Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
 entfernt.
 
 Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/default_data/archived/<Zeitstempel>`
@@ -31,7 +31,7 @@ Die Konfiguration orientiert sich sehr stark an der API des extended_rest_api-Pl
 Für weitere Informationen über die API des `extended_rest_api`-Plugins:
 Mit dem Plugin wird eine Openapi 3.0 Definition für die API ausgeliefert. Diese ist auf der Seite des Plugins
 auf [Github](https://github.com/cloudogu/redmine_extended_rest_api/blob/main/src/assets/openapi.yml) zu finden.
-Alternativ wird diese mit EasyRedmine zusammen ausgeliefert und kann
+Alternativ wird diese mit Redmine zusammen ausgeliefert und kann
 unter `https://<fqdn>/redmine/extended_api/v1/spec`
 abgerufen werden. Um diese grafisch darzustellen, kann z. B.
 das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
