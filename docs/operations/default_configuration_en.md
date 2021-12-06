@@ -42,7 +42,7 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
 ```json
 {
   "settings": {
-    "app_title": "Updated EasyRedmine"
+    "app_title": "Updated Redmine"
   },
   "roles": [
     {
@@ -83,35 +83,35 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
   ],
   "issueStatuses": [
     {
-      "name": "New",
+      "name": "New issue",
       "is_closed": false
     },
     {
-      "name": "In Progress",
+      "name": "Issue in Progress",
       "is_closed": false
     },
     {
-      "name": "Review",
+      "name": "Issue in Review",
       "is_closed": false
     },
     {
-      "name": "Done",
+      "name": "Issue Done",
       "is_closed": true
     }
   ],
   "trackers": [
     {
-      "name": "Bug",
+      "name": "Bugtracker",
       "default_status_name": "New",
       "description": "It's just a bug."
     },
     {
-      "name": "User Story",
+      "name": "User Story tracker",
       "default_status_name": "New",
       "description": "It's just a User Story"
     },
     {
-      "name": "Task",
+      "name": "Tasktracker",
       "default_status_name": "New",
       "description": "It's just a Task."
     }
@@ -119,7 +119,7 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
   "customFields": [
     {
       "type": "IssueCustomField",
-      "name": "Story Points",
+      "name": "Story Points Field",
       "field_format": "int",
       "role_names": [
         "User"
@@ -132,7 +132,7 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
     },
     {
       "type": "IssueCustomField",
-      "name": "Extended description",
+      "name": "Extended description field",
       "field_format": "text",
       "role_names": [
         "User"
@@ -159,7 +159,7 @@ the [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) can be used.
     },
     {
       "type": "IssuePriority",
-      "name": "Immediate"
+      "name": "Very Immediate"
     },
     {
       "type": "IssuePriority",

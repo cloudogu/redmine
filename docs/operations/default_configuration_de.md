@@ -39,7 +39,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
 ```json
 {
   "settings": {
-    "app_title": "Updated EasyRedmine"
+    "app_title": "Updated Redmine"
   },
   "roles": [
     {
@@ -80,35 +80,35 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   ],
   "issueStatuses": [
     {
-      "name": "New",
+      "name": "New issue",
       "is_closed": false
     },
     {
-      "name": "In Progress",
+      "name": "Issue in Progress",
       "is_closed": false
     },
     {
-      "name": "Review",
+      "name": "Issue in Review",
       "is_closed": false
     },
     {
-      "name": "Done",
+      "name": "Issue Done",
       "is_closed": true
     }
   ],
   "trackers": [
     {
-      "name": "Bug",
+      "name": "Bugtracker",
       "default_status_name": "New",
       "description": "It's just a bug."
     },
     {
-      "name": "User Story",
+      "name": "User Story tracker",
       "default_status_name": "New",
       "description": "It's just a User Story"
     },
     {
-      "name": "Task",
+      "name": "Tasktracker",
       "default_status_name": "New",
       "description": "It's just a Task."
     }
@@ -116,7 +116,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
   "customFields": [
     {
       "type": "IssueCustomField",
-      "name": "Story Points",
+      "name": "Story Points Field",
       "field_format": "int",
       "role_names": [
         "User"
@@ -129,7 +129,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
     },
     {
       "type": "IssueCustomField",
-      "name": "Extended description",
+      "name": "Extended description field",
       "field_format": "text",
       "role_names": [
         "User"
@@ -156,7 +156,7 @@ das [Swagger UI - Dogu](https://github.com/cloudogu/swaggerui) genutzt werden.
     },
     {
       "type": "IssuePriority",
-      "name": "Immediate"
+      "name": "Very Immediate"
     },
     {
       "type": "IssuePriority",
