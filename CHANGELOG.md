@@ -12,6 +12,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade dogu-integration-test-library to v2.0.0
 - Upgrade cypress to v8.7.0
 
+## [v4.2.2-4] - 2021-12-06
+### Changed
+- Update rest api plugin to v1.1.0
+- Update documentation for default config mechanism
+- Make default config mechanism use new features from rest api plugin v1.1.0
+
+## [v4.2.2-3] - 2021-12-06
+### Changed
+- Install missing plugin gems in post-upgrade (#71)
+  - moved install_plugins function from startup.sh to util.sh
+
+## [v4.2.2-2] - 2021-12-01
+
+If you have installed additional plugins to Redmine, please skip this version and upgrade to v4.2.2-3 instead!
+
+### Added
+- Allow plugin deletion without direct container interaction (#68)
+  - see also [the docs](docs/operations/redmine_plugins_en.md)
+- Add new plugin volume `plugins_prod` for direct plugin interaction (#68)
+- Add Shell unit tests
+
+### Removed
+- Deprecated the volume for plugin provisioning `plugins` (#68)
+  - see also [the docs](docs/operations/redmine_plugins_en.md)
+
+### Changed
+- Update image maintainer address
+- Switch to dogu v2 syntax which allows for fine-grained dependency management
+
 ## [v4.2.2-1] - 2021-10-11
 ### Changed
 - Upgrade Redmine to 4.2.2; #66

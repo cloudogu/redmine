@@ -3,12 +3,93 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck disable=SC1090
 # shellcheck disable=SC1091
-source /default-config.sh
+source "${STARTUP_DIR}"/default-config.sh
 
 echo "setting redmine environment variables..."
 RAILS_ENV=production
 REDMINE_LANG=en
+DATABASE_USER=
+DATABASE_USER_PASSWORD=
+DATABASE_DB=
+
+# DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
+# them from the plugin directory
+DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
+DEPRECATED_PLUGIN_STORE="/var/tmp/redmine/plugins"
+PLUGIN_DIRECTORY="${WORKDIR}/plugins"
+
+function install_plugins(){
+  echo "installing plugins..."
+
+  checkDeprecatedPluginDir
+
+  installBundledPluginsIfNecessary
+
+  # Installing Gems needs either an internet connection for pulling Gem dependencies or
+  # all required Gems in the Gem path.
+  installPluginGems
+
+  runPluginMigration
+}
+
+function runPluginMigration() {
+  # run migrations always, because core plugins need also a db migration
+  echo "running plugin migrations..."
+  exec_rake redmine:plugins:migrate
+  echo "plugin migrations... done"
+}
+
+function installPluginGems() {
+  # Install missing gems if new plugins are going to be installed.
+  # Otherwise bundle will detect that there are no changes and thus no new gems are needed
+  echo "install missing gems ..."
+
+  rakeExitCode=0
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install || rakeExitCode=$?
+  if [[ ${rakeExitCode} -ne 0 ]]; then
+    echo "ERROR: Rake bund installed returned with an error during the gem installation for new plugins"
+    sleep 300
+    exit 1
+  fi
+
+  echo "missing gems ... installed"
+}
+
+# installs or upgrades the given plugin
+function install_plugin(){
+  NAME="${1}"
+  SOURCE="${DEFAULT_PLUGIN_DIRECTORY}/${NAME}"
+  TARGET="${PLUGIN_DIRECTORY}/${NAME}"
+
+  if [ ! -d "${SOURCE}" ]; then
+    echo "ERROR: ${SOURCE} is not a directory. Skipping this plugin..."
+    return
+  fi
+
+  if [ -d "${TARGET}" ]; then
+    echo "Plugin ${NAME} already exists. Skip restoring the plugin..."
+    return
+  fi
+
+  echo "install plugin ${NAME}"
+  cp -rf "${SOURCE}" "${TARGET}"
+}
+
+function checkDeprecatedPluginDir() {
+  if [[ -n "$(ls -A "${DEPRECATED_PLUGIN_STORE}")" ]]; then
+     echo "WARNING: Found plugins in the deprecated plugin directory ${DEPRECATED_PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
+  fi
+}
+
+function installBundledPluginsIfNecessary() {
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    install_plugin "${PLUGIN_PACKAGE}"
+  done
+}
 
 function exec_rake() {
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
@@ -42,11 +123,6 @@ function render_database_yml_template() {
 function render_configuration_yml_template() {
     doguctl template "${WORKDIR}/config/configuration.yml.tpl" "${WORKDIR}/config/configuration.yml"
 }
-
-echo "get data for database connection"
-DATABASE_USER=$(doguctl config -e sa-postgresql/username)
-DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
-DATABASE_DB=$(doguctl config -e sa-postgresql/database)
 
 function sql(){
   PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
@@ -145,3 +221,15 @@ function wait_for_redmine_to_get_healthy() {
     echo "Redmine endpoint is available"
   fi
 }
+
+function runUtil() {
+  echo "get data for database connection"
+  DATABASE_USER=$(doguctl config -e sa-postgresql/username)
+  DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
+  DATABASE_DB=$(doguctl config -e sa-postgresql/database)
+}
+
+# make the script only run when executed, not when sourced from bats tests)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  runUtil
+fi

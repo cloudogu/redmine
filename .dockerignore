@@ -1,0 +1,6 @@
+# Deny all
+*/**
+
+# Send only specific files to the Docker build context
+!resources/**
+!spec/**

@@ -7,8 +7,7 @@ CURRENT_TIMESTAMP="$(date "+%Y%m%d-%H%M%S")"
 DEFAULT_DATA_PREFIX="default_data"
 DEFAULT_DATA_KEY="${DEFAULT_DATA_PREFIX}/new_configuration"
 DEFAULT_DATA_KEY_ARCHIVED="${DEFAULT_DATA_PREFIX}/archived/${CURRENT_TIMESTAMP}"
-DEFAULT_DATA_KEY_IDS="${DEFAULT_DATA_PREFIX}/creation_ids"
-API_RESPONSE_IDS='{}'
+API_RESPONSE_IDS="{}"
 
 # Calls the the api provided by the extended_rest_api plugin.
 # ${1} The api to call (settings, workflows, issue_statuses, custom_fields, trackers)
@@ -83,23 +82,30 @@ function safe_extended_api_call() {
     echo "${RESPONSE}"
   else
     if [ "${SAVE_ATTRIBUTE}" != "${none}" ] && [ "${WITH_IDENTIFIER}" != "${none}" ]; then
+      if [ "${METHOD}" == "GET" ]
+      then
+        while read -r ELEMENT
+        do
+          ATTRIBUTE_TO_SAVE="$(echo "${ELEMENT}" | jq "${SAVE_ATTRIBUTE}")"
+          IDENTIFIER="$(echo "${ELEMENT}" | jq "${WITH_IDENTIFIER}")"
+          JQ=".${API}.${IDENTIFIER}=${ATTRIBUTE_TO_SAVE}"
+          API_RESPONSE_IDS="$(echo "${API_RESPONSE_IDS}" | jq "${JQ}")"
+        done < <(echo "${RESPONSE}" | jq -c -r .body[])
+      else
       ATTRIBUTE_TO_SAVE="$(echo "${RESPONSE}" | jq "${SAVE_ATTRIBUTE}")"
       IDENTIFIER="$(echo "${RESPONSE}" | jq "${WITH_IDENTIFIER}")"
       JQ=".${API}.${IDENTIFIER}=${ATTRIBUTE_TO_SAVE}"
       API_RESPONSE_IDS="$(echo "${API_RESPONSE_IDS}" | jq "${JQ}")"
+      fi
     fi
     echo "Call to '${API}' successful with content: '${PAYLOAD}'"
   fi
 }
 
-# Saves the variable $API_RESPONSE_IDS in etcd key $DEFAULT_DATA_KEY_IDS
-function save_creation_ids(){
-  doguctl config "${DEFAULT_DATA_KEY_IDS}" "${API_RESPONSE_IDS}"
-}
-
-# Loads the variable $API_RESPONSE_IDS from etcd key $DEFAULT_DATA_KEY_IDS
-function load_creation_ids(){
-  API_RESPONSE_IDS="$(doguctl config --default "{}" "${DEFAULT_DATA_KEY_IDS}")"
+function fetch_remote_creation_ids() {
+  safe_extended_api_call "issue_statuses" "GET" "" "" ".id" ".name"
+  safe_extended_api_call "trackers" "GET" "" "" ".id" ".name"
+  safe_extended_api_call "roles" "GET" "" "" ".id" ".name"
 }
 
 # Adds settings by using the extended_rest_api plugin. The settings must be provided in arg ${1} as json-array.
@@ -114,6 +120,31 @@ function add_settings(){
   echo "Apply configured settings..."
   echo "Found settings data: ${SETTINGS_JSON}"
   safe_extended_api_call "settings" "PUT" "${SETTINGS_JSON}" "204"
+}
+
+# Adds roles by using the extended_rest_api plugin. The roles must be provided in arg ${1} as json-array.
+function add_roles() {
+  local ROLES_JSON="${1}"
+  if [ -z "${ROLES_JSON}" ] || [ "${ROLES_JSON}" = "null" ];
+  then
+    echo "No roles provided...";
+    return;
+  fi
+
+  echo "Apply configured roles..."
+  echo "Found roles data: ${ROLES_JSON}"
+  while read -r ROLE
+  do
+    ROLE_NAME="$(echo "${ROLE}" | jq ".name")"
+    REAL_ID="$(echo "${API_RESPONSE_IDS}" | jq ".roles.${ROLE_NAME}")"
+    if [ -z "${REAL_ID}" ] || [ "${REAL_ID}" = "null" ];
+    then
+      safe_extended_api_call "roles" "POST" "${ROLE}" "201" ".body.id" ".body.name"
+    elif [[ -n "${REAL_ID}" ]]; then
+      ROLE="$(echo "${ROLE}" | jq ".id=${REAL_ID}")"
+      safe_extended_api_call "roles" "PATCH" "${ROLE}" "200" ".body.id" ".body.name"
+    fi
+  done < <(echo "${ROLES_JSON}" | jq -c -r .[])
 }
 
 # Adds trackers by using the extended_rest_api plugin. The trackers must be provided in arg ${1} as json-array.
@@ -187,16 +218,26 @@ function add_custom_fields(){
 # Replaces names in a custom-field-json-object with the ids. Prints out the modified custom-field-json-object
 function prepare_custom_field(){
   CUSTOM_FIELD="${1}"
-  RESULT="$(echo "${CUSTOM_FIELD}" | jq "del( .tracker_ids )")"
-  TRACKER_IDS="$(echo "${CUSTOM_FIELD}" | jq ".tracker_ids")"
+  RESULT="$(echo "${CUSTOM_FIELD}" | jq "del( .tracker_names )" | jq "del( .role_names )")"
+  TRACKER_NAMES="$(echo "${CUSTOM_FIELD}" | jq ".tracker_names")"
+  ROLE_NAMES="$(echo "${CUSTOM_FIELD}" | jq ".role_names")"
 
-  if [ "${TRACKER_IDS}" != "null" ]; then
-  while read -r TRACKER_ID_OR_NAME
+  if [ "${TRACKER_NAMES}" != "null" ]; then
+  while read -r TRACKER_NAME
   do
-    REAL_ID="\"$(jq_get_or_default "${API_RESPONSE_IDS}" ".trackers.${TRACKER_ID_OR_NAME}" "${TRACKER_ID_OR_NAME}")\""
+    REAL_ID="\"$(jq_get_or_default "${API_RESPONSE_IDS}" ".trackers.${TRACKER_NAME}" "${TRACKER_NAME}")\""
     TRANSFORMED="$(echo "${RESULT}" | jq ".tracker_ids += [ ${REAL_ID} ]")"
     RESULT="${TRANSFORMED}"
-  done < <(echo "${TRACKER_IDS}" | jq ".[]")
+  done < <(echo "${TRACKER_NAMES}" | jq ".[]")
+  fi
+
+  if [ "${ROLE_NAMES}" != "null" ]; then
+  while read -r ROLE_NAME
+  do
+    REAL_ID="\"$(jq_get_or_default "${API_RESPONSE_IDS}" ".roles.${ROLE_NAME}" "${ROLE_NAME}")\""
+    TRANSFORMED="$(echo "${RESULT}" | jq ".role_ids += [ ${REAL_ID} ]")"
+    RESULT="${TRANSFORMED}"
+  done < <(echo "${ROLE_NAMES}" | jq ".[]")
   fi
 
   echo "${RESULT}"
@@ -223,9 +264,10 @@ function add_workflows(){
 # Replaces names in a workflows-json-object with the ids. Prints out the modified workflows-json-object
 function prepare_workflow() {
   WORKFLOW="${1}"
-  RESULT="$(echo "${WORKFLOW}" | jq "del( .transitions )" | jq "del( .tracker_names )")"
+  RESULT="$(echo "${WORKFLOW}" | jq "del( .transitions )" | jq "del( .tracker_names )" | jq "del( .role_names )")"
   TRANSITIONS="$(echo "${WORKFLOW}" | jq ".transitions")"
   TRACKER_NAMES="$(echo "${WORKFLOW}" | jq ".tracker_names")"
+  ROLE_NAMES="$(echo "${WORKFLOW}" | jq ".role_names")"
 
   if [ "${TRANSITIONS}" != "null" ]; then
     while read -r TRANSITION_OLD_KEY
@@ -249,6 +291,15 @@ function prepare_workflow() {
       TRANSFORMED="$(echo "${RESULT}" | jq ".tracker_id += [ ${REAL_ID} ]")"
       RESULT="${TRANSFORMED}"
     done < <(echo "${TRACKER_NAMES}" | jq -c ".[]")
+  fi
+
+  if [ "${ROLE_NAMES}" != "null" ]; then
+    while read -r ROLE_NAME
+    do
+      REAL_ID="\"$(jq_get_or_default "${API_RESPONSE_IDS}" ".roles.${ROLE_NAME}" "${ROLE_NAME}")\""
+      TRANSFORMED="$(echo "${RESULT}" | jq ".role_id += [ ${REAL_ID} ]")"
+      RESULT="${TRANSFORMED}"
+    done < <(echo "${ROLE_NAMES}" | jq -c ".[]")
   fi
 
   echo "${RESULT}"
@@ -292,7 +343,7 @@ function prepare_enumeration(){
 # Applies the default configuration which must be provided in arg ${1} as json.
 function apply_default_data(){
   local DEFAULT_CONFIG="${1}"
-  load_creation_ids
+  fetch_remote_creation_ids
 
   echo "Validating default data configuration..."
   # Check if it is possible to parse json
@@ -307,42 +358,41 @@ function apply_default_data(){
   echo "Reading settings default data..."
   SETTINGS="$(echo "${DEFAULT_CONFIG}" | jq -c ".settings")"
   add_settings "${SETTINGS//\'/}"
-  save_creation_ids
+
+  echo "============================================================================"
+  echo "Reading roles default data..."
+  ROLES="$(echo "${DEFAULT_CONFIG}" | jq -c ".roles")"
+  add_roles "${ROLES//\'/}"
 
   echo "============================================================================"
 
   echo "Reading issue statuses default data..."
   ISSUE_STATUSES="$(echo "${DEFAULT_CONFIG}" | jq -c ".issueStatuses")"
   add_issue_statuses "${ISSUE_STATUSES//\'/}"
-  save_creation_ids
 
   echo "============================================================================"
 
   echo "Reading trackers default data..."
   TRACKERS="$(echo "${DEFAULT_CONFIG}" | jq -c ".trackers")"
   add_trackers "${TRACKERS//\'/}"
-  save_creation_ids
 
   echo "============================================================================"
 
   echo "Reading custom fields default data..."
   CUSTOM_FIELDS="$(echo "${DEFAULT_CONFIG}" | jq -c ".customFields")"
   add_custom_fields "${CUSTOM_FIELDS//\'/}"
-  save_creation_ids
 
   echo "============================================================================"
 
   echo "Reading enumerations default data..."
   ENUMERATIONS="$(echo "${DEFAULT_CONFIG}" | jq -c ".enumerations")"
   add_enumerations "${ENUMERATIONS//\'/}"
-  save_creation_ids
 
   echo "============================================================================"
 
   echo "Reading workflows default data..."
   WORKFLOWS="$(echo "${DEFAULT_CONFIG}" | jq -c ".workflows")"
   add_workflows "${WORKFLOWS//\'/}"
-  save_creation_ids
 
   echo "============================================================================"
 }
