@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Upgrade to Redmine 4.2.3; #69
+- Upgrade dogu.json to v2 format
+- Upgrade to dogu-build-lib v1.5.1
+- Upgrade dogu-integration-test-library to v2.0.0
+- Upgrade cypress to v8.7.0
 
 ## [v4.2.2-4] - 2021-12-06
 ### Changed
