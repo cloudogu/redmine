@@ -2,13 +2,13 @@
 FROM registry.cloudogu.com/official/base:3.14.2-2
 
 LABEL NAME="official/redmine" \
-   VERSION="4.2.2-4" \
+   VERSION="4.2.3-1" \
    maintainer="hello@cloudogu.com"
 
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
 
 # set environment variables
-ENV REDMINE_VERSION=4.2.2 \
+ENV REDMINE_VERSION=4.2.3 \
     CAS_PLUGIN_VERSION=1.4.6 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
@@ -18,7 +18,7 @@ ENV REDMINE_VERSION=4.2.2 \
     WORKDIR=/usr/share/webapps/redmine \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
-    REDMINE_TARGZ_SHA256=e6fbe9279939a95953d377ef76f180f204a1f3da5229a1d56055d658de7198f6 \
+    REDMINE_TARGZ_SHA256=72f633dc954217948558889ca85325fe6410cd18a2d8b39358e5d75932a47a0c \
     CAS_PLUGIN_TARGZ_SHA256=5375f9ad0de9dc0d3be874ff7b0c9292878df71f9f18496aa34e9053dc4ed29d \
     EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \

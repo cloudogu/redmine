@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-1] - 2021-12-13
+### Changed
+- Upgrade to Redmine 4.2.3; #69
+- Upgrade to dogu-build-lib v1.5.1
+- Upgrade dogu-integration-test-library to v2.0.0
+- Upgrade cypress to v8.7.0
+
 ## [v4.2.2-4] - 2021-12-06
 ### Changed
 - Update rest api plugin to v1.1.0
@@ -33,7 +40,7 @@ If you have installed additional plugins to Redmine, please skip this version an
 
 ### Changed
 - Update image maintainer address
-- Switch to dogu v2 syntax which allows for fine-grained dependency management
+- Switch to dogu.json v2 syntax which allows for fine-grained dependency management
 
 ## [v4.2.2-1] - 2021-10-11
 ### Changed
