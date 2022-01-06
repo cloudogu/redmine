@@ -55,7 +55,6 @@ function run_postupgrade() {
   echo "Generating configuration.yml from template..."
   render_configuration_yml_template
 
-  echo "Installing plugins..."
   install_plugins
 
   echo "Migrating database..."
