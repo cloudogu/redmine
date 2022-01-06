@@ -25,7 +25,7 @@ function install_plugins(){
 
   checkDeprecatedPluginDir
 
-  installBundledPluginsIfNecessary
+  forceInstallBundledPlugins
 
   # Installing Gems needs either an internet connection for pulling Gem dependencies or
   # all required Gems in the Gem path.
@@ -68,12 +68,10 @@ function install_plugin(){
     return
   fi
 
-  if [ -d "${TARGET}" ]; then
-    echo "Plugin ${NAME} already exists. Skip restoring the plugin..."
-    return
-  fi
+  echo "deinstall bundled plugin ${NAME}"
+  rm -rf "${TARGET}"
 
-  echo "install plugin ${NAME}"
+  echo "install bundled plugin ${NAME}"
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
@@ -83,7 +81,7 @@ function checkDeprecatedPluginDir() {
   fi
 }
 
-function installBundledPluginsIfNecessary() {
+function forceInstallBundledPlugins() {
   PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
 
   for PLUGIN_PACKAGE in ${PLUGINS}; do
