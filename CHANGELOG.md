@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix defect which prevents updating bundled Redmine plugins (#78)
 
 ## [v4.2.3-1] - 2021-12-13
-### Chang
+### Changed
 - Upgrade to Redmine 4.2.3; #69
 - Upgrade to dogu-build-lib v1.5.1
 - Upgrade dogu-integration-test-library to v2.0.0
