@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Update redmine_cas plugin to version 1.5 (#76)
+- Update redmine_cas plugin to version 1.5.1 (#76)
+
+### Fixed
+- Fix defect which prevents updating bundled Redmine plugins (#78)
 
 ## [v4.2.3-1] - 2021-12-13
 ### Changed
