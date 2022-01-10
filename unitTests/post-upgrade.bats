@@ -21,6 +21,9 @@ setup() {
   rake="$(mock_create)"
   export rake
   ln -s "${rake}" "${BATS_TMPDIR}/rake"
+  bundle="$(mock_create)"
+  export bundle
+  ln -s "${bundle}" "${BATS_TMPDIR}/bundle"
   export PATH="${PATH}:${BATS_TMPDIR}"
 }
 
@@ -30,6 +33,7 @@ teardown() {
   rm "${BATS_TMPDIR}/doguctl"
   rm "${BATS_TMPDIR}/psql"
   rm "${BATS_TMPDIR}/rake"
+  rm "${BATS_TMPDIR}/bundle"
 }
 
 @test "versionXLessOrEqualThanY() was properly sourced from pre-upgrade.sh" {
@@ -81,15 +85,33 @@ teardown() {
 }
 
 @test "run_postupgrade should provide PostgresSQL credentials" {
+  export PGPASSWORD="unset!"
   source /workspace/resources/post-upgrade.sh
 
+  mock_set_output "${doguctl}" "theUser" 1
+  mock_set_output "${doguctl}" "thePassword" 2
+  mock_set_output "${doguctl}" "theDatabase" 3
   mock_set_status "${psql}" 0
+  mock_set_side_effect "${psql}" 'export IS_PSQL_PASSWORD_REALLY_SET="${PGPASSWORD}"'
   mock_set_status "${rake}" 0
+  # overwrite plugin env vars for implicit call of install_plugins
+  export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
+  aPluginDirectory="$(mktemp -d -p "${DEFAULT_PLUGIN_DIRECTORY}")"
+  aPluginFile="$(mktemp -p "${aPluginDirectory}")"
+  pluginName="$(basename "${aPluginDirectory}")"
+  aPluginFileName="$(basename "${aPluginFile}")"
+  export PLUGIN_DIRECTORY="$(mktemp -d)"
 
   run run_postupgrade "4.1.0-3" "4.2.0-1"
 
   assert_success
+  assert_line "Redmine post-upgrade done"
+  assert_equal "$(mock_get_call_args "${doguctl}")" "1" "config -e sa-postgresql/user"
+  assert_equal "$(mock_get_call_args "${doguctl}")" "2" "config -e sa-postgresql/password"
+  assert_equal "$(mock_get_call_args "${doguctl}")" "3" "config -e sa-postgresql/database"
 
+  assert_equal "$(mock_get_call_num "${psql}")" "1"
+  assert_equal "$(mock_get_call_args "${psql}" "1")" "--host postgresql --username theUser --dbname theDatabase -1 -c DELETE FROM settings WHERE"
 
-
+  assert_equal "${IS_PSQL_PASSWORD_REALLY_SET}" "thePassword"
 }
