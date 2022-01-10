@@ -14,14 +14,22 @@ setup() {
   export WORKDIR=/workspace
   doguctl="$(mock_create)"
   export doguctl
-  export PATH="${PATH}:${BATS_TMPDIR}"
   ln -s "${doguctl}" "${BATS_TMPDIR}/doguctl"
+  psql="$(mock_create)"
+  export psql
+  ln -s "${psql}" "${BATS_TMPDIR}/psql"
+  rake="$(mock_create)"
+  export rake
+  ln -s "${rake}" "${BATS_TMPDIR}/rake"
+  export PATH="${PATH}:${BATS_TMPDIR}"
 }
 
 teardown() {
   unset STARTUP_DIR
   unset WORKDIR
   rm "${BATS_TMPDIR}/doguctl"
+  rm "${BATS_TMPDIR}/psql"
+  rm "${BATS_TMPDIR}/rake"
 }
 
 @test "versionXLessOrEqualThanY() was properly sourced from pre-upgrade.sh" {
@@ -70,4 +78,18 @@ teardown() {
   assert_line --partial "Migrating plugins finished successfully"
   assert_dir_exist "${productionPluginDir}"
   assert_file_exist "${productionPluginDir}/${pluginName}/${aPluginFileName}"
+}
+
+@test "run_postupgrade should provide PostgresSQL credentials" {
+  source /workspace/resources/post-upgrade.sh
+
+  mock_set_status "${psql}" 0
+  mock_set_status "${rake}" 0
+
+  run run_postupgrade "4.1.0-3" "4.2.0-1"
+
+  assert_success
+
+
+
 }
