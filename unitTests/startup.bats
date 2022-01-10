@@ -63,20 +63,6 @@ teardown() {
   assert_line --partial "is not a directory"
 }
 
-@test "install_plugin() should print an log line if a bundled plugin is already installed" {
-  source /workspace/resources/startup.sh
-  export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
-  aPluginDirectory="$(mktemp -d -p ${DEFAULT_PLUGIN_DIRECTORY})"
-  pluginName="$(basename "${aPluginDirectory}")"
-  export PLUGIN_DIRECTORY="$(mktemp -d)"
-  mkdir -p "${PLUGIN_DIRECTORY}/${pluginName}"
-
-  run install_plugin "${pluginName}"
-
-  assert_success
-  assert_line --partial "already exists. Skip restoring the plugin"
-}
-
 @test "install_plugin() should install a bundled plugin that is absent" {
   source /workspace/resources/startup.sh
   export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
@@ -89,7 +75,8 @@ teardown() {
   run install_plugin "${pluginName}"
 
   assert_success
-  assert_line "install plugin ${pluginName}"
+  assert_line "deinstall bundled plugin ${pluginName}"
+  assert_line "install bundled plugin ${pluginName}"
   assert_dir_exist "${PLUGIN_DIRECTORY}/${pluginName}"
   assert_file_exist "${PLUGIN_DIRECTORY}/${pluginName}/${aPluginFileName}"
 }
@@ -111,7 +98,8 @@ teardown() {
 
   assert_success
   assert_line "installing plugins..."
-  assert_line "install plugin ${pluginName}"
+  assert_line "deinstall bundled plugin ${pluginName}"
+  assert_line "install bundled plugin ${pluginName}"
   assert_line "running plugin migrations..."
   assert_line "plugin migrations... done"
   assert_dir_exist "${PLUGIN_DIRECTORY}/${pluginName}"
