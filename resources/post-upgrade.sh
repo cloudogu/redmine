@@ -25,7 +25,7 @@ function run_postupgrade() {
   FROM_VERSION="${1}"
   TO_VERSION="${2}"
 
-  runUtil
+  fetchDatabaseConnection
 
   echo "Executing Redmine post-upgrade from ${FROM_VERSION} to ${TO_VERSION}"
 
