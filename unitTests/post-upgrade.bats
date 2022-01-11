@@ -95,12 +95,7 @@ teardown() {
   mock_set_status "${psql}" 0
   mock_set_status "${rake}" 0
   # overwrite plugin env vars for implicit call of install_plugins
-  export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
-  aPluginDirectory="$(mktemp -d -p "${DEFAULT_PLUGIN_DIRECTORY}")"
-  aPluginFile="$(mktemp -p "${aPluginDirectory}")"
-  pluginName="$(basename "${aPluginDirectory}")"
-  aPluginFileName="$(basename "${aPluginFile}")"
-  export PLUGIN_DIRECTORY="$(mktemp -d)"
+  overwritePluginDirsWithTmpDirs
 
   run run_postupgrade "4.1.0-3" "4.2.0-1"
 
@@ -121,6 +116,56 @@ teardown() {
   refute isVarExported "DATABASE_DB"
 }
 
+@test "run_postupgrade should delete duplicate database settings during upgrade from source versions [v3.3.2-4 to v4.1.0-3] to target version v4.2.0-1" {
+  source /workspace/resources/post-upgrade.sh
+  sourceVersions=("v3.3.2-4" "v3.4.10-1" "v3.4.10-2" "v3.4.11-1" "v3.4.2-2" "v3.4.2-3" "v3.4.2-4" "v3.4.2-5" "v3.4.2-6" "v3.4.8-1" "v3.4.8-2" "v4.0.5-1" "v4.1.0-1" "v4.1.0-2" "v4.1.0-3")
+
+  for sourceVersion in "${sourceVersions[@]}"; do
+    echo "TEST: run_postupgrade ${sourceVersion}" "4.2.0-1"
+
+    mock_set_status "${doguctl}" 0
+    mock_set_output "${doguctl}" "theUser" 1
+    mock_set_output "${doguctl}" "thePassword" 2
+    mock_set_output "${doguctl}" "theDatabase" 3
+    mock_set_output "${doguctl}" "somethingElse" 4
+    mock_set_status "${psql}" 0
+    mock_set_status "${rake}" 0
+    # overwrite plugin env vars for implicit call of install_plugins
+    overwritePluginDirsWithTmpDirs
+
+    run run_postupgrade "${sourceVersion}" "4.2.0-1"
+
+    assert_success
+    assert_line "post-upgrade: Deleting duplicate settings in database..."
+    assert_line "Redmine post-upgrade done"
+  done
+}
+
+@test "run_postupgrade should not delete duplicate database settings during upgrade from source versions higher than v4.1.0-3" {
+  source /workspace/resources/post-upgrade.sh
+  sourceVersions=("v4.1.1-1" "v4.1.1-2" "v4.2.0-1" "v4.2.0-2" "v4.2.1-1" "v4.2.1-2" "v4.2.1-3" "v4.2.2-1" "v4.2.2-2" "v4.2.2-3" "v4.2.2-4" "v4.2.3-1")
+
+  for sourceVersion in "${sourceVersions[@]}"; do
+    echo "TEST: run_postupgrade ${sourceVersion}" "4.2.3-4"
+
+    mock_set_status "${doguctl}" 0
+    mock_set_output "${doguctl}" "theUser" 1
+    mock_set_output "${doguctl}" "thePassword" 2
+    mock_set_output "${doguctl}" "theDatabase" 3
+    mock_set_output "${doguctl}" "somethingElse" 4
+    mock_set_status "${psql}" 0
+    mock_set_status "${rake}" 0
+    # overwrite plugin env vars for implicit call of install_plugins
+    overwritePluginDirsWithTmpDirs
+
+    run run_postupgrade "${sourceVersion}" "4.2.0-1"
+
+    assert_success
+    refute_line "post-upgrade: Deleting duplicate settings in database..."
+    assert_line "Redmine post-upgrade done"
+  done
+}
+
 @test "isVarExported() return true or false if a variable is exported or not" {
   local localEnvVar=hidden
   export exportEnvVar=HELLO
@@ -130,6 +175,17 @@ teardown() {
 
   run isVarExported "exportEnvVar"
   assert_success
+}
+
+function overwritePluginDirsWithTmpDirs() {
+  export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
+  aPluginDirectory="$(mktemp -d -p "${DEFAULT_PLUGIN_DIRECTORY}")"
+  aPluginFile="$(mktemp -p "${aPluginDirectory}")"
+  pluginName="$(basename "${aPluginDirectory}")"
+  aPluginFileName="$(basename "${aPluginFile}")"
+  export PLUGIN_DIRECTORY="$(mktemp -d)"
+  export DEPRECATED_PLUGIN_STORE="$(mktemp -d)"
+  export MIGRATION_TMP_DIR="$(mktemp -d)"
 }
 
 function isVarExported() {
