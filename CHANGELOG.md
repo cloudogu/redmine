@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix defect which prevents updating bundled Redmine plugins (#78)
+- Fix semantic version bug crashes upgrading from Redmine dogu versions older than4.1.0-3 (#82)
 
 ## [v4.2.3-1] - 2021-12-13
 ### Changed
