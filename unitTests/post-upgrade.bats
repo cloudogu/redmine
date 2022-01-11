@@ -84,15 +84,15 @@ teardown() {
   assert_file_exist "${productionPluginDir}/${pluginName}/${aPluginFileName}"
 }
 
-@test "run_postupgrade should provide PostgresSQL credentials" {
-  export PGPASSWORD="unset!"
+@test "run_postupgrade should provide PostgresSQL credentials (while note being exported)" {
   source /workspace/resources/post-upgrade.sh
 
+  mock_set_status "${doguctl}" 0
   mock_set_output "${doguctl}" "theUser" 1
   mock_set_output "${doguctl}" "thePassword" 2
   mock_set_output "${doguctl}" "theDatabase" 3
+  mock_set_output "${doguctl}" "somethingElse" 4
   mock_set_status "${psql}" 0
-  mock_set_side_effect "${psql}" 'export IS_PSQL_PASSWORD_REALLY_SET="${PGPASSWORD}"'
   mock_set_status "${rake}" 0
   # overwrite plugin env vars for implicit call of install_plugins
   export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
@@ -105,13 +105,38 @@ teardown() {
   run run_postupgrade "4.1.0-3" "4.2.0-1"
 
   assert_success
-  assert_line "Redmine post-upgrade done"
-  assert_equal "$(mock_get_call_args "${doguctl}")" "1" "config -e sa-postgresql/user"
-  assert_equal "$(mock_get_call_args "${doguctl}")" "2" "config -e sa-postgresql/password"
-  assert_equal "$(mock_get_call_args "${doguctl}")" "3" "config -e sa-postgresql/database"
+  assert_line "get data for database connection"
+  assert_equal "$(mock_get_call_num "${doguctl}")" "9"
+  assert_equal "$(mock_get_call_args "${doguctl}" "1")" "config -e sa-postgresql/username"
+  assert_equal "$(mock_get_call_args "${doguctl}" "2")" "config -e sa-postgresql/password"
+  assert_equal "$(mock_get_call_args "${doguctl}" "3")" "config -e sa-postgresql/database"
 
   assert_equal "$(mock_get_call_num "${psql}")" "1"
-  assert_equal "$(mock_get_call_args "${psql}" "1")" "--host postgresql --username theUser --dbname theDatabase -1 -c DELETE FROM settings WHERE"
+  assert_equal "$(mock_get_call_args "${psql}" "1")" "--host postgresql --username theUser --dbname theDatabase -1 -c DELETE FROM settings WHERE id IN (SELECT id FROM settings WHERE NOT id IN (SELECT max(id) FROM settings GROUP BY name HAVING count(*) > 1) AND name IN (SELECT name FROM settings GROUP BY name HAVING count(name) > 1))"
 
-  assert_equal "${IS_PSQL_PASSWORD_REALLY_SET}" "thePassword"
+  assert_line "Redmine post-upgrade done"
+
+  refute isVarExported "DATABASE_USER"
+  refute isVarExported "DATABASE_USER_PASSWORD"
+  refute isVarExported "DATABASE_DB"
+}
+
+@test "isVarExported() return true or false if a variable is exported or not" {
+  local localEnvVar=hidden
+  export exportEnvVar=HELLO
+
+  run isVarExported "localEnvVar"
+  assert_failure
+
+  run isVarExported "exportEnvVar"
+  assert_success
+}
+
+function isVarExported() {
+    local name="${1}"
+    if [[ "${!name@a}" == *x* ]]; then
+        return 0
+    fi
+
+    return 1
 }
