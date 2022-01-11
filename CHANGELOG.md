@@ -5,14 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+### Fixed
+- Fix missing PostgreSQL credentials which crashes during upgrading (#79)
+  - the original defect was introduced with Redmine v4.2.2-3
+- Fix semantic version bug which crashes during upgrading (#82)
+  - the defect was introduced with Redmine v4.1.0-3 
+ 
 ## [v4.2.3-2] - 2022-01-06
 ### Changed
 - Update redmine_cas plugin to version 1.5.1 (#76)
 
 ### Fixed
 - Fix defect which prevents updating bundled Redmine plugins (#78)
-- Fix semantic version bug crashes upgrading from Redmine dogu versions older than4.1.0-3 (#82)
 
 ## [v4.2.3-1] - 2021-12-13
 ### Changed
