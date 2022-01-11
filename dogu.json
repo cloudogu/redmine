@@ -126,6 +126,10 @@
     {
       "Name": "pre-upgrade",
       "Command": "/pre-upgrade.sh"
+    },
+    {
+      "Name": "delete-plugin",
+      "Command": "/delete-plugin.sh"
     }
   ]
 }
