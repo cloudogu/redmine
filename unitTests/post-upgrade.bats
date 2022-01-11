@@ -39,24 +39,24 @@ teardown() {
 @test "versionXLessOrEqualThanY() was properly sourced from pre-upgrade.sh" {
   source /workspace/resources/post-upgrade.sh
 
-  run versionXLessOrEqualThanY "1.0.0" "1.0.0"
+  run versionXLessOrEqualThanY "1.0.0-1" "1.0.0-1"
   assert_success
-  run versionXLessOrEqualThanY "1.0.0" "1.1.1-1"
+  run versionXLessOrEqualThanY "1.0.0-0" "1.1.1-1"
   assert_success
-  run versionXLessOrEqualThanY "1.0.0" "0.0.9"
+  run versionXLessOrEqualThanY "1.0.0-1" "0.0.9-1"
   assert_failure
-  run versionXLessOrEqualThanY "1.0.0" "0.9.0"
+  run versionXLessOrEqualThanY "1.0.0-1" "0.9.0-1"
   assert_failure
 }
 
 @test "versionXLessThanY() was properly sourced from pre-upgrade.sh" {
   source /workspace/resources/post-upgrade.sh
 
-  run versionXLessThanY "1.0.0" "1.1.0"
+  run versionXLessThanY "1.0.0-1" "1.1.0-1"
   assert_success
-  run versionXLessThanY "1.0.0" "1.1.1-1"
+  run versionXLessThanY "1.0.0-1" "1.1.1-1"
   assert_success
-  run versionXLessThanY "1.0.0" "1.0.0"
+  run versionXLessThanY "1.0.0-1" "1.0.0-1"
   assert_failure
   run versionXLessThanY "1.2.3-4" "0.1.2-3"
   assert_failure
