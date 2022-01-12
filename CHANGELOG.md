@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix missing PostgreSQL credentials which crashes during upgrading (#79)
   - the original defect was introduced with Redmine v4.2.2-3
 - Fix semantic version bug which crashes during upgrading (#82)
-  - the defect was introduced with Redmine v4.1.0-3 
+  - the defect concerns Redmine versions <= v4.1.0-3
+  - the defect does not concern Redmine versions >= v4.1.1-1
  
 ## [v4.2.3-2] - 2022-01-06
 ### Changed
