@@ -99,7 +99,6 @@ function versionXLessOrEqualThanY() {
 }
 
 # versionXLessThanY returns true if X is less than Y; otherwise false
-# This code origins from https://stackoverflow.com/a/4024263/12529534
 function versionXLessThanY() {
   if [[ "${1}" == "${2}" ]]; then
     return 1
