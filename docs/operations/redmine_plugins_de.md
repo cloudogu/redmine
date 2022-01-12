@@ -35,11 +35,16 @@ Für im Dogu mitgelieferte Plugins ist keine Internetverbindung nötig, da dies 
 
 ## Plugins entfernen
 
-Ein Redmine-Plugin zu entfernen ist einfach. Um ein Plugin zu entfernen, löscht oder verschiebt man das Verzeichnis des entsprechenden Plugins aus Redmines Plugin-Verzeichnis. Beim nächsten Dogu-Neustart tritt die Entfernung in Kraft.
+Ein Redmine-Plugin zu entfernen ist einfach. Hierfür gibt es ein exposed command, das über die cesapp aufgerufen werden 
+kann. Da durch das Entfernen des Plugins ggf. auch Änderungen an der Datenbank durchgeführt werden, ist ein Backup der
+Datenbank vor dem Entfernen des Plugins empfohlen. 
 
-Beim Entfernen von Plugins sollte verzichtet werden, Redmines gesamtes Plugin-Verzeichnis zu leeren oder zu löschen. Um einen Defekt nach dem Neustart auszuschließen, liegen die folgenden infrastruktur-relevanten Plugins gesichert im Container-Image vor, so dass sie bei Bedarf wiederhergestellt werden können:
+Der cesapp Befehl lautet `cesapp command redmine delete-plugin <plugin name>`. Um das Entfernen des Plugins 
+abzuschließen, muss nach Ausführung des Befehls das Dogu einmal neu gestartet werden.
+
+Um einen Defekt nach dem Neustart auszuschließen, liegen die folgenden infrastruktur-relevanten Plugins gesichert im 
+Container-Image vor, so dass diese bei Bedarf wiederhergestellt werden können:
 - redmine_cas
 - redmine_extended_rest_api
 - redmine_activerecord_session_store
 
-Die `startup.sh` übernimmt die Installation der Plugins, falls eines oder mehrere der Plugin-Verzeichnisse gelöscht oder verschoben wurden.
