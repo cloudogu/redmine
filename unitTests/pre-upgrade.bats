@@ -26,7 +26,6 @@ teardown() {
 
 @test "versionXLessOrEqualThanY() should return true for versions less than or equal to another" {
   source /workspace/resources/pre-upgrade.sh
-  export ERROR_SLEEP_IN_S=0
 
   run versionXLessOrEqualThanY "1.0.0-1" "1.0.0-1"
   assert_success
@@ -59,7 +58,6 @@ teardown() {
 
 @test "versionXLessOrEqualThanY() should return false for versions greater than another" {
   source /workspace/resources/pre-upgrade.sh
-  export ERROR_SLEEP_IN_S=0
 
   run versionXLessOrEqualThanY "0.0.0-10" "0.0.0-9"
   assert_failure
@@ -97,7 +95,6 @@ teardown() {
 
 @test "versionXLessThanY() should return true for versions less than another" {
   source /workspace/resources/pre-upgrade.sh
-  export ERROR_SLEEP_IN_S=0
 
   run versionXLessThanY "1.0.0-1" "1.0.0-2"
   assert_success
@@ -126,7 +123,6 @@ teardown() {
 
 @test "versionXLessThanY() should return false for versions greater than another" {
   source /workspace/resources/pre-upgrade.sh
-  export ERROR_SLEEP_IN_S=0
 
   run versionXLessThanY "1.0.0-1" "1.0.0-1"
   assert_failure

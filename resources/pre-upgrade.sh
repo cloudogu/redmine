@@ -6,7 +6,6 @@ set -o pipefail
 # WORKDIR is a Dockerfile global variable
 REDMINE_WORK_DIR="${WORKDIR}"
 MIGRATION_TMP_DIR="/var/tmp/redmine/plugins/migration4.4.2.1"
-ERROR_SLEEP_IN_S=300
 
 function run_preupgrade() {
   FROM_VERSION="${1}"
@@ -67,7 +66,6 @@ function versionXLessOrEqualThanY() {
     sourceDogu="${BASH_REMATCH[4]}"
   else
     echo "ERROR: source dogu version ${sourceVersion} does not seem to be a semantic version"
-    sleep "${ERROR_SLEEP_IN_S}"
     exit 1
   fi
 
@@ -78,7 +76,6 @@ function versionXLessOrEqualThanY() {
     targetDogu="${BASH_REMATCH[4]}"
   else
     echo "ERROR: target dogu version ${targetVersion} does not seem to be a semantic version"
-    sleep "${ERROR_SLEEP_IN_S}"
     exit 1
   fi
 
