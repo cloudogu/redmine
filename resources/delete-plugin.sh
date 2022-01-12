@@ -4,13 +4,15 @@ set -o nounset
 set -o pipefail
 
 if [[ $# -ne 1 ]]; then
-    echo "Illegal number of arguments - plugin_name must be given as first argument"
+    echo "Wrong number of arguments - Plugin name must be given as the first argument."
     exit 1
 fi
 
 plugin_name=$1
-echo "delete plugin ${plugin_name}"
+
+echo "Delete plugin ${plugin_name}"
 bundle exec rake redmine:plugins:migrate NAME=${plugin_name} VERSION=0 RAILS_ENV=production
 rm -rf /usr/share/webapps/redmine/plugins/${plugin_name}
+
 echo "---"
-echo "In order to save the changes you have made, you must restart the system"
+echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
