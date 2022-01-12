@@ -217,6 +217,6 @@ function runMain() {
 
 # make the script only run when executed, not when sourced from bats tests)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  runUtil
+  fetchDatabaseConnection
   runMain
 fi
