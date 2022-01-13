@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Add an exposed command to delete a Redmine plugin. Call via the cesapp: 
-`cesapp command redmine delete-plugin <plugin-name>`
+`cesapp command redmine delete-plugin <plugin-name> --force` (#80)
 
 ## [v4.2.3-2] - 2022-01-06
 ### Changed
