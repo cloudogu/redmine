@@ -39,7 +39,7 @@ Ein Redmine-Plugin zu entfernen ist einfach. Hierfür gibt es ein exposed comman
 kann. Da durch das Entfernen des Plugins ggf. auch Änderungen an der Datenbank durchgeführt werden, ist ein Backup der
 Datenbank vor dem Entfernen des Plugins empfohlen. 
 
-Der cesapp Befehl lautet `cesapp command redmine delete-plugin <plugin name>`. Um das Entfernen des Plugins 
+Der cesapp Befehl lautet `cesapp command redmine delete-plugin <plugin name> --force`. Um das Entfernen des Plugins 
 abzuschließen, muss nach Ausführung des Befehls das Dogu einmal neu gestartet werden.
 
 Um einen Defekt nach dem Neustart auszuschließen, liegen die folgenden infrastruktur-relevanten Plugins gesichert im 
