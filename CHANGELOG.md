@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-4] - 2022-01-14
+### Changed
+- Update cas plugin to version 1.5.2 (#84)
+
 ## [v4.2.3-3] - 2022-01-12
 ### Fixed
 - Fix missing PostgreSQL credentials which crashes during upgrading (#79)
