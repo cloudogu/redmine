@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add an exposed command to delete a Redmine plugin. Call via the cesapp: 
 `cesapp command redmine delete-plugin <plugin-name> --force` (#80)
 
+## [v4.2.3-4] - 2022-01-14
+### Changed
+- Update cas plugin to version 1.5.2 (#84)
+
+## [v4.2.3-3] - 2022-01-12
+### Fixed
+- Fix missing PostgreSQL credentials which crashes during upgrading (#79)
+  - the original defect was introduced with Redmine v4.2.2-3
+- Fix semantic version bug which crashes during upgrading (#82)
+  - the defect concerns Redmine versions <= v4.1.0-3
+  - the defect does not concern Redmine versions >= v4.1.1-1
+ 
 ## [v4.2.3-2] - 2022-01-06
 ### Changed
 - Update redmine_cas plugin to version 1.5.1 (#76)

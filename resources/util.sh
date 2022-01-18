@@ -220,14 +220,14 @@ function wait_for_redmine_to_get_healthy() {
   fi
 }
 
-function runUtil() {
+function fetchDatabaseConnection() {
   echo "get data for database connection"
-  DATABASE_USER=$(doguctl config -e sa-postgresql/username)
-  DATABASE_USER_PASSWORD=$(doguctl config -e sa-postgresql/password)
-  DATABASE_DB=$(doguctl config -e sa-postgresql/database)
+  DATABASE_USER="$(doguctl config -e sa-postgresql/username)"
+  DATABASE_USER_PASSWORD="$(doguctl config -e sa-postgresql/password)"
+  DATABASE_DB="$(doguctl config -e sa-postgresql/database)"
 }
 
 # make the script only run when executed, not when sourced from bats tests)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  runUtil
+  fetchDatabaseConnection
 fi
