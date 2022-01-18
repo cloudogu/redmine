@@ -29,7 +29,7 @@ function install_plugins(){
 
   # Installing Gems needs either an internet connection for pulling Gem dependencies or
   # all required Gems in the Gem path.
-  installPluginGems
+  installMissingGems
 
   runPluginMigration
 }
@@ -41,15 +41,15 @@ function runPluginMigration() {
   echo "plugin migrations... done"
 }
 
-function installPluginGems() {
+function installMissingGems() {
   # Install missing gems if new plugins are going to be installed.
   # Otherwise bundle will detect that there are no changes and thus no new gems are needed
   echo "install missing gems ..."
 
   rakeExitCode=0
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install || rakeExitCode=$?
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install --quiet || rakeExitCode=$?
   if [[ ${rakeExitCode} -ne 0 ]]; then
-    echo "ERROR: Rake bund installed returned with an error during the gem installation for new plugins"
+    echo "ERROR: bundle install returned with an error during the gem installation"
     sleep 300
     exit 1
   fi
@@ -90,6 +90,11 @@ function forceInstallBundledPlugins() {
 }
 
 function exec_rake() {
+  # Installing Gems needs either an internet connection for pulling Gem dependencies or
+  # all required Gems in the Gem path.
+  # Installing missing Gems is necessary at this point. The following rake task execution works only if the
+  # dependencies required by plugins and the core modules are present.
+  installMissingGems
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
