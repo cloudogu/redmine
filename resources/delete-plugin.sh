@@ -7,6 +7,8 @@ num_min_required_params=1
 num_max_required_params=2
 num_params=$#
 
+DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
+
 function print_usage() {
     echo "usage: delete-plugin[.sh] <plugin-name> --force"
     echo "1st parameter: name of the plugin"
@@ -28,7 +30,7 @@ function print_backup_info() {
 }
 
 function delete_plugin() {
-  plugin_name="$1"
+  local plugin_name="$1"
   # Automate uninstall steps from official Redmine guide -
   # https://www.redmine.org/projects/redmine/wiki/plugins#Uninstalling-a-plugin
   echo "Delete plugin ${plugin_name}"
@@ -37,6 +39,23 @@ function delete_plugin() {
 
   echo "---"
   echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
+}
+
+function plugin_exists() {
+  local plugin_name="$1"
+  [[ -d "/usr/share/webapps/redmine/plugins/${plugin_name}" ]]
+}
+
+function check_plugin() {
+  local plugin_name="$1"
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+
+  for BUNDLED_PLUGIN in ${PLUGINS}; do
+    if [[ "${BUNDLED_PLUGIN}" == "${plugin_name}" ]]; then
+      echo "Bundled plugins must not be deleted."
+      exit 1
+    fi
+  done
 }
 
 if [[ $# -lt $num_min_required_params  || $# -gt $num_max_required_params ]]; then
@@ -64,5 +83,12 @@ if [[ $force_param != "--force" ]]; then
   print_usage
   exit 1
 fi
+
+if [[ ! plugin_exists "${plugin_name}" ]]; then
+  echo "The plugin ${plugin_name} does not exist. Aborting process."
+  exit 1
+fi
+
+check_plugin "${plugin_name}"
 
 delete_plugin "${plugin_name}"
