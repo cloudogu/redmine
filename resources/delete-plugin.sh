@@ -31,12 +31,12 @@ if [[ $# -lt $num_min_required_params  || $# -gt $num_max_required_params ]]; th
     exit 1
 fi
 
-plugin_name=$1
+plugin_name="$1"
 
 if [[ $num_params -eq 1 ]]; then
     print_backup_info
     echo
-    echo "Insert the flag --force at the end of the command to definitely uninstall the selected plugin $plugin_name"
+    echo "Insert the flag --force at the end of the command to definitely uninstall the selected plugin ${plugin_name}"
     echo
     print_usage
     exit 1
@@ -48,8 +48,8 @@ if [[ $force_param == "--force" ]]; then
   # Automate uninstall steps from official Redmine guide -
   # https://www.redmine.org/projects/redmine/wiki/plugins#Uninstalling-a-plugin
   echo "Delete plugin ${plugin_name}"
-  bundle exec rake redmine:plugins:migrate NAME=${plugin_name} VERSION=0 RAILS_ENV=production
-  rm -rf /usr/share/webapps/redmine/plugins/${plugin_name}
+  bundle exec rake redmine:plugins:migrate NAME="${plugin_name}" VERSION=0 RAILS_ENV=production
+  rm -rf "/usr/share/webapps/redmine/plugins/${plugin_name}"
 
   echo "---"
   echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."

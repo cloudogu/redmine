@@ -39,7 +39,7 @@ node('vagrant') {
         }
 
         stage('Shell-Check') {
-            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh ./resources/create-admin.sh ./resources/default-config.sh ./resources/remove-user.sh ./resources/util.sh")
+            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh ./resources/create-admin.sh ./resources/default-config.sh ./resources/remove-user.sh ./resources/util.sh ./resources/delete-plugin.sh")
         }
 
         try {
