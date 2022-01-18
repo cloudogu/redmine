@@ -22,6 +22,9 @@ function print_usage() {
 function print_backup_info() {
     echo "As the removal of the plugin may also result in changes to the database,"
     echo "it is recommended to make a backup of the database before removing the plugin."
+    echo "If you have already configured the Cloudogu EcoSystem back-up you can create a new backup of your system by"
+    echo "typing 'cesapp backup start --all' into the console of your server. Creating a backup just containing the "
+    echo "Redmine data is not possible."
 }
 
 if [[ $# -lt $num_min_required_params  || $# -gt $num_max_required_params ]]; then
