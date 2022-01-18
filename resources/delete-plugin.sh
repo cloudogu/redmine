@@ -41,11 +41,6 @@ function delete_plugin() {
   echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
 }
 
-function plugin_exists() {
-  local plugin_name="$1"
-  [[ -d "/usr/share/webapps/redmine/plugins/${plugin_name}" ]]
-}
-
 function check_plugin() {
   local plugin_name="$1"
   PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
@@ -68,10 +63,6 @@ fi
 plugin_name="$1"
 
 if [[ $num_params -eq 1 ]]; then
-    print_backup_info
-    echo
-    echo "Insert the flag --force at the end of the command to definitely uninstall the selected plugin ${plugin_name}"
-    echo
     print_usage
     exit 1
 fi
@@ -84,7 +75,7 @@ if [[ $force_param != "--force" ]]; then
   exit 1
 fi
 
-if [[ ! plugin_exists "${plugin_name}" ]]; then
+if [[ ! -d "/usr/share/webapps/redmine/plugins/${plugin_name}" ]]; then
   echo "The plugin ${plugin_name} does not exist. Aborting process."
   exit 1
 fi
