@@ -27,6 +27,18 @@ function print_backup_info() {
     echo "Redmine data is not possible."
 }
 
+function delete_plugin() {
+  plugin_name="$1"
+  # Automate uninstall steps from official Redmine guide -
+  # https://www.redmine.org/projects/redmine/wiki/plugins#Uninstalling-a-plugin
+  echo "Delete plugin ${plugin_name}"
+  bundle exec rake redmine:plugins:migrate NAME="${plugin_name}" VERSION=0 RAILS_ENV=production
+  rm -rf "/usr/share/webapps/redmine/plugins/${plugin_name}"
+
+  echo "---"
+  echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
+}
+
 if [[ $# -lt $num_min_required_params  || $# -gt $num_max_required_params ]]; then
     echo "Wrong number of arguments - Plugin name must be given as the first argument."
     echo
@@ -47,15 +59,10 @@ fi
 
 
 force_param=$2
-if [[ $force_param == "--force" ]]; then
-  # Automate uninstall steps from official Redmine guide -
-  # https://www.redmine.org/projects/redmine/wiki/plugins#Uninstalling-a-plugin
-  echo "Delete plugin ${plugin_name}"
-  bundle exec rake redmine:plugins:migrate NAME="${plugin_name}" VERSION=0 RAILS_ENV=production
-  rm -rf "/usr/share/webapps/redmine/plugins/${plugin_name}"
-
-  echo "---"
-  echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
-else
+if [[ $force_param != "--force" ]]; then
+  # --force is a mandatory parameter
   print_usage
+  exit 1
 fi
+
+delete_plugin "${plugin_name}"
