@@ -10,15 +10,16 @@ num_params=$#
 DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
 
 function print_usage() {
-    echo "usage: delete-plugin[.sh] <plugin-name> --force"
-    echo "1st parameter: name of the plugin"
-    echo "2nd parameter: '--force' flag to start the actual execution of the deletion process"
+    echo "NAME:"
+    echo "   delete-plugin - Deletes the plugin passed as 1st parameter"
     echo
-    echo "Deletes the plugin passed as 1st parameter."
+    echo "USAGE:"
+    echo "   delete-plugin <plugin-name> --force"
+    echo
+    echo "1st parameter: name of the plugin"
+    echo "2nd parameter: '--force' flag to start the plugin deletion process. Without this parameter the deletion will not be executed at all."
     echo
     print_backup_info
-    echo
-    echo "To execute the deletion of the plugin add --force flag as 2nd parameter"
 }
 
 function print_backup_info() {
@@ -69,7 +70,7 @@ fi
 
 
 force_param=$2
-if [[ $force_param != "--force" ]]; then
+if [[ "${force_param}" != "--force" ]]; then
   # --force is a mandatory parameter
   print_usage
   exit 1
