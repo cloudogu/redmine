@@ -30,6 +30,7 @@ teardown() {
   local plugin_name=myPlugin
   mock_set_status "${bundle}" 0
   mkdir -p /usr/share/webapps/redmine/plugins/${plugin_name}
+  mkdir -p "${WORKDIR}/defaultPlugins"
 
   run "${STARTUP_DIR}"/delete-plugin.sh "myPlugin" "--force"
 
