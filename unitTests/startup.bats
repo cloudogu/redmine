@@ -107,5 +107,5 @@ teardown() {
   assert_equal "$(mock_get_call_num "${rake}")" "1"
   assert_equal "$(mock_get_call_args "${rake}" "1")" "--trace -f /workspace/Rakefile redmine:plugins:migrate"
   assert_equal "$(mock_get_call_num "${bundle}")" "1"
-  assert_equal "$(mock_get_call_args "${bundle}" "1")" "install"
+  assert_equal "$(mock_get_call_args "${bundle}" "1")" "install --quiet"
 }
