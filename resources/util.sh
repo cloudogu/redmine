@@ -29,8 +29,6 @@ function install_plugins(){
 
   # Installing Gems needs either an internet connection for pulling Gem dependencies or
   # all required Gems in the Gem path.
-  installMissingGems
-
   runPluginMigration
 }
 
