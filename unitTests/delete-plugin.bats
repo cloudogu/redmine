@@ -24,14 +24,16 @@ teardown() {
   rm "${BATS_TMPDIR}/bundle"
 }
 
-@test "script should print a backup warnings, remove plugins and migrate DB" {
+@test "script should print a backup warning, remove plugins and migrate DB" {
   local plugin_name=myPlugin
   mock_set_status "${bundle}" 0
   mkdir -p /usr/share/webapps/redmine/plugins/${plugin_name}
+  mkdir -p "${WORKDIR}/defaultPlugins"
 
-  run /workspace/resources/delete-plugin.sh "myPlugin" "--force"
+  run "${STARTUP_DIR}"/delete-plugin.sh "myPlugin" "--force"
 
   assert_success
+
   # first line
   assert_line "Delete plugin myPlugin"
   # last line
@@ -52,9 +54,10 @@ teardown() {
   # first line
   assert_line --partial "Wrong number of arguments"
   # help text start
-  assert_line "usage: delete-plugin[.sh] <plugin-name> --force"
+  assert_line --partial "delete-plugin - Deletes the plugin passed as 1st parameter"
+  assert_line --partial "delete-plugin <plugin-name> --force"
   # help text end
-  assert_line --partial "To execute the deletion of the plugin add --force"
+  assert_line --partial "2nd parameter: '--force' flag to start the plugin deletion process. Without this parameter the deletion will not be executed at all."
   refute_line --partial "Delete plugin"
   refute_line "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
   assert_dir_exist /usr/share/webapps/redmine/plugins/${plugin_name}
@@ -70,12 +73,12 @@ teardown() {
 
   assert_failure
   # first line
+  assert_line --partial "delete-plugin - Deletes the plugin passed as 1st parameter"
   assert_line --partial "As the removal of the plugin may also result in changes to the database"
-  assert_line --partial "Insert the flag --force at the end of the command to definitely uninstall"
   # help text start
-  assert_line "usage: delete-plugin[.sh] <plugin-name> --force"
+  assert_line --partial "delete-plugin <plugin-name> --force"
   # help text end
-  assert_line --partial "To execute the deletion of the plugin add --force"
+  assert_line --partial "2nd parameter: '--force' flag to start the plugin deletion process. Without this parameter the deletion will not be executed at all."
   refute_line --partial "Delete plugin"
   refute_line "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
   assert_dir_exist /usr/share/webapps/redmine/plugins/${plugin_name}
