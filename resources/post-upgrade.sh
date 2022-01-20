@@ -45,6 +45,10 @@ function run_postupgrade() {
     migratePluginsBackToNewPluginsVolume
   fi
 
+  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
+    migratePluginsBackToPluginsDirectory
+  fi
+
   echo "Making sure config/secrets.yml exists..."
   create_secrets_yml
 
@@ -75,15 +79,40 @@ function run_postupgrade() {
 # different mount point.
 #
 # Global variables:
-# - MIGRATION_TMP_DIR - from pre-upgrade script
+# - MIGRATION4221_TMP_DIR - from pre-upgrade script
 # - REDMINE_WORK_DIR - from pre-upgrade script
 function migratePluginsBackToNewPluginsVolume() {
   echo "Move plugins back to new plugin volume..."
 
-  mv "${MIGRATION_TMP_DIR}"/* "${REDMINE_WORK_DIR}/plugins"
-  rmdir "${MIGRATION_TMP_DIR}"
+  restorePluginsFromTmpDir "${MIGRATION4221_TMP_DIR}"
 
   echo "Migrating plugins finished successfully."
+}
+
+# moves plugins which were moved from a pre-upgrade script back to the original path
+#
+# Global variables:
+# - MIGRATION4234_TMP_DIR - from pre-upgrade script
+# - REDMINE_WORK_DIR - from pre-upgrade script
+function migratePluginsBackToPluginsDirectory() {
+  echo "Move plugins back to plugins directory ..."
+
+  restorePluginsFromTmpDir "${MIGRATION4234_TMP_DIR}"
+
+  echo "Migrating plugins finished successfully."
+}
+
+function restorePluginsFromTmpDir(){
+  local source_directory="$1"
+
+  echo "remove redmine plugin directory"
+  rm -rf "${REDMINE_WORK_DIR}/plugins"
+  echo "create new redmine plugin directory"
+  mkdir "${REDMINE_WORK_DIR}/plugins"
+
+  mv "${source_directory}"/* "${REDMINE_WORK_DIR}/plugins/"
+
+  rm -rf "${source_directory}"
 }
 
 # make the script only run when executed, not when sourced from bats tests)

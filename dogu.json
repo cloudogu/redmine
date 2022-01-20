@@ -86,13 +86,6 @@
       "NeedsBackup": false
     },
     {
-      "Name": "plugins_prod",
-      "Path": "/usr/share/webapps/redmine/plugins",
-      "Owner": "1000",
-      "Group": "1000",
-      "NeedsBackup": true
-    },
-    {
       "Name": "logs",
       "Path": "/usr/share/webapps/redmine/log",
       "Owner": "1000",

@@ -126,6 +126,7 @@ RUN set -eux -o pipefail \
  && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
  && find "${WORKDIR}/defaultPlugins/redmine_extended_rest_api" -name 'Gemfile*' -type f -delete \
  && cd ${WORKDIR} \
+ && chown -R "${USER}:${USER}" "${WORKDIR}/defaultPlugins" \
  # install required and plugin gems \
  # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
