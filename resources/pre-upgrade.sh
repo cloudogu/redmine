@@ -61,7 +61,7 @@ function movePluginsToTmpDir(){
   PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
     if [[ -d "${target_directory}/${PLUGIN_PACKAGE}" ]]; then
-      rm -rf "${target_directory}/${PLUGIN_PACKAGE}"
+      rm -rf "${target_directory:?}/${PLUGIN_PACKAGE}"
     fi
   done
 }
