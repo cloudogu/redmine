@@ -110,7 +110,10 @@ function restorePluginsFromTmpDir(){
   echo "create new redmine plugin directory"
   mkdir "${REDMINE_WORK_DIR}/plugins"
 
-  mv "${source_directory}"/* "${REDMINE_WORK_DIR}/plugins/"
+  # copy plugins to plugin installation source directory
+  cp -r "${source_directory}"/* "${PLUGIN_STORE}"
+  # copy plugins back to redmine plugins directory
+  cp -r "${source_directory}"/* "${REDMINE_WORK_DIR}/plugins/"
 
   rm -rf "${source_directory}"
 }

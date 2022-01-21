@@ -5,6 +5,7 @@ set -o pipefail
 
 # WORKDIR is a Dockerfile global variable
 REDMINE_WORK_DIR="${WORKDIR}"
+DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
 MIGRATION4221_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.2.1"
 MIGRATION4234_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.3.4"
 
@@ -56,6 +57,13 @@ function movePluginsToTmpDir(){
 
   mkdir -p "${target_directory}"
   find "${REDMINE_WORK_DIR}"/plugins/* -maxdepth 0 -type d -exec mv '{}' "${target_directory}" \;
+
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    if [[ -d "${target_directory}/${PLUGIN_PACKAGE}" ]]; then
+      rm -rf "${target_directory}/${PLUGIN_PACKAGE}"
+    fi
+  done
 }
 
 # versionXLessOrEqualThanY returns true if X is less than or equal to Y; otherwise false

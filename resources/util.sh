@@ -17,15 +17,15 @@ DATABASE_DB=
 # DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
 # them from the plugin directory
 DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
-DEPRECATED_PLUGIN_STORE="/var/tmp/redmine/plugins"
+PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
 function install_plugins(){
   echo "installing plugins..."
 
-  checkDeprecatedPluginDir
+  installBundledPlugins
 
-  forceInstallBundledPlugins
+  installCustomPlugins
 
   # Installing Gems needs either an internet connection for pulling Gem dependencies or
   # all required Gems in the Gem path.
@@ -57,8 +57,9 @@ function installMissingGems() {
 
 # installs or upgrades the given plugin
 function install_plugin(){
-  NAME="${1}"
-  SOURCE="${DEFAULT_PLUGIN_DIRECTORY}/${NAME}"
+  SOURCE_DIRECTORY="${1}"
+  NAME="${2}"
+  SOURCE="${SOURCE_DIRECTORY}/${NAME}"
   TARGET="${PLUGIN_DIRECTORY}/${NAME}"
 
   if [ ! -d "${SOURCE}" ]; then
@@ -66,24 +67,28 @@ function install_plugin(){
     return
   fi
 
-  echo "deinstall bundled plugin ${NAME}"
+  echo "remove plugin ${NAME}"
   rm -rf "${TARGET}"
 
-  echo "install bundled plugin ${NAME}"
+  echo "install plugin ${NAME}"
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
-function checkDeprecatedPluginDir() {
-  if [[ -n "$(ls -A "${DEPRECATED_PLUGIN_STORE}")" ]]; then
-     echo "WARNING: Found plugins in the deprecated plugin directory ${DEPRECATED_PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
-  fi
+function installBundledPlugins() {
+  echo "install default plugins ..."
+
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    install_plugin "${DEFAULT_PLUGIN_DIRECTORY}" "${PLUGIN_PACKAGE}"
+  done
 }
 
-function forceInstallBundledPlugins() {
-  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+function installCustomPlugins() {
+  echo "install custom plugins ..."
 
+  PLUGINS=$(ls "${PLUGIN_STORE}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
-    install_plugin "${PLUGIN_PACKAGE}"
+    install_plugin "${PLUGIN_STORE}" "${PLUGIN_PACKAGE}"
   done
 }
 
