@@ -38,6 +38,10 @@ function delete_plugin() {
   bundle exec rake redmine:plugins:migrate NAME="${plugin_name}" VERSION=0 RAILS_ENV=production
   rm -rf "/usr/share/webapps/redmine/plugins/${plugin_name}"
 
+  if [[ -d "/var/tmp/redmine/plugins/${plugin_name}" ]]; then
+    rm -rf "/var/tmp/redmine/plugins/${plugin_name}"
+  fi
+
   echo "---"
   echo "To complete the deletion of the plugin, the Redmine dogu must be restarted once."
 }
