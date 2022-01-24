@@ -51,8 +51,9 @@ node('vagrant') {
                 def batsImage = docker.build("${bats_custom_image}:${bats_tag}", "--build-arg=BATS_BASE_IMAGE=${bats_base_image} --build-arg=BATS_TAG=${bats_tag} ./unitTests")
                 try {
                     sh "mkdir -p target"
+                    sh "mkdir -p testdir"
 
-                    batsContainer = batsImage.inside("--entrypoint='' -v ${WORKSPACE}:/workspace") {
+                    batsContainer = batsImage.inside("--entrypoint='' -v ${WORKSPACE}:/workspace -v ${WORKSPACE}/testdir:/usr/share/webapps") {
                         sh "make unit-test-shell-ci"
                     }
                 } finally {
