@@ -28,35 +28,13 @@ teardown() {
   rm "${BATS_TMPDIR}/bundle"
 }
 
-@test "checkDeprecatedPluginDir() should print a warning if directories exist in the deprecated plugin directory" {
-  source /workspace/resources/startup.sh
-  export DEPRECATED_PLUGIN_STORE="$(mktemp -d)"
-  export PLUGIN_DIRECTORY="a/path/to/a/better/world"
-  mktemp -p "${DEPRECATED_PLUGIN_STORE}"
-
-  run checkDeprecatedPluginDir
-
-  assert_success
-  assert_line --partial "WARNING: Found plugins in the deprecated plugin directory"
-}
-
-@test "checkDeprecatedPluginDir() should not print a warning if no directories exist in the deprecated plugin directory" {
-  source /workspace/resources/startup.sh
-  export DEPRECATED_PLUGIN_STORE="$(mktemp -d)"
-
-  run checkDeprecatedPluginDir
-
-  assert_success
-  refute_output
-}
-
 @test "install_plugin() should print an error but continue if a plugin directory turns out as regular file" {
   source /workspace/resources/startup.sh
   export DEFAULT_PLUGIN_DIRECTORY="$(mktemp -d)"
   export PLUGIN_DIRECTORY="a/path/to/a/better/world"
   pluginName="$(mktemp -p ${DEFAULT_PLUGIN_DIRECTORY})"
 
-  run install_plugin "${pluginName}"
+  run install_plugin "${PLUGIN_DIRECTORY}" "${pluginName}"
 
   assert_success
   assert_line --partial "ERROR"
@@ -72,11 +50,11 @@ teardown() {
   aPluginFileName="$(basename "${aPluginFile}")"
   export PLUGIN_DIRECTORY="$(mktemp -d)"
 
-  run install_plugin "${pluginName}"
+  run install_plugin "${DEFAULT_PLUGIN_DIRECTORY}" "${pluginName}"
 
   assert_success
-  assert_line "deinstall bundled plugin ${pluginName}"
-  assert_line "install bundled plugin ${pluginName}"
+  assert_line "remove plugin ${pluginName}"
+  assert_line "install plugin ${pluginName}"
   assert_dir_exist "${PLUGIN_DIRECTORY}/${pluginName}"
   assert_file_exist "${PLUGIN_DIRECTORY}/${pluginName}/${aPluginFileName}"
 }
@@ -98,8 +76,8 @@ teardown() {
 
   assert_success
   assert_line "installing plugins..."
-  assert_line "deinstall bundled plugin ${pluginName}"
-  assert_line "install bundled plugin ${pluginName}"
+  assert_line "remove plugin ${pluginName}"
+  assert_line "install plugin ${pluginName}"
   assert_line "running plugin migrations..."
   assert_line "plugin migrations... done"
   assert_dir_exist "${PLUGIN_DIRECTORY}/${pluginName}"

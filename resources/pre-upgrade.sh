@@ -23,25 +23,16 @@ function run_preupgrade() {
   echo "Set registry flag so startup script waits for post-upgrade to finish..."
   doguctl state "upgrading"
 
-  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
-    movePluginsToTempDirM4221
-  fi
-
   if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
-    movePluginsToTempDirM4234
+    # this migration only needs to be done if the additional plugins volume was already created
+    if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
+      movePluginsToTempDirM4234
+    fi
   fi
 
   doguctl config "startup/setup_done" "true"
 
   echo "Redmine pre-upgrade done"
-}
-
-function movePluginsToTempDirM4221() {
-  echo "Move plugins to temporary directory..."
-
-  movePluginsToTmpDir "${MIGRATION4221_TMP_DIR}"
-
-  echo "Moving plugins finished. The plugins will be moved back during the post-upgrade."
 }
 
 function movePluginsToTempDirM4234() {

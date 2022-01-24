@@ -41,13 +41,12 @@ function run_postupgrade() {
     sql "${DELETE_DUPLICATE_STATEMENT}"
   fi
 
-  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
-    migratePluginsBackToNewPluginsVolume
-  fi
-
   if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
-    migratePluginsBackToPluginsDirectory
-  fi
+      # this migration only needs to be done if the additional plugins volume was already created
+      if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
+        migratePluginsBackToPluginsDirectory
+      fi
+    fi
 
   echo "Making sure config/secrets.yml exists..."
   create_secrets_yml

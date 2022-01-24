@@ -62,28 +62,6 @@ teardown() {
   assert_failure
 }
 
-@test "migratePluginsBackToNewPluginsVolume() should move files back from the plugin temp volume" {
-  source /workspace/resources/post-upgrade.sh
-
-  export REDMINE_WORK_DIR="$(mktemp -d)"
-  productionPluginDir="${REDMINE_WORK_DIR}/plugins"
-  mkdir -p "${productionPluginDir}"
-
-  export MIGRATION_TMP_DIR="$(mktemp -d)"
-  aPluginDirectory="$(mktemp -d -p "${MIGRATION_TMP_DIR}")"
-  aPluginFile="$(mktemp -p "${aPluginDirectory}")"
-  pluginName="$(basename "${aPluginDirectory}")"
-  aPluginFileName="$(basename "${aPluginFile}")"
-
-  run migratePluginsBackToNewPluginsVolume
-
-  assert_success
-  assert_line --partial "Move plugins back to new plugin volume"
-  assert_line --partial "Migrating plugins finished successfully"
-  assert_dir_exist "${productionPluginDir}"
-  assert_file_exist "${productionPluginDir}/${pluginName}/${aPluginFileName}"
-}
-
 @test "run_postupgrade should provide PostgresSQL credentials (while note being exported)" {
   source /workspace/resources/post-upgrade.sh
 
