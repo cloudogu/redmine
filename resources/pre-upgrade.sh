@@ -6,7 +6,6 @@ set -o pipefail
 # WORKDIR is a Dockerfile global variable
 REDMINE_WORK_DIR="${WORKDIR}"
 DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
-MIGRATION4221_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.2.1"
 MIGRATION4234_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.3.4"
 
 function run_preupgrade() {
