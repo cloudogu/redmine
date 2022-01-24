@@ -74,20 +74,6 @@ function run_postupgrade() {
   echo "Redmine post-upgrade done"
 }
 
-# moves plugins which were moved from a pre-upgrade script back to the original path which although resides on a
-# different mount point.
-#
-# Global variables:
-# - MIGRATION4221_TMP_DIR - from pre-upgrade script
-# - REDMINE_WORK_DIR - from pre-upgrade script
-function migratePluginsBackToNewPluginsVolume() {
-  echo "Move plugins back to new plugin volume..."
-
-  restorePluginsFromTmpDir "${MIGRATION4221_TMP_DIR}"
-
-  echo "Migrating plugins finished successfully."
-}
-
 # moves plugins which were moved from a pre-upgrade script back to the original path
 #
 # Global variables:
@@ -105,14 +91,14 @@ function restorePluginsFromTmpDir(){
   local source_directory="$1"
 
   echo "remove redmine plugin directory"
-  rm -rf "${REDMINE_WORK_DIR}/plugins"
+  rm -rf "${REDMINE_WORK_DIR:?}/plugins"
   echo "create new redmine plugin directory"
-  mkdir "${REDMINE_WORK_DIR}/plugins"
+  mkdir "${REDMINE_WORK_DIR:?}/plugins"
 
   # copy plugins to plugin installation source directory
-  cp -r "${source_directory}"/* "${PLUGIN_STORE}"
+  cp -r "${source_directory:?}"/* "${PLUGIN_STORE}"
   # copy plugins back to redmine plugins directory
-  cp -r "${source_directory}"/* "${REDMINE_WORK_DIR}/plugins/"
+  cp -r "${source_directory:?}"/* "${REDMINE_WORK_DIR}/plugins/"
 
   rm -rf "${source_directory}"
 }
