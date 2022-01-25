@@ -83,6 +83,10 @@ node('vagrant') {
                 ecoSystem.build("/dogu")
             }
 
+            stage('provide test date') {
+                installTestPlugin()
+            }
+
             stage('Verify') {
                 ecoSystem.verify("/dogu")
             }
@@ -91,7 +95,19 @@ node('vagrant') {
                 ecoSystem.runCypressIntegrationTests([
                     cypressImage:"cypress/included:8.7.0",
                     enableVideo: params.EnableVideoRecording,
-                    enableScreenshots: params.EnableScreenshotRecording
+                    enableScreenshots: params.EnableScreenshotRecording,
+                    additionalCypressArgs: "-e TAGS='not @after_restart'"
+                ])
+
+                ecoSystem.vagrant.ssh "cesapp command ${doguName} delete-plugin redmine_noop_plugin --force"
+                ecoSystem.vagrant.ssh "docker restart ${doguName}"
+                ecoSystem.waitForDogu(doguName)
+
+                ecoSystem.runCypressIntegrationTests([
+                        cypressImage:"cypress/included:8.7.0",
+                        enableVideo: params.EnableVideoRecording,
+                        enableScreenshots: params.EnableScreenshotRecording,
+                        additionalCypressArgs: "-e TAGS='@after_restart'"
                 ])
             }
 
@@ -147,4 +163,17 @@ node('vagrant') {
             }
         }
     }
+}
+
+def installTestPlugin() {
+    String noopPluginVersion = "0.0.1"
+    String archiveName = "v${noopPluginVersion}_redmine_noop_plugin.tar.gz"
+
+    sh "mkdir ${WORKSPACE}/testplugins/redmine_noop_plugin"
+    sh "wget -O ${archiveName} https://github.com/cloudogu/redmine-noop-plugin/archive/v${noopPluginVersion}.tar.gz"
+
+    sh "tar xfz ${archiveName} --strip-components=1 -C ${WORKSPACE}/testplugins/redmine_noop_plugin"
+    sh "rm  ${archiveName}"
+
+    sh "mv -r ${WORKSPACE}/testplugins/redmine_noop_plugin /var/lib/ces/redmine/volumes/plugins/"
 }
