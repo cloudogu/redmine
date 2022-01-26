@@ -84,7 +84,7 @@ node('vagrant') {
             }
 
             stage('provide test date') {
-                installTestPlugin()
+                installTestPlugin(ecoSystem)
             }
 
             stage('Verify') {
@@ -92,23 +92,12 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                ecoSystem.runCypressIntegrationTests([
-                    cypressImage:"cypress/included:8.7.0",
-                    enableVideo: params.EnableVideoRecording,
-                    enableScreenshots: params.EnableScreenshotRecording,
-                    additionalCypressArgs: "-e TAGS='not @after_restart'"
-                ])
+                runTests("-e TAGS='not @after_restart'")
 
-                ecoSystem.vagrant.ssh "cesapp command ${doguName} delete-plugin redmine_noop_plugin --force"
-                ecoSystem.vagrant.ssh "docker restart ${doguName}"
-                ecoSystem.waitForDogu(doguName)
+                deletePlugin(ecoSystem, "redmine_noop_plugin")
+                restartAndWait(ecoSystem)
 
-                ecoSystem.runCypressIntegrationTests([
-                        cypressImage:"cypress/included:8.7.0",
-                        enableVideo: params.EnableVideoRecording,
-                        enableScreenshots: params.EnableScreenshotRecording,
-                        additionalCypressArgs: "-e TAGS='@after_restart'"
-                ])
+                runTests("-e TAGS='@after_restart'")
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -134,11 +123,7 @@ node('vagrant') {
 
                 stage('Integration Tests - After Upgrade') {
                     // Run integration tests again to verify that the upgrade was successful
-                    ecoSystem.runCypressIntegrationTests([
-                        cypressImage:"cypress/included:8.7.0",
-                        enableVideo: params.EnableVideoRecording,
-                        enableScreenshots: params.EnableScreenshotRecording
-                    ])
+                    runTests("-e TAGS='not @after_restart'")
                 }
             }
 
@@ -165,15 +150,35 @@ node('vagrant') {
     }
 }
 
-def installTestPlugin() {
+def restartAndWait(EcoSystem ecoSystem) {
+    ecoSystem.vagrant.ssh "sudo docker restart redmine"
+    ecoSystem.waitForDogu("redmine")
+}
+
+def deletePlugin(EcoSystem ecoSystem, String name){
+    ecoSystem.vagrant.ssh "sudo cesapp command redmine delete-plugin ${name} --force"
+}
+
+def installTestPlugin(EcoSystem ecoSystem) {
     String noopPluginVersion = "0.0.1"
     String archiveName = "v${noopPluginVersion}_redmine_noop_plugin.tar.gz"
 
-    sh "mkdir ${WORKSPACE}/testplugins/redmine_noop_plugin"
+    sh "mkdir -p ${WORKSPACE}/testplugins/redmine_noop_plugin"
     sh "wget -O ${archiveName} https://github.com/cloudogu/redmine-noop-plugin/archive/v${noopPluginVersion}.tar.gz"
 
     sh "tar xfz ${archiveName} --strip-components=1 -C ${WORKSPACE}/testplugins/redmine_noop_plugin"
     sh "rm  ${archiveName}"
 
-    sh "mv -r ${WORKSPACE}/testplugins/redmine_noop_plugin /var/lib/ces/redmine/volumes/plugins/"
+    //ecoSystem.vagrant.ssh "mkdir -p /var/lib/ces/redmine/volumes/plugins/redmine_noop_plugin"
+
+    ecoSystem.vagrant.ssh "sudo mv -v /dogu/testplugins/redmine_noop_plugin /var/lib/ces/redmine/volumes/plugins/"
+}
+
+def runTests(String additionalCypressArgs) {
+    ecoSystem.runCypressIntegrationTests([
+            cypressImage:"cypress/included:8.7.0",
+            enableVideo: params.EnableVideoRecording,
+            enableScreenshots: params.EnableScreenshotRecording,
+            additionalCypressArgs: "${additionalCypressArgs}"
+    ])
 }
