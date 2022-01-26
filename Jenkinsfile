@@ -79,12 +79,12 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                runTests("-e TAGS='not (@after_plugin_deletion and @UpgradeTest)'")
+                runTests(ecoSystem, "-e TAGS='(not @after_plugin_deletion) and (not @UpgradeTest)'")
 
                 deletePlugin(ecoSystem, testPluginName)
                 restartAndWait(ecoSystem)
 
-                runTests("-e TAGS='@after_plugin_deletion and not @UpgradeTest'")
+                runTests(ecoSystem, "-e TAGS='@after_plugin_deletion and (not @UpgradeTest)'")
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -111,7 +111,7 @@ node('vagrant') {
 
                 stage('Integration Tests - After Upgrade') {
                     // Run integration tests again to verify that the upgrade was successful
-                    runTests("-e TAGS='not @after_plugin_deletion'")
+                    runTests(ecoSystem, "-e TAGS='not @after_plugin_deletion'")
                 }
             }
 
@@ -165,7 +165,7 @@ static def installTestPlugin(EcoSystem ecoSystem, String name) {
     ecoSystem.vagrant.ssh "sudo cp -r /dogu/testplugins/${name}/* /var/lib/ces/redmine/volumes/plugins/"
 }
 
-def runTests(String additionalCypressArgs) {
+def runTests(EcoSystem ecoSystem, String additionalCypressArgs) {
     ecoSystem.runCypressIntegrationTests([
             cypressImage         : "cypress/included:8.7.0",
             enableVideo          : params.EnableVideoRecording,
