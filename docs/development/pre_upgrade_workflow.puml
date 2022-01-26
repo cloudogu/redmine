@@ -22,17 +22,11 @@ endif
 
 :First param into variable FROM_VERSION;
 :Second param into variable TO_VERSION;
-:execute echo with string:
-"Executing Redmine pre-upgrade from ${FROM_VERSION} to ${TO_VERSION}";
 
 if (FROM_VERSION is equal to TO_VERSION) then (yes)
-:execute echo with string:
-"FROM and TO versions are the same; Exiting...";
-:exit with status code 1;
+:exit with status code 0;
 end
 else (no)
-:execute echo with string:
-"Set registry flag so startup script waits for post-upgrade to finish...";
 :execute command: doguctl state "upgrading";
 endif
 
@@ -43,10 +37,7 @@ if (is FROM_VERSION less or equal than "4.2.3-4") then (no)
    else (no)
 endif
 
-:execute command:
-doguctl config "startup/setup_done" "true";
-:execute echo with string:
-"Redmine pre-upgrade done";
+:execute command: doguctl config "startup/setup_done" "true";
 stop
 
 @enduml
