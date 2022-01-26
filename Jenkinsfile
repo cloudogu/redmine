@@ -6,6 +6,8 @@ import com.cloudogu.ces.zaleniumbuildlib.*
 
 node('vagrant') {
     String doguName = "redmine"
+    String testPluginName = "redmine_noop_plugin"
+    String testPluginVersion = "0.0.1"
     Git git = new Git(this, "cesmarvin")
     git.committerName = 'cesmarvin'
     git.committerEmail = 'cesmarvin@cloudogu.com'
@@ -44,24 +46,11 @@ node('vagrant') {
 
         try {
             stage('Shell tests') {
-                def bats_base_image="bats/bats"
-                def bats_custom_image="cloudogu/bats"
-                def bats_tag="1.2.1"
-
-                def batsImage = docker.build("${bats_custom_image}:${bats_tag}", "--build-arg=BATS_BASE_IMAGE=${bats_base_image} --build-arg=BATS_TAG=${bats_tag} ./unitTests")
-                try {
-                    sh "mkdir -p target"
-                    sh "mkdir -p testdir"
-
-                    batsContainer = batsImage.inside("--entrypoint='' -v ${WORKSPACE}:/workspace -v ${WORKSPACE}/testdir:/usr/share/webapps") {
-                        sh "make unit-test-shell-ci"
-                    }
-                } finally {
-                    junit allowEmptyResults: true, testResults: 'target/shell_test_reports/*.xml'
-                }
+                executeShellTests()
             }
 
             stage('Provision') {
+                prepareTestPlugin(testPluginName, testPluginVersion)
                 ecoSystem.provision("/dogu");
             }
 
@@ -81,10 +70,7 @@ node('vagrant') {
 
             stage('Build') {
                 ecoSystem.build("/dogu")
-            }
-
-            stage('provide test date') {
-                installTestPlugin(ecoSystem)
+                installTestPlugin(ecoSystem, testPluginName)
             }
 
             stage('Verify') {
@@ -92,12 +78,12 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                runTests("-e TAGS='not @after_restart'")
+                runTests("-e TAGS='not (@after_plugin_deletion and @UpgradeTest)'")
 
-                deletePlugin(ecoSystem, "redmine_noop_plugin")
+                deletePlugin(ecoSystem, testPluginName)
                 restartAndWait(ecoSystem)
 
-                runTests("-e TAGS='@after_restart'")
+                runTests("-e TAGS='@after_plugin_deletion and not @UpgradeTest'")
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -112,6 +98,7 @@ node('vagrant') {
                         println "Installing latest released version of dogu..."
                         ecoSystem.installDogu("official/" + doguName)
                     }
+                    installTestPlugin(ecoSystem, testPluginName)
                     ecoSystem.startDogu(doguName)
                     ecoSystem.waitForDogu(doguName)
                     ecoSystem.upgradeDogu(ecoSystem)
@@ -123,7 +110,7 @@ node('vagrant') {
 
                 stage('Integration Tests - After Upgrade') {
                     // Run integration tests again to verify that the upgrade was successful
-                    runTests("-e TAGS='not @after_restart'")
+                    runTests("-e TAGS='not @after_plugin_deletion'")
                 }
             }
 
@@ -150,35 +137,53 @@ node('vagrant') {
     }
 }
 
-def restartAndWait(EcoSystem ecoSystem) {
+static def restartAndWait(EcoSystem ecoSystem) {
     ecoSystem.vagrant.ssh "sudo docker restart redmine"
     ecoSystem.waitForDogu("redmine")
 }
 
-def deletePlugin(EcoSystem ecoSystem, String name){
+static def deletePlugin(EcoSystem ecoSystem, String name) {
     ecoSystem.vagrant.ssh "sudo cesapp command redmine delete-plugin ${name} --force"
 }
 
-def installTestPlugin(EcoSystem ecoSystem) {
-    String noopPluginVersion = "0.0.1"
-    String archiveName = "v${noopPluginVersion}_redmine_noop_plugin.tar.gz"
+def prepareTestPlugin(String name, String version) {
+    String archiveName = "v${version}_${name}.tar.gz"
 
-    sh "mkdir -p ${WORKSPACE}/testplugins/redmine_noop_plugin"
-    sh "wget -O ${archiveName} https://github.com/cloudogu/redmine-noop-plugin/archive/v${noopPluginVersion}.tar.gz"
+    sh "mkdir -p ${WORKSPACE}/testplugins/${name}"
+    sh "wget -O ${archiveName} https://github.com/cloudogu/${name}/archive/v${version}.tar.gz"
 
-    sh "tar xfz ${archiveName} --strip-components=1 -C ${WORKSPACE}/testplugins/redmine_noop_plugin"
-    sh "rm  ${archiveName}"
+    sh "tar xfz ${archiveName} --strip-components=1 -C ${WORKSPACE}/testplugins/${name}"
+    sh "rm ${archiveName}"
+}
 
-    //ecoSystem.vagrant.ssh "mkdir -p /var/lib/ces/redmine/volumes/plugins/redmine_noop_plugin"
-
-    ecoSystem.vagrant.ssh "sudo mv -v /dogu/testplugins/redmine_noop_plugin /var/lib/ces/redmine/volumes/plugins/"
+static def installTestPlugin(EcoSystem ecoSystem, String name) {
+    ecoSystem.vagrant.ssh "sudo mkdir -p /var/lib/ces/redmine/volumes/plugins/${name}"
+    ecoSystem.vagrant.ssh "sudo cp -r /dogu/testplugins/${name}/* /var/lib/ces/redmine/volumes/plugins/"
 }
 
 def runTests(String additionalCypressArgs) {
     ecoSystem.runCypressIntegrationTests([
-            cypressImage:"cypress/included:8.7.0",
-            enableVideo: params.EnableVideoRecording,
-            enableScreenshots: params.EnableScreenshotRecording,
+            cypressImage         : "cypress/included:8.7.0",
+            enableVideo          : params.EnableVideoRecording,
+            enableScreenshots    : params.EnableScreenshotRecording,
             additionalCypressArgs: "${additionalCypressArgs}"
     ])
+}
+
+def executeShellTests() {
+    def bats_base_image = "bats/bats"
+    def bats_custom_image = "cloudogu/bats"
+    def bats_tag = "1.2.1"
+
+    def batsImage = docker.build("${bats_custom_image}:${bats_tag}", "--build-arg=BATS_BASE_IMAGE=${bats_base_image} --build-arg=BATS_TAG=${bats_tag} ./unitTests")
+    try {
+        sh "mkdir -p target"
+        sh "mkdir -p testdir"
+
+        batsContainer = batsImage.inside("--entrypoint='' -v ${WORKSPACE}:/workspace -v ${WORKSPACE}/testdir:/usr/share/webapps") {
+            sh "make unit-test-shell-ci"
+        }
+    } finally {
+        junit allowEmptyResults: true, testResults: 'target/shell_test_reports/*.xml'
+    }
 }
