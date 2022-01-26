@@ -1,0 +1,60 @@
+@startuml
+
+start
+:set option to output on the standard error stream stderr;
+:set option nounset, which causes the shell to indicate an error
+when it encounters an undefined variable;
+:set option pipefail to abort the whole script
+in case of an error of one line;
+
+:safe the number 1 into the
+variable num_min_required_params;
+:safe the number 2 into the
+variable num_max_required_params;
+:safe the amount of parameters given into the script call
+into the variable num_params;
+
+:safe path for default plugins
+into variable DEFAULT_PLUGIN_DIRECTORY ;
+
+if (amount of params is less than minimum required numbers of parameters
+or
+amount of params is greater than the maximum required numbers of parameters ) then (yes)
+    :print usage info;
+    :exit with code 1;
+    end
+    else (no)
+endif
+
+:safe the second parameter given on script call
+into the variable plugin_name;
+
+if (number of parameter equals to 1) then(yes)
+    :print usage info;
+    :exit with code 1;
+    end
+    else (no)
+endif
+
+:safe third parameter into variable force_param;
+
+if (content of variable force_param is NOT "--force") then (yes)
+    :print usage info;
+    :exit with code 1;
+    end
+    else (no)
+endif
+
+if (FILE "/usr/share/webapps/redmine/plugins/${plugin_name}"
+DOESN'T exists and is NOT a directory) then (yes)
+    :exit with code 1;
+    end
+    else (no)
+endif
+
+:check if plugin is a bundled plugin/ default plugin;
+
+:delete plugin;
+stop
+
+@enduml
