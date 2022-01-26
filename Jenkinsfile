@@ -79,12 +79,12 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                runTests(ecoSystem, "-e TAGS='(not @after_plugin_deletion) and (not @UpgradeTest)'")
+                runTests(ecoSystem, "-e TAGS='not (@after_plugin_deletion or @UpgradeTest)'")
 
                 deletePlugin(ecoSystem, testPluginName)
                 restartAndWait(ecoSystem)
 
-                runTests(ecoSystem, "-e TAGS='@after_plugin_deletion and (not @UpgradeTest)'")
+                runTests(ecoSystem, "-e TAGS='@after_plugin_deletion and not @UpgradeTest'")
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -162,7 +162,7 @@ def prepareTestPlugin(String name, String version, String repoName="") {
 
 static def installTestPlugin(EcoSystem ecoSystem, String name) {
     ecoSystem.vagrant.ssh "sudo mkdir -p /var/lib/ces/redmine/volumes/plugins/${name}"
-    ecoSystem.vagrant.ssh "sudo cp -r /dogu/testplugins/${name}/* /var/lib/ces/redmine/volumes/plugins/"
+    ecoSystem.vagrant.ssh "sudo cp -r /dogu/testplugins/${name} /var/lib/ces/redmine/volumes/plugins/"
 }
 
 def runTests(EcoSystem ecoSystem, String additionalCypressArgs) {
