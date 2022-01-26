@@ -6,6 +6,8 @@ LABEL NAME="official/redmine" \
    maintainer="hello@cloudogu.com"
 
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
+# copy resource files
+COPY resources/usr /usr
 
 # set environment variables
 ENV REDMINE_VERSION=4.2.3 \
@@ -28,9 +30,6 @@ ENV REDMINE_VERSION=4.2.3 \
     THEME_TARGZ_SHA256=b541030c7351a4f71561e8ac409fbcc257978c9de75816bcbcdcd199f7446cfb \
     STARTUP_DIR=/
 
-# copy resource files
-COPY resources/ /
-
 RUN set -eux -o pipefail \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
@@ -38,6 +37,7 @@ RUN set -eux -o pipefail \
  # install runtime packages
  && apk --no-cache add --virtual /.run-deps \
    postgresql-client \
+   mariadb-client \
    sqlite-libs \
    imagemagick6 \
    imagemagick \
@@ -51,6 +51,7 @@ RUN set -eux -o pipefail \
    libffi \
    su-exec \
    git \
+   mariadb-connector-c-dev \
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
    build-base \
@@ -63,6 +64,7 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
+   mariadb-dev \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
@@ -145,6 +147,8 @@ WORKDIR ${WORKDIR}
 
 # expose application port
 EXPOSE 3000
+
+COPY resources/ /
 
 HEALTHCHECK CMD doguctl healthy redmine || exit 1
 

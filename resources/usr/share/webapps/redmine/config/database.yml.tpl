@@ -3,11 +3,11 @@
 # Line indentation must be 2 spaces (no tabs).
 
 production:
-  adapter: postgresql
-  database: {{ .Config.GetAndDecrypt "sa-postgresql/database" }}
-  host: postgresql
-  username: {{ .Config.GetAndDecrypt "sa-postgresql/username" }}
-  password: {{ .Config.GetAndDecrypt "sa-postgresql/password" }}
+  adapter: mysql2
+  database: {{ .Config.GetAndDecrypt "sa-mariadb/database" }}
+  host: mariadb
+  username: {{ .Config.GetAndDecrypt "sa-mariadb/username" }}
+  password: {{ .Config.GetAndDecrypt "sa-mariadb/password" }}
   encoding: utf8
 
 #development:

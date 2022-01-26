@@ -94,10 +94,10 @@ function runMain() {
   export FQDN
   export ADMIN_GROUP
 
-  # wait until postgresql passes all health checks
-  echo "wait until postgresql passes all health checks"
-  if ! doguctl healthy --wait --timeout 120 postgresql; then
-    echo "timeout reached by waiting of postgresql to get healthy"
+  # wait until mariadb passes all health checks
+  echo "wait until mariadb passes all health checks"
+  if ! doguctl healthy --wait --timeout 120 mariadb; then
+    echo "timeout reached by waiting of mariadb to get healthy"
     exit 1
   fi
 
@@ -145,31 +145,24 @@ function runMain() {
     exec_rake redmine:load_default_data
 
     echo "Writing cas plugin settings to database..."
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', '--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
-
     # Enabling REST API
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('rest_api_enabled', 1, now());"
-
     # Insert auth_sources record for AuthSourceCas authentication source
-    sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
-
+    sql "INSERT INTO auth_sources (type, name, host, port, account, account_password, base_dn, attr_login, attr_firstname, attr_lastname, attr_mail, onthefly_register, tls, filter, timeout) VALUES ('AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
     # write url settings to database
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('protocol','https', now());"
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', E'You have received this notification because you have either subscribed to it, or are involved in it.\\r\\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
-
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('emails_footer', 'You have received this notification because you have either subscribed to it, or are involved in it.\\r\\nTo change your notification preferences, please click here: https://${FQDN}/redmine/my/account', now());"
     # set default email address
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('mail_from','${MAIL_ADDRESS}', now());"
-
     # set theme to cloudogu, do this only on installation not on a upgrade
     # because the user should be able to change the theme
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('ui_theme','Cloudogu', now());"
-
     # enable gravatar
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_enabled', 1, now());"
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_default', 'identicon', now());"
-
     # we use markdown as default format, however it can be changed
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'markdown', now());"
 

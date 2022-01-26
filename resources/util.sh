@@ -123,16 +123,16 @@ function render_configuration_yml_template() {
 }
 
 function sql(){
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
+  mariadb -p"${DATABASE_USER_PASSWORD}" -h"mariadb" -u"${DATABASE_USER}" -e "${1}" "${DATABASE_DB}"
 }
 
 function get_setting_value() {
   SETTING_NAME=$1
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql -t \
-    --host "postgresql" \
-    --username "${DATABASE_USER}" \
-    --dbname "${DATABASE_DB}" \
-    -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
+  mariadb \
+    -p"${DATABASE_USER_PASSWORD}" \
+    -h"mariadb" \
+    -u"${DATABASE_USER}" \
+    -e "SELECT value FROM settings WHERE name='${SETTING_NAME}';" "${DATABASE_DB}"
 }
 
 function stop_redmine_daemon(){
@@ -222,9 +222,9 @@ function wait_for_redmine_to_get_healthy() {
 
 function fetchDatabaseConnection() {
   echo "get data for database connection"
-  DATABASE_USER="$(doguctl config -e sa-postgresql/username)"
-  DATABASE_USER_PASSWORD="$(doguctl config -e sa-postgresql/password)"
-  DATABASE_DB="$(doguctl config -e sa-postgresql/database)"
+  DATABASE_USER="$(doguctl config -e sa-mariadb/username)"
+  DATABASE_USER_PASSWORD="$(doguctl config -e sa-mariadb/password)"
+  DATABASE_DB="$(doguctl config -e sa-mariadb/database)"
 }
 
 # make the script only run when executed, not when sourced from bats tests)

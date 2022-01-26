@@ -102,7 +102,7 @@
   ],
   "ServiceAccounts": [
     {
-      "Type": "postgresql"
+      "Type": "mariadb"
     }
   ],
   "HealthChecks": [
