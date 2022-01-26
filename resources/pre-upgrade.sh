@@ -16,7 +16,7 @@ function run_preupgrade() {
 
   if [ "${FROM_VERSION}" = "${TO_VERSION}" ]; then
     echo "FROM and TO versions are the same; Exiting..."
-    exit 0
+    exit 1
   fi
 
   echo "Set registry flag so startup script waits for post-upgrade to finish..."
