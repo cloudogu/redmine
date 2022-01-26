@@ -7,6 +7,7 @@ import com.cloudogu.ces.zaleniumbuildlib.*
 node('vagrant') {
     String doguName = "redmine"
     String testPluginName = "redmine_noop_plugin"
+    String testPluginRepoName = "redmine-noop-plugin"
     String testPluginVersion = "0.0.1"
     Git git = new Git(this, "cesmarvin")
     git.committerName = 'cesmarvin'
@@ -50,7 +51,7 @@ node('vagrant') {
             }
 
             stage('Provision') {
-                prepareTestPlugin(testPluginName, testPluginVersion)
+                prepareTestPlugin(testPluginName, testPluginVersion, testPluginRepoName)
                 ecoSystem.provision("/dogu");
             }
 
@@ -146,11 +147,14 @@ static def deletePlugin(EcoSystem ecoSystem, String name) {
     ecoSystem.vagrant.ssh "sudo cesapp command redmine delete-plugin ${name} --force"
 }
 
-def prepareTestPlugin(String name, String version) {
+def prepareTestPlugin(String name, String version, String repoName="") {
+    if (repoName == "") {
+        repoName = name
+    }
     String archiveName = "v${version}_${name}.tar.gz"
 
     sh "mkdir -p ${WORKSPACE}/testplugins/${name}"
-    sh "wget -O ${archiveName} https://github.com/cloudogu/${name}/archive/v${version}.tar.gz"
+    sh "wget -O ${archiveName} https://github.com/cloudogu/${repoName}/archive/v${version}.tar.gz"
 
     sh "tar xfz ${archiveName} --strip-components=1 -C ${WORKSPACE}/testplugins/${name}"
     sh "rm ${archiveName}"
