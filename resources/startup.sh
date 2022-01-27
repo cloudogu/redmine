@@ -133,7 +133,7 @@ function runMain() {
 
     # Reason for this update: The cas plugin config should not be configurable. This lock out the user and make the dogu unusable.
     # This is why the config is overridden at each start. The only flag that must be configurable is the redirect_enabled flag.
-    sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\n${REDIRECT_SETTINGS}cas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" >/dev/null 2>&1
+    sql "UPDATE settings SET value='--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\n${REDIRECT_SETTINGS}cas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" >/dev/null 2>&1
   else
 
     # Create the database structure
