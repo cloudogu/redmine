@@ -53,3 +53,4 @@ Die mit dem Docker-Image gelieferten Standard-Plugin, die für den Betrieb des D
 - redmine_extended_rest_api
 - redmine_activerecord_session_store
 
+![UI](figures/uninstall_plugin_redmine.png)

@@ -1,0 +1,43 @@
+@startuml
+
+start
+if (is argument count correct) then (yes)
+else (no)
+    :print usage info;
+    :exit with code 1;
+    stop
+endif
+
+:safe the second parameter given on script call
+into the variable plugin_name;
+
+if (number of parameter equals to 1) then(yes)
+    :print usage info;
+    :exit with code 1;
+    stop
+else (no)
+endif
+
+if (is "--force" flag set) then (yes)
+else (no)
+    :print usage info;
+    :exit with code 1;
+    stop
+endif
+
+if (plugin exists) then (yes)
+else (no)
+    :exit with code 1;
+    stop
+endif
+
+if (is default plugin) then (yes)
+    :exit with code 1;
+    stop
+else (no)
+endif
+
+:delete plugin;
+end
+
+@enduml

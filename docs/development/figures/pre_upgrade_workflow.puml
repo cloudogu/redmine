@@ -1,0 +1,27 @@
+@startuml
+start
+
+if (the script is actively executed) then (yes)
+:call function run_preupgrade() with all params;
+else (no)
+ stop
+endif
+
+if (FROM_VERSION not equal to TO_VERSION) then (yes)
+:execute command: doguctl state "upgrading";
+else (no)
+:exit with status code 0;
+stop
+endif
+
+if (is FROM_VERSION less or equal than "4.2.3-4") then (no)
+    elseif (is FROM_VERSION NOT less or equal then "4.2.2-1") then (yes)
+    :move plugins into a newly made directory
+    with the path from the MIGRATION4234_TMP_DIR variable;
+   else (no)
+endif
+
+:execute command: doguctl config "startup/setup_done" "true";
+stop
+
+@enduml
