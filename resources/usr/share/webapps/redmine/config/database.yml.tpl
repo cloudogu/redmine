@@ -8,7 +8,7 @@ production:
   host: mariadb
   username: {{ .Config.GetAndDecrypt "sa-mariadb/username" }}
   password: {{ .Config.GetAndDecrypt "sa-mariadb/password" }}
-  encoding: utf8
+  encoding: utf8mb4
 
 #development:
 #  adapter: mysql2
