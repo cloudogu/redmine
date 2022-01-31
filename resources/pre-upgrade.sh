@@ -5,7 +5,8 @@ set -o pipefail
 
 # WORKDIR is a Dockerfile global variable
 REDMINE_WORK_DIR="${WORKDIR}"
-MIGRATION_TMP_DIR="/var/tmp/redmine/plugins/migration4.4.2.1"
+DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
+MIGRATION_VERSION_4234_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.3.4"
 
 function run_preupgrade() {
   FROM_VERSION="${1}"
@@ -21,8 +22,11 @@ function run_preupgrade() {
   echo "Set registry flag so startup script waits for post-upgrade to finish..."
   doguctl state "upgrading"
 
-  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
-    movePluginsToTempDir
+  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
+    # this migration only needs to be done if the additional plugins volume was already created
+    if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
+      movePluginsToTempDirM4234
+    fi
   fi
 
   doguctl config "startup/setup_done" "true"
@@ -30,13 +34,26 @@ function run_preupgrade() {
   echo "Redmine pre-upgrade done"
 }
 
-function movePluginsToTempDir() {
+function movePluginsToTempDirM4234() {
   echo "Move plugins to temporary directory..."
 
-  mkdir -p "${MIGRATION_TMP_DIR}"
-  find "${REDMINE_WORK_DIR}"/plugins/* -maxdepth 0 -type d -exec mv '{}' "${MIGRATION_TMP_DIR}" \;
+  movePluginsToTmpDir "${MIGRATION_VERSION_4234_TMP_DIR}"
 
   echo "Moving plugins finished. The plugins will be moved back during the post-upgrade."
+}
+
+function movePluginsToTmpDir(){
+  local target_directory="$1"
+
+  mkdir -p "${target_directory}"
+  find "${REDMINE_WORK_DIR}"/plugins/* -maxdepth 0 -type d -exec mv '{}' "${target_directory}" \;
+
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    if [[ -d "${target_directory}/${PLUGIN_PACKAGE}" ]]; then
+      rm -rf "${target_directory:?}/${PLUGIN_PACKAGE}"
+    fi
+  done
 }
 
 # versionXLessOrEqualThanY returns true if X is less than or equal to Y; otherwise false

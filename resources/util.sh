@@ -17,20 +17,18 @@ DATABASE_DB=
 # DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
 # them from the plugin directory
 DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
-DEPRECATED_PLUGIN_STORE="/var/tmp/redmine/plugins"
+PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
 function install_plugins(){
   echo "installing plugins..."
 
-  checkDeprecatedPluginDir
+  installBundledPlugins
 
-  forceInstallBundledPlugins
+  installCustomPlugins
 
   # Installing Gems needs either an internet connection for pulling Gem dependencies or
   # all required Gems in the Gem path.
-  installPluginGems
-
   runPluginMigration
 }
 
@@ -41,15 +39,15 @@ function runPluginMigration() {
   echo "plugin migrations... done"
 }
 
-function installPluginGems() {
+function installMissingGems() {
   # Install missing gems if new plugins are going to be installed.
   # Otherwise bundle will detect that there are no changes and thus no new gems are needed
   echo "install missing gems ..."
 
   rakeExitCode=0
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install || rakeExitCode=$?
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install --quiet || rakeExitCode=$?
   if [[ ${rakeExitCode} -ne 0 ]]; then
-    echo "ERROR: Rake bund installed returned with an error during the gem installation for new plugins"
+    echo "ERROR: bundle install returned with an error during the gem installation"
     sleep 300
     exit 1
   fi
@@ -59,8 +57,9 @@ function installPluginGems() {
 
 # installs or upgrades the given plugin
 function install_plugin(){
-  NAME="${1}"
-  SOURCE="${DEFAULT_PLUGIN_DIRECTORY}/${NAME}"
+  SOURCE_DIRECTORY="${1}"
+  NAME="${2}"
+  SOURCE="${SOURCE_DIRECTORY}/${NAME}"
   TARGET="${PLUGIN_DIRECTORY}/${NAME}"
 
   if [ ! -d "${SOURCE}" ]; then
@@ -68,28 +67,37 @@ function install_plugin(){
     return
   fi
 
-  echo "deinstall bundled plugin ${NAME}"
+  echo "remove plugin ${NAME}"
   rm -rf "${TARGET}"
 
-  echo "install bundled plugin ${NAME}"
+  echo "install plugin ${NAME}"
   cp -rf "${SOURCE}" "${TARGET}"
 }
 
-function checkDeprecatedPluginDir() {
-  if [[ -n "$(ls -A "${DEPRECATED_PLUGIN_STORE}")" ]]; then
-     echo "WARNING: Found plugins in the deprecated plugin directory ${DEPRECATED_PLUGIN_STORE}. Please use the plugin volume which maps to ${PLUGIN_DIRECTORY} instead."
-  fi
+function installBundledPlugins() {
+  echo "install default plugins ..."
+
+  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    install_plugin "${DEFAULT_PLUGIN_DIRECTORY}" "${PLUGIN_PACKAGE}"
+  done
 }
 
-function forceInstallBundledPlugins() {
-  PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
+function installCustomPlugins() {
+  echo "install custom plugins ..."
 
+  PLUGINS=$(ls "${PLUGIN_STORE}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
-    install_plugin "${PLUGIN_PACKAGE}"
+    install_plugin "${PLUGIN_STORE}" "${PLUGIN_PACKAGE}"
   done
 }
 
 function exec_rake() {
+  # Installing Gems needs either an internet connection for pulling Gem dependencies or
+  # all required Gems in the Gem path.
+  # Installing missing Gems is necessary at this point. The following rake task execution works only if the
+  # dependencies required by plugins and the core modules are present.
+  installMissingGems
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 

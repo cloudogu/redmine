@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Add an exposed command to delete a Redmine plugin. Call via the cesapp: 
+`cesapp command redmine delete-plugin <plugin-name> --force` (#80)
+
+### Fixed
+- plugins can now be installed on first Dogu start. This was prevented by missing dependencies in older versions.
 
 ## [v4.2.3-4] - 2022-01-14
 ### Changed

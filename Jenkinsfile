@@ -6,6 +6,10 @@ import com.cloudogu.ces.zaleniumbuildlib.*
 
 node('vagrant') {
     String doguName = "redmine"
+    String testPluginName = "redmine_noop_plugin"
+    String testPluginRepoName = "redmine-noop-plugin"
+    String testPluginVersion = "0.0.1"
+
     Git git = new Git(this, "cesmarvin")
     git.committerName = 'cesmarvin'
     git.committerEmail = 'cesmarvin@cloudogu.com'
@@ -39,12 +43,16 @@ node('vagrant') {
         }
 
         stage('Shell-Check') {
-            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh ./resources/create-admin.sh ./resources/default-config.sh ./resources/remove-user.sh ./resources/util.sh")
+            shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh ./resources/create-admin.sh ./resources/default-config.sh ./resources/remove-user.sh ./resources/util.sh ./resources/delete-plugin.sh")
         }
 
         try {
+            stage('Shell tests') {
+                executeShellTests()
+            }
 
             stage('Provision') {
+                prepareTestPlugin(testPluginName, testPluginVersion, testPluginRepoName)
                 ecoSystem.provision("/dogu");
             }
 
@@ -64,6 +72,7 @@ node('vagrant') {
 
             stage('Build') {
                 ecoSystem.build("/dogu")
+                installTestPlugin(ecoSystem, testPluginName)
             }
 
             stage('Verify') {
@@ -71,11 +80,12 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                ecoSystem.runCypressIntegrationTests([
-                    cypressImage:"cypress/included:8.7.0",
-                    enableVideo: params.EnableVideoRecording,
-                    enableScreenshots: params.EnableScreenshotRecording
-                ])
+                runIntegrationTests(ecoSystem, "-e TAGS='not (@after_plugin_deletion or @UpgradeTest)'")
+
+                deletePlugin(ecoSystem, testPluginName)
+                restartAndWait(ecoSystem)
+
+                runIntegrationTests(ecoSystem, "-e TAGS='@after_plugin_deletion and not @UpgradeTest'")
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -90,6 +100,7 @@ node('vagrant') {
                         println "Installing latest released version of dogu..."
                         ecoSystem.installDogu("official/" + doguName)
                     }
+                    installTestPlugin(ecoSystem, testPluginName)
                     ecoSystem.startDogu(doguName)
                     ecoSystem.waitForDogu(doguName)
                     ecoSystem.upgradeDogu(ecoSystem)
@@ -101,11 +112,7 @@ node('vagrant') {
 
                 stage('Integration Tests - After Upgrade') {
                     // Run integration tests again to verify that the upgrade was successful
-                    ecoSystem.runCypressIntegrationTests([
-                        cypressImage:"cypress/included:8.7.0",
-                        enableVideo: params.EnableVideoRecording,
-                        enableScreenshots: params.EnableScreenshotRecording
-                    ])
+                    runIntegrationTests(ecoSystem, "-e TAGS='not @after_plugin_deletion'")
                 }
             }
 
@@ -129,5 +136,59 @@ node('vagrant') {
                 ecoSystem.destroy()
             }
         }
+    }
+}
+
+static def restartAndWait(EcoSystem ecoSystem) {
+    ecoSystem.vagrant.ssh "sudo docker restart redmine"
+    ecoSystem.waitForDogu("redmine")
+}
+
+static def deletePlugin(EcoSystem ecoSystem, String name) {
+    ecoSystem.vagrant.ssh "sudo cesapp command redmine delete-plugin ${name} --force"
+}
+
+def prepareTestPlugin(String name, String version, String repoName="") {
+    if (repoName == "") {
+        repoName = name
+    }
+    String archiveName = "v${version}_${name}.tar.gz"
+
+    sh "mkdir -p ${WORKSPACE}/testplugins/${name}"
+    sh "wget -O ${archiveName} https://github.com/cloudogu/${repoName}/archive/v${version}.tar.gz"
+
+    sh "tar xfz ${archiveName} --strip-components=1 -C ${WORKSPACE}/testplugins/${name}"
+    sh "rm ${archiveName}"
+}
+
+static def installTestPlugin(EcoSystem ecoSystem, String name) {
+    ecoSystem.vagrant.ssh "sudo mkdir -p /var/lib/ces/redmine/volumes/plugins/${name}"
+    ecoSystem.vagrant.ssh "sudo cp -r /dogu/testplugins/${name} /var/lib/ces/redmine/volumes/plugins/"
+}
+
+def runIntegrationTests(EcoSystem ecoSystem, String additionalCypressArgs) {
+    ecoSystem.runCypressIntegrationTests([
+            cypressImage         : "cypress/included:8.7.0",
+            enableVideo          : params.EnableVideoRecording,
+            enableScreenshots    : params.EnableScreenshotRecording,
+            additionalCypressArgs: "${additionalCypressArgs}"
+    ])
+}
+
+def executeShellTests() {
+    def bats_base_image = "bats/bats"
+    def bats_custom_image = "cloudogu/bats"
+    def bats_tag = "1.2.1"
+
+    def batsImage = docker.build("${bats_custom_image}:${bats_tag}", "--build-arg=BATS_BASE_IMAGE=${bats_base_image} --build-arg=BATS_TAG=${bats_tag} ./unitTests")
+    try {
+        sh "mkdir -p target"
+        sh "mkdir -p testdir"
+
+        batsContainer = batsImage.inside("--entrypoint='' -v ${WORKSPACE}:/workspace -v ${WORKSPACE}/testdir:/usr/share/webapps") {
+            sh "make unit-test-shell-ci"
+        }
+    } finally {
+        junit allowEmptyResults: true, testResults: 'target/shell_test_reports/*.xml'
     }
 }
