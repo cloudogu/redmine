@@ -25,7 +25,7 @@ else (no)
 endif
 
 if (is FROM_VERSION less or equal than "4.2.3-4") then (no)
-    elseif (is FROM_VERSION NOT less or equal then "4.2.2-1") then (yes)
+    elseif (FROM_VERSION greater than "4.2.2-1") then (yes)
         :migrate plugin back to plugins directory
         with the path from the MIGRATION_VERSION_4234_TMP_DIR variable;
     else (no)
