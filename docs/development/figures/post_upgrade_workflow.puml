@@ -2,10 +2,10 @@
 
 start
 
-if (the script is actively executed) then (yes)
-:call function run_postupgrade() with all params;
+if (is script sourced) then (yes)
+    stop
 else (no)
- stop
+    :call function run_postupgrade() with all params;
 endif
 
 
@@ -14,9 +14,9 @@ DATABASE_USER_PASSWORD and DATABASE_DB via
 doguctl command;
 
 
-if (FROM_VERSION not equal to TO_VERSION) then (yes)
+if (FROM_VERSION is equal to TO_VERSION) then (yes)
+    stop
 else (no)
-stop
 endif
 
 if (is FROM_VERSION less or equal than "4.1.0-3") then (yes)
@@ -35,6 +35,6 @@ endif
 
 :execute command: doguctl state "upgrade done";
 
-stop
+end
 
 @enduml

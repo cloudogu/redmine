@@ -1,17 +1,16 @@
 @startuml
 start
 
-if (the script is actively executed) then (yes)
-:call function run_preupgrade() with all params;
+if (is script sourced) then (yes)
+    stop
 else (no)
- stop
+    :call function run_preupgrade() with all params;
 endif
 
-if (FROM_VERSION not equal to TO_VERSION) then (yes)
-:execute command: doguctl state "upgrading";
+if (FROM_VERSION is equal to TO_VERSION) then (yes)
+    stop
 else (no)
-:exit with status code 0;
-stop
+    :execute command: doguctl state "upgrading";
 endif
 
 if (is FROM_VERSION less or equal than "4.2.3-4") then (no)
@@ -22,6 +21,6 @@ if (is FROM_VERSION less or equal than "4.2.3-4") then (no)
 endif
 
 :execute command: doguctl config "startup/setup_done" "true";
-stop
+end
 
 @enduml
