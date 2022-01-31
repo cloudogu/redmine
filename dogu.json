@@ -17,7 +17,7 @@
   "Dependencies": [
     {
       "type": "dogu",
-      "name": "postgresql"
+      "name": "mariadb"
     },
     {
       "type": "dogu",
