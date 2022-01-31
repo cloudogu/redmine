@@ -170,13 +170,13 @@ teardown() {
   pluginName="$(basename "${aPluginDirectory}")"
   aPluginFileName="$(basename "${aPluginFile}")"
 
-  export MIGRATION4234_TMP_DIR="$(mktemp -d)"
+  export MIGRATION_VERSION_4234_TMP_DIR="$(mktemp -d)"
 
   run movePluginsToTempDirM4234
 
   assert_success
   assert_line --partial "Move plugins to temporary directory"
   assert_line --partial "Moving plugins finished. The plugins will be moved back during the post-upgrade"
-  assert_dir_exist "${MIGRATION4234_TMP_DIR}"
-  assert_file_exist "${MIGRATION4234_TMP_DIR}/${pluginName}/${aPluginFileName}"
+  assert_dir_exist "${MIGRATION_VERSION_4234_TMP_DIR}"
+  assert_file_exist "${MIGRATION_VERSION_4234_TMP_DIR}/${pluginName}/${aPluginFileName}"
 }

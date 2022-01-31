@@ -9,6 +9,7 @@ node('vagrant') {
     String testPluginName = "redmine_noop_plugin"
     String testPluginRepoName = "redmine-noop-plugin"
     String testPluginVersion = "0.0.1"
+
     Git git = new Git(this, "cesmarvin")
     git.committerName = 'cesmarvin'
     git.committerEmail = 'cesmarvin@cloudogu.com'
@@ -79,12 +80,12 @@ node('vagrant') {
             }
 
             stage('Integration tests') {
-                runTests(ecoSystem, "-e TAGS='not (@after_plugin_deletion or @UpgradeTest)'")
+                runIntegrationTests(ecoSystem, "-e TAGS='not (@after_plugin_deletion or @UpgradeTest)'")
 
                 deletePlugin(ecoSystem, testPluginName)
                 restartAndWait(ecoSystem)
 
-                runTests(ecoSystem, "-e TAGS='@after_plugin_deletion and not @UpgradeTest'")
+                runIntegrationTests(ecoSystem, "-e TAGS='@after_plugin_deletion and not @UpgradeTest'")
             }
 
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
@@ -111,7 +112,7 @@ node('vagrant') {
 
                 stage('Integration Tests - After Upgrade') {
                     // Run integration tests again to verify that the upgrade was successful
-                    runTests(ecoSystem, "-e TAGS='not @after_plugin_deletion'")
+                    runIntegrationTests(ecoSystem, "-e TAGS='not @after_plugin_deletion'")
                 }
             }
 
@@ -165,7 +166,7 @@ static def installTestPlugin(EcoSystem ecoSystem, String name) {
     ecoSystem.vagrant.ssh "sudo cp -r /dogu/testplugins/${name} /var/lib/ces/redmine/volumes/plugins/"
 }
 
-def runTests(EcoSystem ecoSystem, String additionalCypressArgs) {
+def runIntegrationTests(EcoSystem ecoSystem, String additionalCypressArgs) {
     ecoSystem.runCypressIntegrationTests([
             cypressImage         : "cypress/included:8.7.0",
             enableVideo          : params.EnableVideoRecording,

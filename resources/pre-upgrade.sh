@@ -6,7 +6,7 @@ set -o pipefail
 # WORKDIR is a Dockerfile global variable
 REDMINE_WORK_DIR="${WORKDIR}"
 DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
-MIGRATION4234_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.3.4"
+MIGRATION_VERSION_4234_TMP_DIR="/var/tmp/redmine/plugins/migration4.2.3.4"
 
 function run_preupgrade() {
   FROM_VERSION="${1}"
@@ -37,7 +37,7 @@ function run_preupgrade() {
 function movePluginsToTempDirM4234() {
   echo "Move plugins to temporary directory..."
 
-  movePluginsToTmpDir "${MIGRATION4234_TMP_DIR}"
+  movePluginsToTmpDir "${MIGRATION_VERSION_4234_TMP_DIR}"
 
   echo "Moving plugins finished. The plugins will be moved back during the post-upgrade."
 }

@@ -77,12 +77,12 @@ function run_postupgrade() {
 # moves plugins which were moved from a pre-upgrade script back to the original path
 #
 # Global variables:
-# - MIGRATION4234_TMP_DIR - from pre-upgrade script
+# - MIGRATION_VERSION_4234_TMP_DIR - from pre-upgrade script
 # - REDMINE_WORK_DIR - from pre-upgrade script
 function migratePluginsBackToPluginsDirectory() {
   echo "Move plugins back to plugins directory ..."
 
-  restorePluginsFromTmpDir "${MIGRATION4234_TMP_DIR}"
+  restorePluginsFromTmpDir "${MIGRATION_VERSION_4234_TMP_DIR}"
 
   echo "Migrating plugins finished successfully."
 }

@@ -54,3 +54,5 @@ All plugins required to use Redmine will be installed or refreshed on each Dogu 
 - redmine_cas
 - redmine_extended_rest_api
 - redmine_activerecord_session_store
+
+![UI](figures/uninstall_plugin_redmine.png)

@@ -48,7 +48,7 @@ cesapp command redmine delete-plugin <plugin name> --force
 
 wird das Plugin `<plugin name>` aus Redmine komplett entfernt. Nach der erfolgreichen Ausführung des Befehls muss das Dogu einmal neugestartet werden, damit auch Redmine die geladenen Plugins aktualisiert. Andernfalls kann es zu schwerem Fehlverhalten in Redmine kommen.
 
-Die mit dem Docker-Image gelieferten Standard-Plugin, die für den Betrieb des Dogus notwendig sein, werden bei jedem Neustart wiederhergestellt:
+Die mit dem Docker-Image gelieferten Standard-Plugins, die für den Betrieb des Dogus notwendig sind, werden bei jedem Neustart wiederhergestellt:
 - redmine_cas
 - redmine_extended_rest_api
 - redmine_activerecord_session_store
