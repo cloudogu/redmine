@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-5] - 2022-02-01
+### Added
+- Add an exposed command to delete a Redmine plugin. Call via the cesapp: 
+`cesapp command redmine delete-plugin <plugin-name> --force` (#80)
+
+### Fixed
+- plugins can now be installed on first Dogu start. This was prevented by missing dependencies in older versions.
+
 ## [v4.2.3-4] - 2022-01-14
 ### Changed
 - Update cas plugin to version 1.5.2 (#84)

@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "4.2.3-4",
+  "Version": "4.2.3-5",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -91,13 +91,6 @@
       "Owner": "1000",
       "Group": "1000",
       "NeedsBackup": false
-    },
-    {
-      "Name": "plugins_prod",
-      "Path": "/usr/share/webapps/redmine/plugins",
-      "Owner": "1000",
-      "Group": "1000",
-      "NeedsBackup": true
     }
   ],
   "ServiceAccounts": [
@@ -126,6 +119,10 @@
     {
       "Name": "pre-upgrade",
       "Command": "/pre-upgrade.sh"
+    },
+    {
+      "Name": "delete-plugin",
+      "Command": "/delete-plugin.sh"
     }
   ]
 }

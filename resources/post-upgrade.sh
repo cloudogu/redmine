@@ -41,9 +41,12 @@ function run_postupgrade() {
     sql "${DELETE_DUPLICATE_STATEMENT}"
   fi
 
-  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
-    migratePluginsBackToNewPluginsVolume
-  fi
+  if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
+      # this migration only needs to be done if the additional plugins volume was already created
+      if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
+        migratePluginsBackToPluginsDirectory
+      fi
+    fi
 
   echo "Making sure config/secrets.yml exists..."
   create_secrets_yml
@@ -71,19 +74,33 @@ function run_postupgrade() {
   echo "Redmine post-upgrade done"
 }
 
-# moves plugins which were moved from a pre-upgrade script back to the original path which although resides on a
-# different mount point.
+# moves plugins which were moved from a pre-upgrade script back to the original path
 #
 # Global variables:
-# - MIGRATION_TMP_DIR - from pre-upgrade script
+# - MIGRATION_VERSION_4234_TMP_DIR - from pre-upgrade script
 # - REDMINE_WORK_DIR - from pre-upgrade script
-function migratePluginsBackToNewPluginsVolume() {
-  echo "Move plugins back to new plugin volume..."
+function migratePluginsBackToPluginsDirectory() {
+  echo "Move plugins back to plugins directory ..."
 
-  mv "${MIGRATION_TMP_DIR}"/* "${REDMINE_WORK_DIR}/plugins"
-  rmdir "${MIGRATION_TMP_DIR}"
+  restorePluginsFromTmpDir "${MIGRATION_VERSION_4234_TMP_DIR}"
 
   echo "Migrating plugins finished successfully."
+}
+
+function restorePluginsFromTmpDir(){
+  local source_directory="$1"
+
+  echo "remove redmine plugin directory"
+  rm -rf "${REDMINE_WORK_DIR:?}/plugins"
+  echo "create new redmine plugin directory"
+  mkdir "${REDMINE_WORK_DIR:?}/plugins"
+
+  # copy plugins to plugin installation source directory
+  cp -r "${source_directory:?}"/* "${PLUGIN_STORE}"
+  # copy plugins back to redmine plugins directory
+  cp -r "${source_directory:?}"/* "${REDMINE_WORK_DIR}/plugins/"
+
+  rm -rf "${source_directory}"
 }
 
 # make the script only run when executed, not when sourced from bats tests)
