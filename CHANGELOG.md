@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-6] - 2022-02-01
+### Fixed
+- Upgrade from dogu version above 4.2.2-1 failed if no additional plugins were installed (#86)
+
 ## [v4.2.3-5] - 2022-02-01
 ### Added
 - Add an exposed command to delete a Redmine plugin. Call via the cesapp: 
