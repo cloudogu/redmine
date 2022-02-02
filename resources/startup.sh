@@ -108,16 +108,6 @@ function runMain() {
     # update FQDN in settings
     # we need to update the fqdn on every start, because of possible changes
     sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
-
-    echo "Get cas plugin config values..."
-
-    echo "Updating cas plugin settings..."
-    exec_rake redmine_cas:change_setting\[enabled,1\]
-    exec_rake redmine_cas:change_setting\[attributes_mapping,"firstname=givenName&lastname=surname&mail=mail&login=username&allgroups=allgroups"\]
-    exec_rake redmine_cas:change_setting\[redmine_fqdn,"${FQDN}"\]
-    exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
-    exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
-    exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
   else
 
     # Create the database structure
@@ -128,15 +118,11 @@ function runMain() {
     echo "Inserting default configuration data into database..."
     exec_rake redmine:load_default_data
 
-    echo "Writing cas plugin settings to database..."
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
+    echo "Writing authentication settings to database..."
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
 
     # Enabling REST API
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('rest_api_enabled', 1, now());"
-
-    # Insert auth_sources record for AuthSourceCas authentication source
-    sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
 
     # write url settings to database
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
@@ -163,6 +149,13 @@ function runMain() {
     doguctl config "${SETUP_DONE_KEY}" "true"
   fi
 
+  echo "Updating cas plugin settings..."
+  exec_rake redmine_cas:change_setting\[enabled,1\]
+  exec_rake redmine_cas:change_setting\[attributes_mapping,"firstname=givenName&lastname=surname&mail=mail&login=username&allgroups=allgroups"\]
+  exec_rake redmine_cas:change_setting\[redmine_fqdn,"${FQDN}"\]
+  exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
+  exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
+  exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
 
   # install manual installed plugins
   install_plugins
