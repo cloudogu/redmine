@@ -9,7 +9,7 @@ LABEL NAME="official/redmine" \
 
 # set environment variables
 ENV REDMINE_VERSION=4.2.3 \
-    CAS_PLUGIN_VERSION=1.5.2 \
+    CAS_PLUGIN_VERSION=temporary-testing \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
     RUBYCASVERSION=2.3.15 \
@@ -19,7 +19,7 @@ ENV REDMINE_VERSION=4.2.3 \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
     REDMINE_TARGZ_SHA256=72f633dc954217948558889ca85325fe6410cd18a2d8b39358e5d75932a47a0c \
-    CAS_PLUGIN_TARGZ_SHA256=5095a32b8b56c48280fb9a33580ec5925fdcbecbfec1a3f69930b78e2fb4a109 \
+    CAS_PLUGIN_TARGZ_SHA256=c52fd9b8c06705347cf51d005b525391af9500792127e0c57177a62448c67c0c \
     EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
@@ -100,7 +100,7 @@ RUN set -eux -o pipefail \
  && mkdir "${WORKDIR}/defaultPlugins/redmine_cas" \
  && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
+ && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-v${CAS_PLUGIN_VERSION}/src" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
   # install Cloudogu theme
  && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
