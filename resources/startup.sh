@@ -156,6 +156,8 @@ function runMain() {
   exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
   exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
   exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
+  AUTO_MANAGED=true
+  export AUTO_MANAGED
 
   # install manual installed plugins
   install_plugins
