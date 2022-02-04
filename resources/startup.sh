@@ -156,8 +156,6 @@ function runMain() {
   exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
   exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
   exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
-  AUTO_MANAGED=true
-  export AUTO_MANAGED
 
   # install manual installed plugins
   install_plugins
@@ -191,7 +189,7 @@ function runMain() {
 
   # Start redmine
   echo "Starting redmine..."
-  exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
+  exec su - redmine -c "AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
 }
 
 # make the script only run when executed, not when sourced from bats tests)
