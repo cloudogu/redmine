@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-7] - 2022-02-07
+### Changed
+- Upgrade to base image 3.14.3-1
+
 ## [v4.2.3-6] - 2022-02-01
 ### Fixed
 - Upgrade from dogu version above 4.2.2-1 failed if no additional plugins were installed (#86)
