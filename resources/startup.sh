@@ -154,7 +154,7 @@ function runMain() {
   exec_rake redmine_cas:change_setting\[attributes_mapping,"firstname=givenName&lastname=surname&mail=mail&login=username&allgroups=allgroups"\]
   exec_rake redmine_cas:change_setting\[redmine_fqdn,"${FQDN}"\]
   exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
-  exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
+  exec_rake redmine_cas:change_setting\[cas_relative_url,/cas\]
   exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
 
   # install manual installed plugins
