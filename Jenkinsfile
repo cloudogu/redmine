@@ -70,11 +70,6 @@ node('vagrant') {
                 ecoSystem.verify("/dogu")
             }
 
-            stage('Integration tests') {
-                ecoSystem.runCypressIntegrationTests([enableVideo      : params.EnableVideoRecording,
-                                                      enableScreenshots: params.EnableScreenshotRecording])
-            }
-
             if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
                 stage('Upgrade dogu') {
                     // Remove new dogu that has been built and tested above
