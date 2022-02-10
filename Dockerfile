@@ -99,9 +99,8 @@ RUN set -eux -o pipefail \
  # install cas plugin
  && mkdir "${WORKDIR}/defaultPlugins/redmine_cas" \
  && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
- && cat v2.0.0.tar.gz | sha256sum \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-v${CAS_PLUGIN_VERSION}/src" \
+ && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
   # install Cloudogu theme
  && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
