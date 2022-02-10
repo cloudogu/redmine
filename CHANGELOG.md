@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Upgrade to base image 3.14.3-1
+- Upgrade cas plugin to version 2.0.0 (#88)
+- Remove sql-statements to initialize the cas plugin and use the new rake tasks instead (#88)
 
 ## [v4.2.3-6] - 2022-02-01
 ### Fixed
