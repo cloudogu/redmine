@@ -90,10 +90,6 @@ function runMain() {
   # Make sure secrets.yml exists
   create_secrets_yml
 
-  # export variables for auth_source_cas.rb
-  export FQDN
-  export ADMIN_GROUP
-
   # wait until postgresql passes all health checks
   echo "wait until postgresql passes all health checks"
   if ! doguctl healthy --wait --timeout 120 postgresql; then
@@ -112,28 +108,6 @@ function runMain() {
     # update FQDN in settings
     # we need to update the fqdn on every start, because of possible changes
     sql "UPDATE settings SET value='${HOSTNAME_SETTING}' WHERE name='host_name';"
-
-    echo "Get cas plugin config values..."
-
-    # Get the configured value for the redmine cas plugin config
-    OLD_SETTINGS="$(get_setting_value "plugin_redmine_cas")"
-
-    # Extract the value for the redirect_enabled config
-    VALUE_REDIRECT_SETTING="$(echo "${OLD_SETTINGS}" |grep "redirect_enabled: '" |sed "s/^[^']*'\([^']*\)'.*$/\1/g" || echo "0")"
-
-    # Value: 1 => true / not existing => false
-    # Even value: 0 would still be true. This is why this step is necessary.
-    REDIRECT_SETTINGS="redirect_enabled: 1 \\n"
-    if [ "${VALUE_REDIRECT_SETTING}" != "1" ]
-    then
-      REDIRECT_SETTINGS=""
-    fi
-
-    echo "Updating cas plugin settings..."
-
-    # Reason for this update: The cas plugin config should not be configurable. This lock out the user and make the dogu unusable.
-    # This is why the config is overridden at each start. The only flag that must be configurable is the redirect_enabled flag.
-    sql "UPDATE settings SET value=E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\n${REDIRECT_SETTINGS}cas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1' WHERE name='plugin_redmine_cas';" >/dev/null 2>&1
   else
 
     # Create the database structure
@@ -144,15 +118,11 @@ function runMain() {
     echo "Inserting default configuration data into database..."
     exec_rake redmine:load_default_data
 
-    echo "Writing cas plugin settings to database..."
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('plugin_redmine_cas', E'--- !ruby/hash:ActionController::Parameters \\nenabled: 1 \\ncas_url: https://${FQDN}/cas \\nattributes_mapping: firstname=givenName&lastname=surname&mail=mail \\nautocreate_users: 1', now());"
+    echo "Writing authentication settings to database..."
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('login_required', 1, now());"
 
     # Enabling REST API
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('rest_api_enabled', 1, now());"
-
-    # Insert auth_sources record for AuthSourceCas authentication source
-    sql "INSERT INTO auth_sources VALUES (DEFAULT, 'AuthSourceCas', 'Cas', 'cas.example.com', 1234, 'myDbUser', 'myDbPass', 'dbAdapter:dbName', 'name', 'firstName', 'lastName', 'email', true, false, null, null);"
 
     # write url settings to database
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('host_name','${HOSTNAME_SETTING}', now());"
@@ -179,6 +149,13 @@ function runMain() {
     doguctl config "${SETUP_DONE_KEY}" "true"
   fi
 
+  echo "Updating cas plugin settings..."
+  exec_rake redmine_cas:change_setting\[enabled,"1"\]
+  exec_rake redmine_cas:change_setting\[attributes_mapping,"firstname=givenName&lastname=surname&mail=mail&login=username&allgroups=allgroups"\]
+  exec_rake redmine_cas:change_setting\[redmine_fqdn,"${FQDN}"\]
+  exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
+  exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
+  exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
 
   # install manual installed plugins
   install_plugins
@@ -212,7 +189,7 @@ function runMain() {
 
   # Start redmine
   echo "Starting redmine..."
-  exec su - redmine -c "FQDN=${FQDN} ADMIN_GROUP=${ADMIN_GROUP} RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
+  exec su - redmine -c "AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
 }
 
 # make the script only run when executed, not when sourced from bats tests)
