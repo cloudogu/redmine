@@ -136,10 +136,6 @@ function runMain() {
     # because the user should be able to change the theme
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('ui_theme','Cloudogu', now());"
 
-    # enable gravatar
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_enabled', 1, now());"
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('gravatar_default', 'identicon', now());"
-
     # we use markdown as default format, however it can be changed
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'markdown', now());"
 
