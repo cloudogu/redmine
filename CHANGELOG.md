@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-9] - 2022-03-11
+### Changed
+- Gravatar will not be used by default any longer. The admin needs to configure it manually. (#92)
+
 ## [v4.2.3-8] - 2022-02-15
 ### Changed
 - Upgrade cas plugin to version 2.0.0 (#88)
