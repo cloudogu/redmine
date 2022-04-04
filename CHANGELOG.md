@@ -5,11 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changed
-- Upgrade base image to 3.15.3-1 #96
-
 ### Fixed
-- Fix zlib CVE-2018-25032 by upgrading version from recent Alpine #96
+- Fix zlib CVE-2018-25032 by upgrading to version 1.2.12-r0 from Alpine 3.14 #96
 
 ## [v4.2.3-9] - 2022-03-11
 ### Changed

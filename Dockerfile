@@ -1,5 +1,5 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.15.3-1
+FROM registry.cloudogu.com/official/base:3.14.3-1
 
 LABEL NAME="official/redmine" \
    VERSION="4.2.3-9" \
