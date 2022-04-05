@@ -2,7 +2,7 @@
 FROM registry.cloudogu.com/official/base:3.14.3-1
 
 LABEL NAME="official/redmine" \
-   VERSION="4.2.3-9" \
+   VERSION="4.2.3-10" \
    maintainer="hello@cloudogu.com"
 
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
@@ -32,6 +32,8 @@ ENV REDMINE_VERSION=4.2.3 \
 COPY resources/ /
 
 RUN set -eux -o pipefail \
+ && apk update \
+ && apk upgrade \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \

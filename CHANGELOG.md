@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.3-10] - 2022-04-05
+### Fixed
+- Fix zlib CVE-2018-25032 by upgrading to version 1.2.12-r0 from Alpine 3.14 #96
+
 ## [v4.2.3-9] - 2022-03-11
 ### Changed
 - Gravatar will not be used by default any longer. The admin needs to configure it manually. (#92)
