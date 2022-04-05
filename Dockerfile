@@ -32,6 +32,8 @@ ENV REDMINE_VERSION=4.2.3 \
 COPY resources/ /
 
 RUN set -eux -o pipefail \
+ && apk update \
+ && apk upgrade \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
