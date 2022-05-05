@@ -20,6 +20,8 @@ DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
+RAILS_SCRIPTS_DIR=/rails_scripts
+
 function install_plugins(){
   echo "installing plugins..."
 
@@ -196,10 +198,16 @@ function default_data_imports_exist() {
 }
 
 function trigger_imports(){
-    local EMPTY="<empty>"
+    local EMPTY="<empty>" ALLOW_LOCAL_USERS
     DEFAULT_DATA=$(doguctl config --default "${EMPTY}" "${DEFAULT_DATA_KEY}")
-
+    ALLOW_LOCAL_USERS="$(railsConsole "${RAILS_SCRIPTS_DIR}/get_setting.rb" --key "local_users_enabled" | grep "{\"result\":" | jq -r ".result")"
+    if [[ "${ALLOW_LOCAL_USERS}" == "null" ]]; then
+      ALLOW_LOCAL_USERS=0
+    fi
     if [ "$(default_data_imports_exist)" == "true" ]; then
+      # read local_users_enabled from settings and store it so it can be restored after the data import
+      # the import uses a local user
+      railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
       create_temporary_admin
       start_redmine_in_background
 
@@ -215,6 +223,7 @@ function trigger_imports(){
     else
       echo "IMPORT-INFO: Startup without any import. No temporary admin will be created."
     fi
+    railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
 }
 
 function wait_for_redmine_to_get_healthy() {
@@ -239,3 +248,7 @@ function fetchDatabaseConnection() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   fetchDatabaseConnection
 fi
+
+function railsConsole() {
+  rails r -e production "$@"
+}
