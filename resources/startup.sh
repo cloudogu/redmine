@@ -73,8 +73,10 @@ function runMain() {
 
   echo "get variables for templates"
   FQDN=$(doguctl config --global fqdn)
+  export FQDN
   DOMAIN=$(doguctl config --global domain)
   ADMIN_GROUP=$(doguctl config --global 'admin_group')
+  export ADMIN_GROUP
   MAIL_ADDRESS=$(doguctl config -d "redmine@${DOMAIN}" --global mail_address)
 
   HOSTNAME_SETTING="${FQDN}/redmine"
@@ -144,14 +146,6 @@ function runMain() {
 
     doguctl config "${SETUP_DONE_KEY}" "true"
   fi
-
-  echo "Updating cas plugin settings..."
-  exec_rake redmine_cas:change_setting\[enabled,"1"\]
-  exec_rake redmine_cas:change_setting\[attributes_mapping,"firstname=givenName&lastname=surname&mail=mail&login=username&allgroups=allgroups"\]
-  exec_rake redmine_cas:change_setting\[redmine_fqdn,"${FQDN}"\]
-  exec_rake redmine_cas:change_setting\[cas_fqdn,"${FQDN}"\]
-  exec_rake redmine_cas:change_setting\[cas_relative_url,"/cas"\]
-  exec_rake redmine_cas:change_setting\[admin_group,"${ADMIN_GROUP}"\]
 
   # install manual installed plugins
   install_plugins

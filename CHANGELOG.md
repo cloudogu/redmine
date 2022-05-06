@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- CVE 2022-21381 by updating Redmine to version 4.2.5 (#95)
+
+### Fixed
+- Import of custom configuration fails if local users were not allowed
 
 ## [v4.2.3-10] - 2022-04-05
 ### Fixed
