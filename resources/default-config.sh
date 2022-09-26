@@ -30,7 +30,7 @@ function curl_extended_api(){
 
   URL="${BASE_URL}/${API}"
 
-  local CURL_COMMAND="curl -L -H 'accept: */*' -H 'Content-Type: application/json' -X ${METHOD} -u ${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD} --silent --write-out 'HTTPSTATUS:%{http_code}' -d '${PAYLOAD}' ${URL}"
+  local CURL_COMMAND="curl -L -H 'accept: */*' -H 'Content-Type: application/json' -X ${METHOD} -u \"${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD}\" --silent --write-out 'HTTPSTATUS:%{http_code}' -d '${PAYLOAD}' ${URL}"
   HTTP_RESPONSE=$(bash -c "${CURL_COMMAND}")
   # shellcheck disable=SC2001 ### Doesn't work
   HTTP_BODY=$(echo "$HTTP_RESPONSE" | sed -e 's/HTTPSTATUS\:.*//g')
@@ -119,6 +119,7 @@ function add_settings(){
 
   echo "Apply configured settings..."
   echo "Found settings data: ${SETTINGS_JSON}"
+  echo "${SETTINGS_JSON}"
   safe_extended_api_call "settings" "PUT" "${SETTINGS_JSON}" "204"
 }
 
