@@ -160,11 +160,11 @@ function start_redmine_in_background(){
 # Creates an admin user by using the create-admin.sh script
 function create_temporary_admin() {
   echo "Creating temporary admin..."
-  # The Password must contain a special character, a captial letter and a number...
-  TMP_ADMIN_PASSWORD_SUFFIX="B&5"
+  # The Password must contain a special character, a lowercase letter, a capital letter and a number...
+  TMP_ADMIN_PASSWORD_SUFFIX="aB&5"
   TMP_ADMIN_NAME="$(doguctl random)"
   TMP_ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
-  TMP_ADMIN_PASSWORD="$TMP_ADMIN_RANDOMIZED_STR$TMP_ADMIN_PASSWORD_SUFFIX"
+  TMP_ADMIN_PASSWORD="${TMP_ADMIN_RANDOMIZED_STR}${TMP_ADMIN_PASSWORD_SUFFIX}"
 
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
