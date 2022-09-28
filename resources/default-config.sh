@@ -119,7 +119,6 @@ function add_settings(){
 
   echo "Apply configured settings..."
   echo "Found settings data: ${SETTINGS_JSON}"
-  echo "${SETTINGS_JSON}"
   safe_extended_api_call "settings" "PUT" "${SETTINGS_JSON}" "204"
 }
 
