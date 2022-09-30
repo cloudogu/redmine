@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Upgrade to Redmine 4.2.7; #103
 
 ### Fixed
 - Randomized admin password now always contains a special character, an uppercase letter and a number (#99)
