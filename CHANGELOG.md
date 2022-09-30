@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.7-1] - 2022-09-30
+### Changed
+- Upgrade to Redmine 4.2.7; #103
+
+### Fixed
+- Randomized admin password now always contains a special character, an uppercase letter and a number (#99)
+
 ## [v4.2.5-2] - 2022-09-23
 ### Changed
 - Update PurpleMine theme (#100)
