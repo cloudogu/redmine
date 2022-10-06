@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "4.2.7-1",
+  "Version": "4.2.8-1",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -83,7 +83,7 @@
       "Path": "/var/tmp/redmine/plugins",
       "Owner": "1000",
       "Group": "1000",
-      "NeedsBackup": false
+      "NeedsBackup": true
     },
     {
       "Name": "logs",
