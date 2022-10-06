@@ -1,6 +1,6 @@
 # Shell-Tests
 
-Sie können Bash-Tests im Verzeichnis `unitTests` erstellen und ändern. Das Make-Target `unit-test-shell` unterstützt dabei mit einer verallgemeinerten Bash-Testumgebung.
+Sie können Bash-Tests im Verzeichnis `batsTests` erstellen und ändern. Das Make-Target `unit-test-shell` unterstützt dabei mit einer verallgemeinerten Bash-Testumgebung.
 
 ```bash
 make unit-test-shell

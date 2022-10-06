@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@v1.48.0', 'github.com/cloudogu/dogu-build-lib@v1.5.1']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.57.0', 'github.com/cloudogu/dogu-build-lib@v1.6.0']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -47,8 +47,9 @@ node('vagrant') {
         }
 
         try {
-            stage('Shell tests') {
-                executeShellTests()
+            stage('Bats Tests') {
+                Bats bats = new Bats(this, docker)
+                bats.checkAndExecuteTests()
             }
 
             stage('Provision') {
@@ -59,7 +60,6 @@ node('vagrant') {
             stage('Setup') {
                 ecoSystem.loginBackend('cesmarvin-setup')
                 ecoSystem.setup([additionalDependencies: ['official/postgresql']])
-
             }
 
             stage('Wait for dependencies') {
@@ -173,22 +173,4 @@ def runIntegrationTests(EcoSystem ecoSystem, String additionalCypressArgs) {
             enableScreenshots    : params.EnableScreenshotRecording,
             additionalCypressArgs: "${additionalCypressArgs}"
     ])
-}
-
-def executeShellTests() {
-    def bats_base_image = "bats/bats"
-    def bats_custom_image = "cloudogu/bats"
-    def bats_tag = "1.2.1"
-
-    def batsImage = docker.build("${bats_custom_image}:${bats_tag}", "--build-arg=BATS_BASE_IMAGE=${bats_base_image} --build-arg=BATS_TAG=${bats_tag} ./unitTests")
-    try {
-        sh "mkdir -p target"
-        sh "mkdir -p testdir"
-
-        batsContainer = batsImage.inside("--entrypoint='' -v ${WORKSPACE}:/workspace -v ${WORKSPACE}/testdir:/usr/share/webapps") {
-            sh "make unit-test-shell-ci"
-        }
-    } finally {
-        junit allowEmptyResults: true, testResults: 'target/shell_test_reports/*.xml'
-    }
 }

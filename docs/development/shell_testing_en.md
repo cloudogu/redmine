@@ -1,6 +1,6 @@
 # Shell testing
 
-You can create and amend bash tests in the `unitTests` directory. The make target `unit-test-shell` will support you with a generalized bash test environment.
+You can create and amend bash tests in the `batsTests` directory. The make target `unit-test-shell` will support you with a generalized bash test environment.
 
 ```bash
 make unit-test-shell
