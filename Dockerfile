@@ -13,6 +13,7 @@ ENV REDMINE_VERSION=4.2.8 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
     RUBYCASVERSION=2.3.15 \
+    RUBYCASHASH=bb67f18a875190ce43f0b6c6457881f1b842daaa \
     USER=redmine \
     BASEDIR=/usr/share/webapps \
     WORKDIR=/usr/share/webapps/redmine \
@@ -22,7 +23,7 @@ ENV REDMINE_VERSION=4.2.8 \
     CAS_PLUGIN_TARGZ_SHA256=f296de1a13ee1d52d545c0ee29c685f8eb46b606ccabd16fe3e392008c892f96 \
     EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
-    RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
+    RUBYCAS_TARGZ_SHA256=9f5969b897544b97da5bd92b28ea953cc066fc9d2ed92f03d025b03828d402dc \
     RAILS_RELATIVE_URL_ROOT=/redmine \
     CLOUDOGU_THEME_VERSION=2.15.0-1 \
     THEME_TARGZ_SHA256=a1e0e4efdb2b496fb042bb2a9e48934d1bb85ea8fb48da6baca798e3120a4166 \
@@ -79,7 +80,7 @@ RUN set -eux -o pipefail \
  # set temporary database configuration for bundle install
  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
  # Install rubycas-client
- && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
+ && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/${RUBYCASHASH}.tar.gz" \
  && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
  && mkdir rubycas-client \
  && tar xfz v${RUBYCASVERSION}.tar.gz --strip-components=1 -C rubycas-client \
