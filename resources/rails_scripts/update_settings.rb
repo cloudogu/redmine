@@ -34,8 +34,8 @@ module SettingsHelper
     [
       { key: :enabled, value: 1 },
       { key: :attributes_mapping, value: 'firstname=givenName&lastname=surname&mail=mail&login=username&allgroups=allgroups' },
-      { key: :redmine_fqdn, value: ENV['FQDN'].to_s },
-      { key: :cas_fqdn, value: ENV['FQDN'].to_s },
+      { key: :redmine_fqdn, value: "[#{ENV['FQDN'].to_s}]" },
+      { key: :cas_fqdn, value: "[#{ENV['FQDN'].to_s}]" },
       { key: :cas_relative_url, value: '/cas' },
       { key: :admin_group, value: ENV['ADMIN_GROUP'].to_s },
       { key: :local_users_enabled, value: @options[:allow_local_users].to_i }
