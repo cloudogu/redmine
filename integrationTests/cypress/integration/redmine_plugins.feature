@@ -27,7 +27,7 @@ Feature: Redmine install and uninstall plugins functionality
     When the admin user logs into redmine
     And the admin navigates to the plugin overview
     Then the plugin "redmine_extended_rest_api" is installed in version "1.1.0"
-    And the plugin "redmine_cas" is installed in version "1.5.2"
+    And the plugin "redmine_cas" is installed in version "2.0.0"
     And the plugin "redmine_activerecord_session_store" is installed in version "0.1.0"
 
   @UpgradeTest
