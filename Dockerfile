@@ -2,7 +2,7 @@
 FROM registry.cloudogu.com/official/base:3.14.3-1
 
 LABEL NAME="official/redmine" \
-   VERSION="4.2.8-1" \
+   VERSION="4.2.8-2" \
    maintainer="hello@cloudogu.com"
 
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
@@ -24,8 +24,8 @@ ENV REDMINE_VERSION=4.2.8 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
     RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
     RAILS_RELATIVE_URL_ROOT=/redmine \
-    CLOUDOGU_THEME_VERSION=2.15.0-1 \
-    THEME_TARGZ_SHA256=a1e0e4efdb2b496fb042bb2a9e48934d1bb85ea8fb48da6baca798e3120a4166 \
+    CLOUDOGU_THEME_VERSION=2.15.0-2 \
+    THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
     STARTUP_DIR=/
 
 # copy resource files

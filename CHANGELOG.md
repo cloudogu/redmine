@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.8-2] - 2022-10-13
+### Changed
+- Update PurpleMine theme to version `2.15.0-2` (#107)
+
 ## [v4.2.8-1] - 2022-10-06
 ### Changed
 - Upgrade to Redmine 4.2.8; #105
