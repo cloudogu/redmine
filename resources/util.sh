@@ -187,8 +187,7 @@ function remove_last_temporary_admin() {
   if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
   then
     echo "Removing last temporary admin..."
-    # shellcheck disable=SC1091
-    source "/remove-user.sh" "${LAST_TMP_ADMIN}"
+    railsConsole "/remove_user.rb" --username "${LAST_TMP_ADMIN}"
     doguctl config --rm last_tmp_admin
   fi
 }
