@@ -170,7 +170,7 @@ function create_temporary_admin() {
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  railsConsole "/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
+  railsConsole "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -187,7 +187,7 @@ function remove_last_temporary_admin() {
   then
     echo "Removing last temporary admin..."
     # shellcheck disable=SC1091
-    railsConsole "/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
+    railsConsole "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
     doguctl config --rm last_tmp_admin
   fi
 }
