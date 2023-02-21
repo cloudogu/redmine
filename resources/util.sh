@@ -157,7 +157,7 @@ function start_redmine_in_background(){
   wait_for_redmine_to_get_healthy 300
 }
 
-# Creates an admin user by using the create-admin.sh script
+# Creates an admin user by using the create_admin.rb script
 function create_temporary_admin() {
   echo "Creating temporary admin..."
   # The Password must contain a special character, a lowercase letter, a capital letter and a number...
@@ -170,8 +170,7 @@ function create_temporary_admin() {
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  # shellcheck disable=SC1091
-  source "/create-admin.sh" "${TMP_ADMIN_NAME}" "${TMP_ADMIN_PASSWORD}"
+  railsConsole "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -188,7 +187,7 @@ function remove_last_temporary_admin() {
   then
     echo "Removing last temporary admin..."
     # shellcheck disable=SC1091
-    source "/remove-user.sh" "${LAST_TMP_ADMIN}"
+    railsConsole "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
     doguctl config --rm last_tmp_admin
   fi
 }
