@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.9-2] - 2023-02-21
+### Changed
+- Extract admin creation and deletion scripts (#111)
+
 ## [v4.2.9-1] - 2023-02-14
 ### Changed
 - Upgrade to Redmine 4.2.9; #109
