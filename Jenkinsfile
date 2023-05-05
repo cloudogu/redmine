@@ -87,9 +87,11 @@ node('vagrant') {
             parallel(
                 "trivy-scan": {
                     stage('Trivy scan') {
-                       parallel({"html-report": trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy)})
-                       parallel({"json-report": trivy.scanDogu("/dogu", TrivyScanFormat.JSON, params.TrivyScanLevels, params.TrivyStrategy)})
-                       parallel({"plain-report": trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy)})
+                       parallel(
+                            "html-report": { trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy) },
+                            "json-report": { trivy.scanDogu("/dogu", TrivyScanFormat.JSON, params.TrivyScanLevels, params.TrivyStrategy) },
+                            "plain-report": { trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy) }
+                       )
                     }
                 },
                 "verify-dogu": {
