@@ -17,6 +17,7 @@ node('vagrant') {
     GitHub github = new GitHub(this, git)
     Changelog changelog = new Changelog(this)
     Markdown markdown = new Markdown(this, "3.11.0")
+    Trivy trivy = new Trivy(this, ecoSystem)
 
     timestamps {
         properties([
@@ -83,17 +84,20 @@ node('vagrant') {
                 ecoSystem.build("/dogu")
                 installTestPlugin(ecoSystem, testPluginName)
             }
-
-            stage('Trivy scan') {
-                trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy)
-                trivy.scanDogu("/dogu", TrivyScanFormat.JSON,  params.TrivyScanLevels, params.TrivyStrategy)
-                trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy)
-            }
-
-            stage('Verify') {
-                ecoSystem.verify("/dogu")
-            }
-
+            parallel(
+                "trivy-scan": {
+                    stage('Trivy scan') {
+                       parallel({"html-report": trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy)})
+                       parallel({"json-report": trivy.scanDogu("/dogu", TrivyScanFormat.JSON, params.TrivyScanLevels, params.TrivyStrategy)})
+                       parallel({"plain-report": trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy)})
+                    }
+                },
+                "verify-dogu": {
+                    stage('Verify') {
+                        ecoSystem.verify("/dogu")
+                    }
+                }
+            )
             stage('Integration tests') {
                 runIntegrationTests(ecoSystem, "-e TAGS='not (@after_plugin_deletion or @UpgradeTest)'")
 
