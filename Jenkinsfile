@@ -17,6 +17,7 @@ node('vagrant') {
     GitHub github = new GitHub(this, git)
     Changelog changelog = new Changelog(this)
     Markdown markdown = new Markdown(this, "3.11.0")
+    EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
     Trivy trivy = new Trivy(this, ecoSystem)
 
     timestamps {
@@ -36,8 +37,6 @@ node('vagrant') {
 
                 ])
         ])
-
-        EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
 
         stage('Checkout') {
             checkout scm
