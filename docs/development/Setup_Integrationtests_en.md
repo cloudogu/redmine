@@ -10,7 +10,7 @@ This section describes the steps required to properly run the integration tests.
 
 In order for all integration tests to work properly, some data must be configured beforehand.
 
-**integrationTests/cypress.json** [[Link to file](../../integrationTests/cypress.json)]
+**integrationTests/cypress.json** [[Link to file](../../integrationTests/cypress.json)] <!-- markdown-link-check-disable-line -->
 
 1) The base URL must be adapted to the host system.
    For this the field `baseUrl` has to be adjusted to the host FQDN (`https://local.cloudogu.com`).
