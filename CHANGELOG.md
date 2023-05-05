@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Trivy image scan during jenkins build (#113)
+- Link checker step during jenkins build to verify links inside the markdown documents (#113)
 
 ### Changed
 - Update makefiles to 7.5.0 (#113)

@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.64.1', 'github.com/cloudogu/dogu-build-lib@v2.1.0']) _
+@Library(['github.com/cloudogu/ces-build-lib@1.64.2', 'github.com/cloudogu/dogu-build-lib@v2.1.0']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -16,6 +16,7 @@ node('vagrant') {
     GitFlow gitflow = new GitFlow(this, git)
     GitHub github = new GitHub(this, git)
     Changelog changelog = new Changelog(this)
+    Markdown markdown = new Markdown(this, "3.11.0")
 
     timestamps {
         properties([
@@ -48,6 +49,11 @@ node('vagrant') {
         stage('Shell-Check') {
             shellCheck("./resources/startup.sh ./resources/post-upgrade.sh ./resources/pre-upgrade.sh ./resources/util.sh ./resources/upgrade-notification.sh ./resources/default-config.sh ./resources/util.sh ./resources/delete-plugin.sh")
         }
+
+        stage('Check markdown links') {
+            markdown.check()
+        }
+
 
         try {
             stage('Bats Tests') {
