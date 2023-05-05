@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Trivy image scan during jenkins build (#113)
+
 ### Changed
 - Update makefiles to 7.5.0 (#113)
+- Update build libs (#113)
 
 ## [v4.2.9-2] - 2023-02-21
 ### Changed
