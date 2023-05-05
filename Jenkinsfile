@@ -83,22 +83,17 @@ node('vagrant') {
                 ecoSystem.build("/dogu")
                 installTestPlugin(ecoSystem, testPluginName)
             }
-            parallel(
-                "trivy-scan": {
-                    stage('Trivy scan') {
-                       parallel(
-                            "html-report": { trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy) },
-                            "json-report": { trivy.scanDogu("/dogu", TrivyScanFormat.JSON, params.TrivyScanLevels, params.TrivyStrategy) },
-                            "plain-report": { trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy) }
-                       )
-                    }
-                },
-                "verify-dogu": {
-                    stage('Verify') {
-                        ecoSystem.verify("/dogu")
-                    }
-                }
-            )
+
+            stage('Trivy scan') {
+                trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy)
+                trivy.scanDogu("/dogu", TrivyScanFormat.JSON, params.TrivyScanLevels, params.TrivyStrategy)
+                trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy)
+            }
+
+            stage('Verify') {
+                ecoSystem.verify("/dogu")
+            }
+
             stage('Integration tests') {
                 runIntegrationTests(ecoSystem, "-e TAGS='not (@after_plugin_deletion or @UpgradeTest)'")
 
