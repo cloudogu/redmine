@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v4.2.9-3] - 2023-05-08
 ### Added
 - Trivy image scan during jenkins build (#113)
 - Link checker step during jenkins build to verify links inside the markdown documents (#113)
