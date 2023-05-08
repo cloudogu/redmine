@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.9-3] - 2023-05-08
+### Added
+- Trivy image scan during jenkins build (#113)
+- Link checker step during jenkins build to verify links inside the markdown documents (#113)
+
+### Changed
+- Update makefiles to 7.5.0 (#113)
+- Update build libs (#113)
+
 ## [v4.2.9-2] - 2023-02-21
 ### Changed
 - Extract admin creation and deletion scripts (#111)
