@@ -26,6 +26,10 @@ begin
   opts = CreateAdminHelper::options
   username = opts[:username]
   password = opts[:password]
+  domain_restrictions = Setting[:email_domains_allowed].split(',')
+  domain = "#{username}.de"
+  domain = domain_restrictions[0] if domain_restrictions.length() > 0
+  mail = "#{username}@#{domain}"
   puts "Try to create user '%s'" % username
   user = User.new(:language => Setting.default_language, :mail_notification => Setting.default_notification_option, :admin => true)
   user.login = username
@@ -33,7 +37,7 @@ begin
   user.password_confirmation = password
   user.lastname = username
   user.firstname = username
-  user.mail = "#{username}@#{username}.de"
+  user.mail = mail
   user.save!
   puts 'User saved successfully.'
 rescue Exception => error
