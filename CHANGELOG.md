@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2.9-4] - 2023-05-24
+### Changed
+- Use custom email domain for the temporary admin user if the constraint is configured in Redmine (#115)
+
 ## [v4.2.9-3] - 2023-05-08
 ### Added
 - Trivy image scan during jenkins build (#113)
