@@ -1,5 +1,5 @@
 # registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.14.3-1
+FROM registry.cloudogu.com/official/base:3.17.3-2
 
 LABEL NAME="official/redmine" \
    VERSION="4.2.9-4" \
@@ -8,7 +8,7 @@ LABEL NAME="official/redmine" \
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
 
 # set environment variables
-ENV REDMINE_VERSION=4.2.9 \
+ENV REDMINE_VERSION=5.0.5 \
     CAS_PLUGIN_VERSION=2.0.0 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
@@ -18,7 +18,7 @@ ENV REDMINE_VERSION=4.2.9 \
     WORKDIR=/usr/share/webapps/redmine \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
-    REDMINE_TARGZ_SHA256=d38741345f6efd10c079898093b259d8dc4dcd8e41dfc4f64649685ae7a8cb1e \
+    REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
     CAS_PLUGIN_TARGZ_SHA256=f296de1a13ee1d52d545c0ee29c685f8eb46b606ccabd16fe3e392008c892f96 \
     EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
     ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
@@ -41,7 +41,6 @@ RUN set -eux -o pipefail \
  && apk --no-cache add --virtual /.run-deps \
    postgresql-client \
    sqlite-libs \
-   imagemagick6 \
    imagemagick \
    tzdata \
    ruby \
@@ -58,7 +57,6 @@ RUN set -eux -o pipefail \
    build-base \
    ruby-dev \
    libxslt-dev \
-   imagemagick6-dev \
    postgresql-dev \
    sqlite-dev \
    linux-headers \
@@ -99,11 +97,11 @@ RUN set -eux -o pipefail \
  && mkdir -p "${WORKDIR}/plugins" \
  && mkdir -p "${WORKDIR}/defaultPlugins" \
  # install cas plugin
- && mkdir "${WORKDIR}/defaultPlugins/redmine_cas" \
- && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
- && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
- && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
- && rm v${CAS_PLUGIN_VERSION}.tar.gz \
+# && mkdir "${WORKDIR}/defaultPlugins/redmine_cas" \
+# && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
+# && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+# && tar -C "${WORKDIR}/defaultPlugins/redmine_cas" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
+# && rm v${CAS_PLUGIN_VERSION}.tar.gz \
   # install Cloudogu theme
  && mkdir -p "${WORKDIR}/public/themes/Cloudogu" \
  && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
@@ -141,6 +139,9 @@ RUN set -eux -o pipefail \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/* \
  && apk add ruby-irb
+
+COPY redmine_cas /redmine_cas
+RUN mv /redmine_cas "${WORKDIR}/defaultPlugins/"
 
 # set workdir
 WORKDIR ${WORKDIR}
