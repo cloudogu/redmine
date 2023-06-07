@@ -149,7 +149,7 @@ WORKDIR ${WORKDIR}
 # expose application port
 EXPOSE 3000
 
-HEALTHCHECK CMD doguctl healthy redmine || exit 1
+HEALTHCHECK --interval=5s CMD doguctl healthy redmine || exit 1
 
 # start
 CMD ["/startup.sh"]
