@@ -73,7 +73,6 @@ module RedmineCas
         if logout_request?
           logger.info 'CAS logout request detected: Skipping validation of authenticity token'
         else
-          puts "Use old method....."
           super
         end
       end
