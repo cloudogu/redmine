@@ -1,36 +1,13 @@
 module RedmineCas
   module AccountControllerPatch
     def self.included(base)
-      base.send(:include, InstanceMethods)
-      base.class_eval do
-        alias_method :logout_without_cas, :logout
-        alias_method :logout, :logout_with_cas
-        alias_method :original_login, :login
-        alias_method :login, :cas_login
-      end
+      base.send(:include, NewMethods)
+      base.send(:prepend, InstanceMethods)
     end
 
-    module InstanceMethods
-      def cas_login
-
-        return original_login if request.post? && RedmineCas.local_user_enabled?
-        return original_login unless RedmineCas.enabled?
-        return if RedmineCas.local_user_enabled?
-
-        prev_url = request.referrer
-        prev_url = home_url if prev_url.to_s.strip.empty?
-        login_url = RedmineCas.get_cas_url + '/login?service=' + ERB::Util.url_encode(prev_url)
-        redirect_to login_url
-      end
-
-      def logout_with_cas
-        return logout_without_cas unless RedmineCas.enabled?
-
-        logout_user
-        CASClient::Frameworks::Rails::Filter.logout(self, home_url)
-      end
-
+    module NewMethods
       def cas
+        puts "CAS WAS CALLED"
         return redirect_to_action('login') unless RedmineCas.enabled?
 
         if User.current.logged?
@@ -42,7 +19,6 @@ module RedmineCas
         if CASClient::Frameworks::Rails::Filter.filter(self)
           attrs = RedmineCas.user_extra_attributes_from_session(session)
           user = RedmineCas::UserManager.create_or_update_user(attrs["login"], attrs["firstname"], attrs["lastname"], attrs["mail"], attrs["allgroups"])
-
           return cas_user_not_found if user.nil?
           return cas_account_pending unless user.active?
 
@@ -113,6 +89,27 @@ module RedmineCas
           format.any { head @status }
         end
       end
+    end
+    module InstanceMethods2
+      def login
+
+        return super if request.post? && RedmineCas.local_user_enabled?
+        return super unless RedmineCas.enabled?
+        return if RedmineCas.local_user_enabled?
+
+        prev_url = request.referrer
+        prev_url = home_url if prev_url.to_s.strip.empty?
+        login_url = RedmineCas.get_cas_url + '/login?service=' + ERB::Util.url_encode(prev_url)
+        redirect_to login_url
+      end
+
+      def logout
+        return super unless RedmineCas.enabled?
+
+        logout_user
+        CASClient::Frameworks::Rails::Filter.logout(self, home_url)
+      end
+
     end
   end
 end

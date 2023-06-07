@@ -17,10 +17,28 @@ Redmine::Plugin.register :redmine_cas do
     'admin_group' => 'admin',
   }, :partial => 'redmine_cas/settings'
 
+  # http://sundivenetworks.com/archive/2021/tried-to-load-unspecified-class-time-psych-disallowedclass.html
+  Psych::ClassLoader::ALLOWED_PSYCH_CLASSES = [ Time ]
+
+  module Psych
+    class ClassLoader
+      ALLOWED_PSYCH_CLASSES = [] unless defined? ALLOWED_PSYCH_CLASSES
+      class Restricted < ClassLoader
+        def initialize classes, symbols
+          @classes = classes + Psych::ClassLoader::ALLOWED_PSYCH_CLASSES.map(&:to_s)
+          @symbols = symbols
+          super()
+        end
+      end
+    end
+  end
+
+  ApplicationController.send(:include, RedmineCas::ApplicationControllerPatch)
+  AccountController.send(:include, RedmineCas::AccountControllerPatch)
+  User.send(:include, RedmineCas::UserPatch)
+
   ActionDispatch::Callbacks.before do
     RedmineCas.setup!
-    ApplicationController.send(:include, RedmineCas::ApplicationControllerPatch)
-    AccountController.send(:include, RedmineCas::AccountControllerPatch)
-    User.send(:include, RedmineCas::UserPatch)
   end
+
 end

@@ -1,29 +1,17 @@
 module RedmineCas
   module ApplicationControllerPatch
     def self.included(base)
-      base.send(:include, InstanceMethods)
-      base.class_eval do
-        alias_method :verify_authenticity_token_without_cas, :verify_authenticity_token
-        alias_method :verify_authenticity_token, :verify_authenticity_token_with_cas
-        alias_method :require_login_without_cas, :require_login
-        alias_method :require_login, :require_login_with_cas
-        alias_method :original_check_if_login_required, :check_if_login_required
-        alias_method :check_if_login_required, :cas_check_if_login_required
-        alias_method :original_find_current_user, :find_current_user
-        alias_method :find_current_user, :cas_find_current_user
-        alias_method :original_user_setup, :user_setup
-        alias_method :user_setup, :cas_user_setup
-      end
+      base.send(:prepend, InstanceMethods)
     end
 
     module InstanceMethods
-      def cas_user_setup
-        original_user_setup
+      def user_setup
+        super
         # reload user data so the updated group information will be took into account
         User.current.reload
       end
 
-      def cas_find_current_user
+      def find_current_user
         if /\AProxyTicket /i.match?(request.authorization.to_s)
           begin
             ticket = request.authorization.to_s.split(" ", 2)[1]
@@ -49,11 +37,11 @@ module RedmineCas
           end
         end
 
-        original_find_current_user
+        super
       end
 
-      def require_login_with_cas
-        return require_login_without_cas unless RedmineCas.enabled?
+      def require_login
+        return super unless RedmineCas.enabled?
 
         unless User.current.logged?
           referrer = request.fullpath
@@ -76,20 +64,21 @@ module RedmineCas
         true
       end
 
-      def cas_check_if_login_required
-        return original_check_if_login_required unless RedmineCas.enabled?
-        require_login if params.has_key?(:ticket) or original_check_if_login_required
+      def check_if_login_required
+        return super unless RedmineCas.enabled?
+        require_login if params.has_key?(:ticket) or super
       end
 
-      def verify_authenticity_token_with_cas
-        if cas_logout_request?
+      def verify_authenticity_token
+        if logout_request?
           logger.info 'CAS logout request detected: Skipping validation of authenticity token'
         else
-          verify_authenticity_token_without_cas
+          puts "Use old method....."
+          super
         end
       end
 
-      def cas_logout_request?
+      def logout_request?
         request.post? && params.has_key?('logoutRequest')
       end
 
