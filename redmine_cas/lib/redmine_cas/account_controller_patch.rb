@@ -7,7 +7,6 @@ module RedmineCas
 
     module NewMethods
       def cas
-        puts "CAS WAS CALLED"
         return redirect_to_action('login') unless RedmineCas.enabled?
 
         if User.current.logged?
@@ -90,7 +89,7 @@ module RedmineCas
         end
       end
     end
-    module InstanceMethods2
+    module InstanceMethods
       def login
 
         return super if request.post? && RedmineCas.local_user_enabled?
