@@ -8,22 +8,29 @@ LABEL NAME="official/redmine" \
 # This Dockerfile is based on https://github.com/docker-library/redmine/blob/master/4.0/alpine/Dockerfile
 
 # set environment variables
-ENV REDMINE_VERSION=5.0.5 \
-    CAS_PLUGIN_VERSION=2.0.0 \
-    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
-    EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
-    RUBYCASVERSION=2.3.15 \
-    USER=redmine \
+ENV USER=redmine \
     BASEDIR=/usr/share/webapps \
     WORKDIR=/usr/share/webapps/redmine \
     SERVICE_TAGS=webapp \
     RAILS_ENV=production \
-    REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
-    CAS_PLUGIN_TARGZ_SHA256=f296de1a13ee1d52d545c0ee29c685f8eb46b606ccabd16fe3e392008c892f96 \
-    EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
-    ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
-    RUBYCAS_TARGZ_SHA256=9ca9b2e020c4f12c3c7e87565b9aa19dda130912138d80ad6775e5bdc2d4ca66 \
     RAILS_RELATIVE_URL_ROOT=/redmine \
+    STARTUP_DIR=/
+    # Redmine version
+    REDMINE_VERSION=5.0.5 \
+    REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
+    # CAS-Plugin version
+    CAS_PLUGIN_VERSION=2.0.0 \
+    CAS_PLUGIN_TARGZ_SHA256=f296de1a13ee1d52d545c0ee29c685f8eb46b606ccabd16fe3e392008c892f96 \
+    # Rest-API-Plugin version
+    EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
+    EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
+    # Activerecord session plugin version
+    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
+    ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
+    # Rubycas-client version
+    RUBYCASVERSION=2.4.0-rc1 \
+    RUBYCAS_TARGZ_SHA256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 \
+    # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
     THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
     STARTUP_DIR=/
@@ -84,7 +91,7 @@ RUN set -eux -o pipefail \
  && rm v${RUBYCASVERSION}.tar.gz \
  && cd rubycas-client \
  && gem build rubycas-client.gemspec \
- && gem install rubycas-client-${RUBYCASVERSION}.gem \
+ && gem install rubycas-client-2.4.0.pre.rc1.gem \
  && cd .. \
  && rm -rf rubycas-client \
  # install redmine required gems
