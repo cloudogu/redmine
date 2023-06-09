@@ -1,9 +1,0 @@
-<h2><%= @status %></h2>
-
-<% if @message.present? %>
-  <div id="errorExplanation"><%= ActionController::Base.helpers.sanitize(@message.html_safe) %></div>
-<% end %>
-
-<p><a href="javascript:history.back()"><%= l(:button_back) %></a></p>
-
-<% html_title @status %>
