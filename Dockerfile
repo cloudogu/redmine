@@ -13,8 +13,8 @@ ENV USER=redmine \
     RAILS_RELATIVE_URL_ROOT=/redmine \
     STARTUP_DIR=/ \
     # Rubycas-client version
-    RUBYCASVERSION=2.4.02 \
-    RUBYCAS_TARGZ_SHA256=1af24c85c151fd648a2ccd9a5690eb27dce30e7e0c7b886b7fac1934ccf59e1e \
+    RUBYCASVERSION=2.4.0.rc1 \
+    RUBYCAS_TARGZ_SHA256=c5b0dd09a77c02ce228f9d58735f6833bc5ab9a64ec0351899a447fcf0da26ec \
     # Redmine version
     REDMINE_VERSION=5.0.5 \
     REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
@@ -24,19 +24,17 @@ ENV USER=redmine \
     EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
     EXTENDED_REST_API_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_extended_rest_api" \
     # Activerecord session plugin version
-    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.1.0 \
-    ACTIVERECORD_TARGZ_SHA256=a5d3a5ac6c5329212621bab128a2f94b0ad6bb59084f3cc714786a297bcdc7ee \
+    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.2.0-rc2 \
+    ACTIVERECORD_TARGZ_SHA256=a60dda982c99d28eebc7eaa7e56cd4b59eceef5227d843edb64388f07ad84cb4 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
-    CAS_PLUGIN_VERSION=2.0.02 \
-    CAS_PLUGIN_TARGZ_SHA256=4aa8d4732160bcbf5712de21661e910256a8d05bea79b66d2cfe18a96a631186 \
+    CAS_PLUGIN_VERSION=2.0.0.rc1 \
+    CAS_PLUGIN_TARGZ_SHA256=5b8e33f183db8ae5ac3cc7029b0dce70c4550cefc30429c7139944489f6f2c7d \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
     THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
-    CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
-    # Session Stoire gem
-    SESSION_STORE_GEM_VERSION="2.0"
+    CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu"
 
 COPY resources/ /
 
@@ -96,6 +94,7 @@ RUN set -eux -o pipefail \
    libffi \
    su-exec \
    git \
+   curl \
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
    build-base \
@@ -123,8 +122,6 @@ RUN set -eux -o pipefail \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
  && cd .. \
  && rm -rf rubycas-client \
- # install redmine required gems
- && echo "gem \"activerecord-session_store\", \"${SESSION_STORE_GEM_VERSION}\"" >> ${WORKDIR}/Gemfile \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
