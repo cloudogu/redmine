@@ -2,7 +2,7 @@
 FROM registry.cloudogu.com/official/base:3.17.3-2
 
 LABEL NAME="official/redmine" \
-   VERSION="4.2.9-4" \
+   VERSION="5.0.5-1" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -28,8 +28,8 @@ ENV USER=redmine \
     ACTIVERECORD_TARGZ_SHA256=a60dda982c99d28eebc7eaa7e56cd4b59eceef5227d843edb64388f07ad84cb4 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
-    CAS_PLUGIN_VERSION=2.0.0.rc1 \
-    CAS_PLUGIN_TARGZ_SHA256=5b8e33f183db8ae5ac3cc7029b0dce70c4550cefc30429c7139944489f6f2c7d \
+    CAS_PLUGIN_VERSION=2.1.0-rc1 \
+    CAS_PLUGIN_TARGZ_SHA256=ec6b0cde55f51fe8e9989542c10cbedf0df01bb3f50070984d5391a1f8503ee9 \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
