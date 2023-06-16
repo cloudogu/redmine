@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Update Redmine to 5.0.5 (#117)
+- Clear sessions on each restart of the container
 - Update makefiles
 - Update redmine_cas plugin
 - Update activerecord-session_store plugin
