@@ -13,8 +13,8 @@ ENV USER=redmine \
     RAILS_RELATIVE_URL_ROOT=/redmine \
     STARTUP_DIR=/ \
     # Rubycas-client version
-    RUBYCASVERSION=2.4.0.rc1 \
-    RUBYCAS_TARGZ_SHA256=c5b0dd09a77c02ce228f9d58735f6833bc5ab9a64ec0351899a447fcf0da26ec \
+    RUBYCASVERSION=2.4.0 \
+    RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
     REDMINE_VERSION=5.0.5 \
     REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
@@ -24,12 +24,12 @@ ENV USER=redmine \
     EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
     EXTENDED_REST_API_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_extended_rest_api" \
     # Activerecord session plugin version
-    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.2.0-rc2 \
-    ACTIVERECORD_TARGZ_SHA256=a60dda982c99d28eebc7eaa7e56cd4b59eceef5227d843edb64388f07ad84cb4 \
+    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.2.0 \
+    ACTIVERECORD_TARGZ_SHA256=6e9bdeef6ddaef3b997251418647bd17b11bb10d36b7a2ad27f387cb511858ea \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
-    CAS_PLUGIN_VERSION=2.1.0-rc1 \
-    CAS_PLUGIN_TARGZ_SHA256=ec6b0cde55f51fe8e9989542c10cbedf0df01bb3f50070984d5391a1f8503ee9 \
+    CAS_PLUGIN_VERSION=2.1.0 \
+    CAS_PLUGIN_TARGZ_SHA256=062207dfc5ebc624458e25e41da8bfbebcf8d962f60b442a957c4617017e2090 \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
