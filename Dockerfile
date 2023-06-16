@@ -129,7 +129,7 @@ RUN set -eux -o pipefail \
  # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
- && bundle config set --local without7 'development test' \
+ && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \
  # cleanup
