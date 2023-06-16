@@ -82,14 +82,11 @@ RUN set -eux -o pipefail \
  # install runtime packages
  && apk --no-cache add --virtual /.run-deps \
    postgresql-client \
-   sqlite-libs \
    imagemagick \
    tzdata \
    ruby \
-   ruby-bigdecimal \
    ruby-bundler \
    ruby-rdoc \
-   ruby-webrick \
    tini \
    libffi \
    su-exec \
