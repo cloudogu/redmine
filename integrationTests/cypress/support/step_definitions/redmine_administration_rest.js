@@ -1,7 +1,7 @@
 const {
     When,
     Then
-} = require("cypress-cucumber-preprocessor/steps");
+} = require("@badeball/cypress-cucumber-preprocessor");
 
 // The response is used to verify the outcome of a request
 let authenticationResponse = null
