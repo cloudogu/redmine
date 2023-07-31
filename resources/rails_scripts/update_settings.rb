@@ -38,7 +38,8 @@ module SettingsHelper
       { key: :cas_fqdn, value: ENV['FQDN'].to_s },
       { key: :cas_relative_url, value: '/cas' },
       { key: :admin_group, value: ENV['ADMIN_GROUP'].to_s },
-      { key: :local_users_enabled, value: @options[:allow_local_users].to_i }
+      { key: :local_users_enabled, value: @options[:allow_local_users].to_i },
+      { key: :ticket_store, value: :active_record_ticket_store }
     ]
   end
 

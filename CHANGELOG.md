@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.0.5-1] - 2023-07-31
+### Changed
+- Update Redmine to 5.0.5 (#117)
+- Clear sessions on each restart of the container
+- Update makefiles
+- Update redmine_cas plugin
+- Update activerecord-session_store plugin
+- Update installed version of rubycas-client
+
+### Fixed
+- Fix integration tests by upgrading cypress and integration-tests-lib
+
 ## [v4.2.9-4] - 2023-05-24
 ### Changed
 - Use custom email domain for the temporary admin user if the constraint is configured in Redmine (#115)

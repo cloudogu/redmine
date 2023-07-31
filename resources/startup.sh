@@ -175,6 +175,9 @@ function runMain() {
   chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
   chmod -R 755 files log tmp public/plugin_assets
 
+  echo "Clearing sessions..."
+  exec_rake db:sessions:clear
+
   doguctl state "ready"
 
   # Start redmine
