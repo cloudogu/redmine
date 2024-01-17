@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.0.5-3] - 2024-01-17
+### Fixed
+- [#123] Add gem `bigdecimal` because some plugins like `helpdesk` need the dependency on `bundle install` if redmine is starting up.
+
 ## [v5.0.5-2] - 2023-10-20
 ### Fixed
 - [#121] FIXED CVE: CVE-2023-4863 CVE-2023-38039 CVE-2023-38545 CVE-2023-39417 CVE-2023-44487
