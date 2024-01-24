@@ -2,7 +2,7 @@
 FROM registry.cloudogu.com/official/base:3.17.3-2
 
 LABEL NAME="official/redmine" \
-   VERSION="5.0.5-3" \
+   VERSION="5.0.5-4" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -132,7 +132,8 @@ RUN set -eux -o pipefail \
  && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \
- && gem install bigdecimal \
+ && gem install bigdecimal -v 3.1.5 \
+ && bundle add bigdecimal --version=3.1.5 \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
