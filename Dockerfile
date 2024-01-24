@@ -132,7 +132,8 @@ RUN set -eux -o pipefail \
  && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \
- && gem install bigdecimal \
+ && gem install bigdecimal -v 3.1.5 \
+ && bundle add bigdecimal --version=3.1.5 \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
