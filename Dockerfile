@@ -28,8 +28,8 @@ ENV USER=redmine \
     ACTIVERECORD_TARGZ_SHA256=6e9bdeef6ddaef3b997251418647bd17b11bb10d36b7a2ad27f387cb511858ea \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
-    CAS_PLUGIN_VERSION=2.1.0 \
-    CAS_PLUGIN_TARGZ_SHA256=062207dfc5ebc624458e25e41da8bfbebcf8d962f60b442a957c4617017e2090 \
+    CAS_PLUGIN_VERSION=2.1.1 \
+    CAS_PLUGIN_TARGZ_SHA256=d326207bbe86a82e95c41278553ce216713b3ad3755a10138d742816c213aeba \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
