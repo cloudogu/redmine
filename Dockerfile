@@ -1,5 +1,4 @@
-# registry.cloudogu.com/official/redmine
-FROM registry.cloudogu.com/official/base:3.17.3-2
+FROM registry.cloudogu.com/official/base:3.18.3-1
 
 LABEL NAME="official/redmine" \
    VERSION="5.0.5-1" \
@@ -16,8 +15,8 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=5.0.5 \
-    REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
+    REDMINE_VERSION=5.1.2 \
+    REDMINE_TARGZ_SHA256=26c0ca0a9aaee1ceb983825bf1266c99b0850bf013c178713f5a3b0080012123 \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
@@ -139,10 +138,6 @@ RUN set -eux -o pipefail \
  && rm -rf /var/cache/apk/* \
  && apk add ruby-irb
 
-# set workdir
-WORKDIR ${WORKDIR}
-
-# expose application port
 EXPOSE 3000
 
 HEALTHCHECK --interval=5s CMD doguctl healthy redmine || exit 1
