@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Update Redmine to version 5.1.2
+- Update Redmine to version 5.0.8
 - Update CAS plugin to version 2.1.1
   - This will fix a bug where the user data was not updated on login (#126)
 
