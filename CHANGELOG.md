@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Update Redmine to version 5.0.8
-- Update CAS plugin to version 2.1.1
+- Update CAS plugin to version 2.1.2
   - This will fix a bug where the user data was not updated on login (#126)
+  - This will also fix an error response when a ticket parameter inside an HTTP POST body was mistaken to be a CAS service ticket parameter
 
 ## [v5.0.5-1] - 2023-07-31
 ### Changed
