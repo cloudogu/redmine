@@ -138,6 +138,8 @@ RUN set -eux -o pipefail \
  && rm -rf /var/cache/apk/* \
  && apk add ruby-irb
 
+WORKDIR ${WORKDIR}
+
 EXPOSE 3000
 
 HEALTHCHECK --interval=5s CMD doguctl healthy redmine || exit 1
