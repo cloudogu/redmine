@@ -1,8 +1,7 @@
-# registry.cloudogu.com/official/redmine
 FROM registry.cloudogu.com/official/base:3.17.3-2
 
 LABEL NAME="official/redmine" \
-   VERSION="5.0.5-4" \
+   VERSION="5.0.8-1" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -16,8 +15,8 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=5.0.5 \
-    REDMINE_TARGZ_SHA256=a89ad1c4bb9bf025e6527c77ab18c8faf7749c94a975caf2cfdbba00eb12a481 \
+    REDMINE_VERSION=5.0.8 \
+    REDMINE_TARGZ_SHA256=1eda410840a21ab0f6965a378699a65588b6785db95eaf6494c6c9bc51b5bf6e \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
@@ -28,8 +27,8 @@ ENV USER=redmine \
     ACTIVERECORD_TARGZ_SHA256=6e9bdeef6ddaef3b997251418647bd17b11bb10d36b7a2ad27f387cb511858ea \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
-    CAS_PLUGIN_VERSION=2.1.0 \
-    CAS_PLUGIN_TARGZ_SHA256=062207dfc5ebc624458e25e41da8bfbebcf8d962f60b442a957c4617017e2090 \
+    CAS_PLUGIN_VERSION=2.1.2 \
+    CAS_PLUGIN_TARGZ_SHA256=0a0234fca4224aa3da47e60fb20f633a6a11f328dfdac11c33548bfbd6dd1baf \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
@@ -132,8 +131,9 @@ RUN set -eux -o pipefail \
  && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \
- && gem install bigdecimal -v 3.1.5 \
- && bundle add bigdecimal --version=3.1.5 \
+ # Do not remove the dependency on bigdecimal. Many tools rely on bigdecimal, and it may not be possible to install it in a running dogu
+ && gem install bigdecimal -v 3.1.6 \
+ && bundle add bigdecimal --version=3.1.6 \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
@@ -141,10 +141,8 @@ RUN set -eux -o pipefail \
  && rm -rf /var/cache/apk/* \
  && apk add ruby-irb
 
-# set workdir
 WORKDIR ${WORKDIR}
 
-# expose application port
 EXPOSE 3000
 
 HEALTHCHECK --interval=5s CMD doguctl healthy redmine || exit 1
