@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v5.0.8-1] - 2024-03-07
 ### Changed
 - Update Redmine to version 5.0.8
 - Update CAS plugin to version 2.1.2
