@@ -17,7 +17,6 @@ echo "                       'V/(/////////////////////////////V'      "
 
 SETUP_DONE_KEY="startup/setup_done"
 
-
 # import util functions:
 # - create_secrets_yml
 # - render_config_ru_template
@@ -35,7 +34,7 @@ sourceUtilExitCode=0
 # shellcheck disable=SC1091
 source "${STARTUP_DIR}"/util.sh || sourceUtilExitCode=$?
 if [[ ${sourceUtilExitCode} -ne 0 ]]; then
-  echo "ERROR: An error occurred while sourcing util functions.";
+  echo "ERROR: An error occurred while sourcing util functions."
   doguctl state "ErrorSourceUtilFunctions"
   sleep 300
   exit 2
@@ -46,17 +45,17 @@ function setDoguLogLevel() {
   currentLogLevel=$(doguctl config --default "WARN" "logging/root")
 
   case "${currentLogLevel}" in
-    "ERROR")
-      export REDMINE_LOGLEVEL=":error"
+  "ERROR")
+    export REDMINE_LOGLEVEL=":error"
     ;;
-    "INFO")
-      export REDMINE_LOGLEVEL=":info"
+  "INFO")
+    export REDMINE_LOGLEVEL=":info"
     ;;
-    "DEBUG")
-      export REDMINE_LOGLEVEL=":debug"
+  "DEBUG")
+    export REDMINE_LOGLEVEL=":debug"
     ;;
-    *)
-      export REDMINE_LOGLEVEL=":warn"
+  *)
+    export REDMINE_LOGLEVEL=":warn"
     ;;
   esac
   doguctl template /usr/share/webapps/redmine/config/additional_environment.rb.tpl /usr/share/webapps/redmine/config/additional_environment.rb
