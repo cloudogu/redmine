@@ -178,6 +178,7 @@ function runMain() {
   exec_rake db:sessions:clear
 
   doguctl state "ready"
+  doguctl config --rm "local_state"
 
   # Start redmine
   echo "Starting redmine..."
