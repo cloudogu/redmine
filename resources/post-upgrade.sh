@@ -70,6 +70,7 @@ function run_postupgrade() {
 
   echo "Set registry flag so startup script can start afterwards..."
   doguctl state "upgrade done"
+  doguctl config --rm "local_state"
 
   echo "Redmine post-upgrade done"
 }
