@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Update Redmine to version 5.1.3
+  - common_mark markdown formatter is set for new installations, markdown formatter is deprecated.
 
 ## [v5.0.8-1] - 2024-03-07
 ### Changed
