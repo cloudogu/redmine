@@ -138,7 +138,7 @@ function runMain() {
     sql "INSERT INTO settings (name, value, updated_on) VALUES ('ui_theme','Cloudogu', now());"
 
     # we use markdown as default format, however it can be changed
-    sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'markdown', now());"
+    sql "INSERT INTO settings (name, value, updated_on) VALUES ('text_formatting', 'common_mark', now());"
 
     # Remove default admin account
     sql "DELETE FROM users WHERE login='admin';"
