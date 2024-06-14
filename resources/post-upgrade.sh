@@ -48,6 +48,14 @@ function run_postupgrade() {
       fi
     fi
 
+  if versionXLessOrEqualThanY "${FROM_VERSION}" "5.1.3-1" ; then
+    current_formatter=$(sql "SELECT value FROM settings where name = 'text_formatting'");
+    if [ "$current_formatter" != "common_mark" ]; then
+      sql "UPDATE settings SET value='common_mark' WHERE name='text_formatting';"
+    fi
+  fi
+
+
   echo "Making sure config/secrets.yml exists..."
   create_secrets_yml
 
