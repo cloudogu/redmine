@@ -42,11 +42,11 @@ function run_postupgrade() {
   fi
 
   if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
-      # this migration only needs to be done if the additional plugins volume was already created
-      if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
-        migratePluginsBackToPluginsDirectory
-      fi
+    # this migration only needs to be done if the additional plugins volume was already created
+    if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
+      migratePluginsBackToPluginsDirectory
     fi
+  fi
 
   if versionXLessOrEqualThanY "${FROM_VERSION}" "5.1.3-1" ; then
     migrateDeprecatedMarkdownFormatter
