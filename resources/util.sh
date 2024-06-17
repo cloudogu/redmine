@@ -134,15 +134,13 @@ function render_configuration_yml_template() {
 
 function sql(){
   local stmt="${1}"
-  local additionalArgs="${2:-""}"
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql "${additionalArgs}" --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${stmt}"
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${stmt}"
 }
 
 function sqlForSelect(){
   local stmt="${1}"
-  local returnOnlyTheSelectedValueNothingElseCmdFlag="-tA"
-
-  sql "${1}" "${returnOnlyTheSelectedValueNothingElseCmdFlag}"
+  local returnOnlyTheSelectedValue="-tA"
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql "${returnOnlyTheSelectedValue}" --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${stmt}"
 }
 
 function get_setting_value() {

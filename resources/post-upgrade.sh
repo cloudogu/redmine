@@ -83,7 +83,6 @@ function migrateDeprecatedMarkdownFormatter() {
   echo "Looking for deprecated formatters..."
   local current_formatter
   current_formatter=$(sqlForSelect "SELECT value FROM settings where name = 'text_formatting'");
-  echo "Found formatter.${current_formatter}."
 
   if [[ "${current_formatter}" == "markdown" ]] ; then
     echo "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
