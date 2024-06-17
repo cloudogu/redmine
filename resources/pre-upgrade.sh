@@ -61,7 +61,10 @@ function versionXLessOrEqualThanY() {
   local sourceVersion="${1}"
   local targetVersion="${2}"
 
+  echo "comparing '${sourceVersion}' to '${targetVersion}'"
+
   if [[ "${sourceVersion}" == "${targetVersion}" ]]; then
+    echo "upgrade to same version"
     return 0
   fi
 

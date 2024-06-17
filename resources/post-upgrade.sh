@@ -49,10 +49,7 @@ function run_postupgrade() {
     fi
 
   if versionXLessOrEqualThanY "${FROM_VERSION}" "5.1.3-1" ; then
-    current_formatter=$(sql "SELECT value FROM settings where name = 'text_formatting'");
-    if [ "$current_formatter" != "common_mark" ]; then
-      sql "UPDATE settings SET value='common_mark' WHERE name='text_formatting';"
-    fi
+    migrateDeprecatedMarkdownFormatter
   fi
 
 
@@ -80,6 +77,18 @@ function run_postupgrade() {
   doguctl state "upgrade done"
 
   echo "Redmine post-upgrade done"
+}
+
+function migrateDeprecatedMarkdownFormatter() {
+  echo "Looking for deprecated formatters..."
+  local current_formatter
+  current_formatter=$(sqlForSelect "SELECT value FROM settings where name = 'text_formatting'");
+  echo "Found formatter.${current_formatter}."
+
+  if [[ "${current_formatter}" == "markdown" ]] ; then
+    echo "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
+    sql "UPDATE settings SET value='common_mark' WHERE name='text_formatting' and value='markdown';"
+  fi
 }
 
 # moves plugins which were moved from a pre-upgrade script back to the original path

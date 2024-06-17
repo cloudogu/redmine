@@ -84,7 +84,7 @@ teardown() {
   assert_equal "$(mock_get_call_args "${doguctl}" "2")" "config -e sa-postgresql/password"
   assert_equal "$(mock_get_call_args "${doguctl}" "3")" "config -e sa-postgresql/database"
 
-  assert_equal "$(mock_get_call_num "${psql}")" "1"
+  assert_equal "$(mock_get_call_num "${psql}")" "2"
   assert_equal "$(mock_get_call_args "${psql}" "1")" "--host postgresql --username theUser --dbname theDatabase -1 -c DELETE FROM settings WHERE id IN (SELECT id FROM settings WHERE NOT id IN (SELECT max(id) FROM settings GROUP BY name HAVING count(*) > 1) AND name IN (SELECT name FROM settings GROUP BY name HAVING count(name) > 1))"
 
   assert_line "Redmine post-upgrade done"
@@ -119,6 +119,41 @@ teardown() {
 
     echo "TEST: Success: run_postupgrade ${sourceVersion}" "4.2.0-1"
   done
+}
+
+
+@test "migrateDeprecatedMarkdownFormatter should upgrade deprecated markdown formatter towards new markdown formatter" {
+  source /workspace/resources/post-upgrade.sh
+
+  mock_set_status "${psql}" 0
+  mock_set_output "${psql}" "markdown" 1
+  mock_set_output "${psql}" "UPDATE 1" 2
+
+  run migrateDeprecatedMarkdownFormatter
+
+  assert_success
+  assert_line "Looking for deprecated formatters..."
+  assert_line "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
+}
+
+@test "run_postupgrade should upgrade deprecated markdown formatter towards new markdown formatter during upgrade from version 5.0.8-1 to version 5.1.3-1" {
+  source /workspace/resources/post-upgrade.sh
+  sourceVersion="5.0.8-1"
+  targetVersion="5.1.3-1"
+
+  echo "TEST: Running: run_postupgrade ${sourceVersion} ${targetVersion}"
+
+  mock_set_status "${psql}" 0
+  mock_set_output "${psql}" "markdown" 1
+  mock_set_output "${psql}" "UPDATE 1" 2
+
+  # overwrite plugin env vars for implicit call of install_plugins
+  overwritePluginDirsWithTmpDirs
+
+  run run_postupgrade "${sourceVersion}" "${targetVersion}"
+
+  assert_success
+  assert_line "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
 }
 
 @test "run_postupgrade should not delete duplicate database settings during upgrade from source versions higher than 4.1.0-3" {
