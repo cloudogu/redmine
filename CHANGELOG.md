@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Update Redmine to version 5.1.3
+- Update Redmine to version 5.1.3 (#130)
   - Redmine 5.1.2 deprecates the previous markdown formatter. 
     - The formatter `common_mark markdown (github-flavoured)` will be set for new installations as well as for upgrading instances that use the old markdown formatter
+- Update base image to Alpine 3.19.2 including doguctl v0.11.0
+
 ## [v5.0.8-1] - 2024-03-07
 ### Changed
 - Update Redmine to version 5.0.8
