@@ -80,7 +80,7 @@ RUN set -eux -o pipefail \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
  # install runtime packages
  && apk --no-cache add --virtual /.run-deps \
-   postgresql-client \
+   postgresql16-client \
    imagemagick \
    tzdata \
    ruby \
