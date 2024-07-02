@@ -48,9 +48,10 @@ function run_postupgrade() {
     fi
   fi
 
-  if versionXLessOrEqualThanY "${FROM_VERSION}" "5.1.3-1" ; then
-    migrateDeprecatedMarkdownFormatter
-  fi
+# TODO: ppxl: Uncomment when Redmine actually removes the deprecated 'markdown' formatter
+#  if versionXLessOrEqualThanY "${FROM_VERSION}" "x.x.x-x" ; then
+#    migrateDeprecatedMarkdownFormatter
+#  fi
 
 
   echo "Making sure config/secrets.yml exists..."
