@@ -122,7 +122,7 @@ function restorePluginsFromTmpDir(){
   rm -rf "${source_directory}"
 }
 
-# make the script only run when executed, not when sourced from bats tests)
+# make the script only run when executed, not when sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   run_postupgrade "$@"
 fi

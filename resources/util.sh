@@ -254,11 +254,12 @@ function fetchDatabaseConnection() {
   DATABASE_DB="$(doguctl config -e sa-postgresql/database)"
 }
 
-# make the script only run when executed, not when sourced from bats tests)
+function railsConsole() {
+  rails r -e production "$@"
+}
+
+# make the script only run when executed, not when sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   fetchDatabaseConnection
 fi
 
-function railsConsole() {
-  rails r -e production "$@"
-}
