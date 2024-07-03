@@ -8,7 +8,8 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 * Das Dogu bietet nun die Redmine-Version 5.1.2 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#512-2024-06-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX_REPLACE_ME).
 * Diese Version veraltet das ursprüngliche Markdown-Format "Markdown" zugunsten des verbreiteten Markdown-Formats "CommonMark Markdown (Github-flavored)".
-   - Obwohl der alte Formatter noch verwendet werden kann, sollten Administratoren sich auf eine Umstellung ihrer Projekte einstellen:
+   - Für Neuinstallationen ist `CommonMark Markdown (github-flavoured)` nun der Standardformatter  
+   - Obwohl der alte Formatter noch verwendet werden kann, sollten Administratoren von vorherigen Redmine-Versionen sich auf eine Umstellung ihrer Projekte einstellen:
       - Unterstrichener Text (`_underline_`) wird nicht länger als solches unterstützt und wird stattdessen *kursiv* dargestellt
       - Die [Github documentation](https://docs.github.com/de/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) hält zu den meisten unterstützen _Github-flavored Markdown_-Formatierungen Informationen bereit (der in Redmine verwendet jedoch nicht die neuesten Formatierungen wie z. B. _Alerts_)
    - Andere Formatter sind von dieser Änderung nicht betroffen
