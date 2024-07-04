@@ -133,7 +133,14 @@ function render_configuration_yml_template() {
 }
 
 function sql(){
-  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${1}"
+  local stmt="${1}"
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${stmt}"
+}
+
+function sqlForSelect(){
+  local stmt="${1}"
+  local returnOnlyTheSelectedValue="-tA"
+  PGPASSWORD="${DATABASE_USER_PASSWORD}" psql "${returnOnlyTheSelectedValue}" --host "postgresql" --username "${DATABASE_USER}" --dbname "${DATABASE_DB}" -1 -c "${stmt}"
 }
 
 function get_setting_value() {
@@ -247,11 +254,12 @@ function fetchDatabaseConnection() {
   DATABASE_DB="$(doguctl config -e sa-postgresql/database)"
 }
 
-# make the script only run when executed, not when sourced from bats tests)
+function railsConsole() {
+  rails r -e production "$@"
+}
+
+# make the script only run when executed, not when sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   fetchDatabaseConnection
 fi
 
-function railsConsole() {
-  rails r -e production "$@"
-}

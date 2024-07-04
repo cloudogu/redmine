@@ -54,6 +54,8 @@ teardown() {
   assert_success
   run versionXLessOrEqualThanY "1.0.0-1" "2.1.1-1"
   assert_success
+  run versionXLessOrEqualThanY "5.1.3-1" "5.1.3-1"
+  assert_success
 }
 
 @test "versionXLessOrEqualThanY() should return false for versions greater than another" {

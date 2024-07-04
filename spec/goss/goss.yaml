@@ -60,7 +60,7 @@ package:
     installed: true
   libffi:
     installed: true
-  postgresql15-client:
+  postgresql16-client:
     installed: true
   ruby:
     installed: true

@@ -42,11 +42,17 @@ function run_postupgrade() {
   fi
 
   if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
-      # this migration only needs to be done if the additional plugins volume was already created
-      if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
-        migratePluginsBackToPluginsDirectory
-      fi
+    # this migration only needs to be done if the additional plugins volume was already created
+    if ! versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.2-1" ; then
+      migratePluginsBackToPluginsDirectory
     fi
+  fi
+
+# TODO: ppxl: Uncomment when Redmine actually removes the deprecated 'markdown' formatter
+#  if versionXLessOrEqualThanY "${FROM_VERSION}" "x.x.x-x" ; then
+#    migrateDeprecatedMarkdownFormatter
+#  fi
+
 
   echo "Making sure config/secrets.yml exists..."
   create_secrets_yml
@@ -72,6 +78,17 @@ function run_postupgrade() {
   doguctl state "upgrade done"
 
   echo "Redmine post-upgrade done"
+}
+
+function migrateDeprecatedMarkdownFormatter() {
+  echo "Looking for deprecated formatters..."
+  local current_formatter
+  current_formatter=$(sqlForSelect "SELECT value FROM settings where name = 'text_formatting'");
+
+  if [[ "${current_formatter}" == "markdown" ]] ; then
+    echo "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
+    sql "UPDATE settings SET value='common_mark' WHERE name='text_formatting' and value='markdown';"
+  fi
 }
 
 # moves plugins which were moved from a pre-upgrade script back to the original path
@@ -105,7 +122,7 @@ function restorePluginsFromTmpDir(){
   rm -rf "${source_directory}"
 }
 
-# make the script only run when executed, not when sourced from bats tests)
+# make the script only run when executed, not when sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   run_postupgrade "$@"
 fi
