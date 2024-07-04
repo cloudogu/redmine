@@ -121,6 +121,40 @@ teardown() {
   done
 }
 
+
+@test "migrateDeprecatedMarkdownFormatter should upgrade deprecated markdown formatter towards new markdown formatter" {
+  source /workspace/resources/post-upgrade.sh
+
+  mock_set_status "${psql}" 0
+  mock_set_output "${psql}" "markdown" 1
+  mock_set_output "${psql}" "UPDATE 1" 2
+
+  run migrateDeprecatedMarkdownFormatter
+
+  assert_success
+  assert_line "Looking for deprecated formatters..."
+  assert_line "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
+}
+
+@test "run_postupgrade should not (yet) upgrade deprecated markdown formatter towards new markdown formatter during upgrade from version 5.0.8-1 to version 5.1.3-1" {
+  # the migration is supposed to run when Redmine removes the deprecated markdown formatter
+  source /workspace/resources/post-upgrade.sh
+  sourceVersion="5.0.8-1"
+  targetVersion="5.1.3-1"
+
+  echo "TEST: Running: run_postupgrade ${sourceVersion} ${targetVersion}"
+
+  mock_set_status "${psql}" 0
+
+  # overwrite plugin env vars for implicit call of install_plugins
+  overwritePluginDirsWithTmpDirs
+
+  run run_postupgrade "${sourceVersion}" "${targetVersion}"
+
+  assert_success
+  refute_line "Found deprecated formatter 'markdown'. Replacing by supported formatter 'common_mark'..."
+}
+
 @test "run_postupgrade should not delete duplicate database settings during upgrade from source versions higher than 4.1.0-3" {
   source /workspace/resources/post-upgrade.sh
   sourceVersions=("4.1.1-1" "4.1.1-2" "4.2.0-1" "4.2.0-2" "4.2.1-1" "4.2.1-2" "4.2.1-3" "4.2.2-1" "4.2.2-2" "4.2.2-3" "4.2.2-4" "4.2.3-1")
