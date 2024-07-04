@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.19.2-2
 
 LABEL NAME="official/redmine" \
-   VERSION="5.0.8-1" \
+   VERSION="5.1.3-1" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
