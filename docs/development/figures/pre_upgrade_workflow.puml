@@ -10,7 +10,7 @@ endif
 if (FROM_VERSION is equal to TO_VERSION) then (yes)
     stop
 else (no)
-    :execute command: doguctl state "upgrading";
+    :execute command: doguctl config "local_state" "upgrading";
 endif
 
 if (is FROM_VERSION less or equal than "4.2.3-4") then (no)

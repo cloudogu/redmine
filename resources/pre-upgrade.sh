@@ -20,7 +20,7 @@ function run_preupgrade() {
   fi
 
   echo "Set registry flag so startup script waits for post-upgrade to finish..."
-  doguctl state "upgrading"
+  doguctl config "local_state" "upgrading"
 
   if versionXLessOrEqualThanY "${FROM_VERSION}" "4.2.3-4" ; then
     # this migration only needs to be done if the additional plugins volume was already created

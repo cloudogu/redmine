@@ -35,7 +35,7 @@ sourceUtilExitCode=0
 source "${STARTUP_DIR}"/util.sh || sourceUtilExitCode=$?
 if [[ ${sourceUtilExitCode} -ne 0 ]]; then
   echo "ERROR: An error occurred while sourcing util functions."
-  doguctl state "ErrorSourceUtilFunctions"
+  doguctl config "local_state" "ErrorSourceUtilFunctions"
   sleep 300
   exit 2
 fi
@@ -63,7 +63,7 @@ function setDoguLogLevel() {
 
 function runMain() {
   # check whether post-upgrade script is still running
-  while [[ "$(doguctl state)" == "upgrading" ]]; do
+  while [[ "$(doguctl config "local_state" -d "empty")" == "upgrading" ]]; do
     echo "Upgrade script is running. Waiting..."
     sleep 3
   done
@@ -178,6 +178,7 @@ function runMain() {
   exec_rake db:sessions:clear
 
   doguctl state "ready"
+  doguctl config --rm "local_state"
 
   # Start redmine
   echo "Starting redmine..."
