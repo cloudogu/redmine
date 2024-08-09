@@ -4,6 +4,9 @@ Below you will find the release notes for the Redmine Dogu.
 
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
+## Release 5.1.3-2
+* Fix of critical CVE-2024-41110 in library dependencies. This vulnerability could not be actively exploited, though.
+
 ## Release 5.1.3-1
 
 * The Dogu now offers the Redmine version 5.1.2. The Redmine release notes can be found [here](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#512-2024-06-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX_REPLACE_ME).
