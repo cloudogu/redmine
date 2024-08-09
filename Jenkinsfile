@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@1.64.2', 'github.com/cloudogu/dogu-build-lib@v2.1.0']) _
+@Library(['github.com/cloudogu/ces-build-lib@2.2.1', 'github.com/cloudogu/dogu-build-lib@v2.3.1']) _
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 import com.cloudogu.ces.zaleniumbuildlib.*
@@ -16,7 +16,7 @@ node('vagrant') {
     GitFlow gitflow = new GitFlow(this, git)
     GitHub github = new GitHub(this, git)
     Changelog changelog = new Changelog(this)
-    Markdown markdown = new Markdown(this, "3.11.0")
+    Markdown markdown = new Markdown(this, "3.12.2")
     EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
     Trivy trivy = new Trivy(this, ecoSystem)
 
