@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.3-2] - 2024-08-13
+### Changed
+- [#133] Update base image to 3.19.3-1
+
+### Security
+- [#133] close CVE-2024-41110
+
 ## [v5.1.3-1] - 2024-07-04
 ### Changed
 - Update Redmine to version 5.1.3 (#130)
