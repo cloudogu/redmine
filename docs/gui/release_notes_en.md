@@ -4,6 +4,9 @@ Below you will find the release notes for the Redmine Dogu.
 
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
+## Release 5.1.3-3
+* Cloudogu's own sources are relicensed from MIT to the AGPL 3.0-only.
+
 ## Release 5.1.3-2
 * Fix of critical CVE-2024-41110 in library dependencies. This vulnerability could not be actively exploited, though.
 

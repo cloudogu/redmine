@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.3-3] - 2024-09-06
+### Changed
+- Relicense to AGPL-3.0-only
+
 ## [v5.1.3-2] - 2024-08-13
 ### Changed
 - [#133] Update base image to 3.19.3-1
