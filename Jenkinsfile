@@ -183,7 +183,7 @@ static def installTestPlugin(EcoSystem ecoSystem, String name) {
 
 def runIntegrationTests(EcoSystem ecoSystem, String additionalCypressArgs) {
     ecoSystem.runCypressIntegrationTests([
-            cypressImage         : "cypress/included:12.17.1",
+            cypressImage         : "cypress/included:13.14.2",
             enableVideo          : params.EnableVideoRecording,
             enableScreenshots    : params.EnableScreenshotRecording,
             additionalCypressArgs: "${additionalCypressArgs}"
