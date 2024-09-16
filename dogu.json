@@ -21,7 +21,8 @@
     },
     {
       "type": "dogu",
-      "name": "cas"
+      "name": "cas",
+      "Version": ">=7.0.5.1-6"
     },
     {
       "type": "dogu",
@@ -96,6 +97,10 @@
   "ServiceAccounts": [
     {
       "Type": "postgresql"
+    },
+    {
+      "Type": "cas",
+      "Params": ["cas"]
     }
   ],
   "HealthChecks": [
