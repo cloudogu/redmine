@@ -79,7 +79,7 @@ teardown() {
 
   assert_success
   assert_line "get data for database connection"
-  assert_equal "$(mock_get_call_num "${doguctl}")" "9"
+  assert_equal "$(mock_get_call_num "${doguctl}")" "10"
   assert_equal "$(mock_get_call_args "${doguctl}" "1")" "config -e sa-postgresql/username"
   assert_equal "$(mock_get_call_args "${doguctl}" "2")" "config -e sa-postgresql/password"
   assert_equal "$(mock_get_call_args "${doguctl}" "3")" "config -e sa-postgresql/database"

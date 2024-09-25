@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "5.1.3-3",
+  "Version": "5.1.3-4",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -21,7 +21,8 @@
     },
     {
       "type": "dogu",
-      "name": "cas"
+      "name": "cas",
+      "Version": ">=7.0.5.1-6"
     },
     {
       "type": "dogu",
@@ -91,11 +92,24 @@
       "Owner": "1000",
       "Group": "1000",
       "NeedsBackup": false
+    },
+    {
+      "Name": "localConfig",
+      "Path": "/var/ces/config",
+      "Owner": "1000",
+      "Group": "1000",
+      "NeedsBackup": true
     }
   ],
   "ServiceAccounts": [
     {
       "Type": "postgresql"
+    },
+    {
+      "Type": "cas",
+      "Params": [
+        "cas"
+      ]
     }
   ],
   "HealthChecks": [

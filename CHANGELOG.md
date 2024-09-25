@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.3-4] - 2024-09-25
+### Changed
+- Switch to new CAS service account structure in dogu.json
+- [#128] Move state that should be persistent between restarts to local config.
+
 ## [v5.1.3-3] - 2024-09-06
 ### Changed
 - Relicense to AGPL-3.0-only

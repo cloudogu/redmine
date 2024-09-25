@@ -34,6 +34,7 @@ endif
 :render templates and update plugins
 
 :execute command: doguctl state "upgrade done";
+:execute command: doguctl config --rm "local_state";
 
 end
 
