@@ -4,13 +4,16 @@ Below you will find the release notes for the Redmine Dogu.
 
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
-## Release 5.1.3-3
+## 5.1.3-4
+We have only made technical changes. You can find more details in the changelogs.
+
+## 5.1.3-3
 * Cloudogu's own sources are relicensed from MIT to the AGPL 3.0-only.
 
-## Release 5.1.3-2
+## 5.1.3-2
 * Fix of critical CVE-2024-41110 in library dependencies. This vulnerability could not be actively exploited, though.
 
-## Release 5.1.3-1
+## 5.1.3-1
 
 * The Dogu now offers the Redmine version 5.1.2. The Redmine release notes can be found [here](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#512-2024-06-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX_REPLACE_ME).
 * This version deprecates the original Markdown format "Markdown" in favor of the more common Markdown format "CommonMark Markdown (Github-flavored)".
@@ -20,7 +23,7 @@ Technical details on a release can be found in the corresponding [Changelog](htt
       - The [Github documentation](https://docs.github.com/de/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) has information on most of the supported _Github-flavored Markdown_ formatting (the one in Redmine does not use the latest formatting such as _Alerts_)
    - Other formatters are not affected by this change
 
-## Release 5.0.8-1
+## 5.0.8-1
 
 * The Dogu now offers the Redmine version 5.0.8. The release notes of Redmine can be found [here](https://www.redmine.org/projects/redmine/wiki/Changelog_5_0#508-2024-03-04).
 * In the past it happened that [changes from the user management](https://docs.cloudogu.com/en/usermanual/usermgt/documentation/#synchronization-of-accounts-and-groups) were not updated in Redmine after a login of the affected user. The bug has been fixed in this version.
