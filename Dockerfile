@@ -1,4 +1,4 @@
-FROM registry.cloudogu.com/official/base:3.20.3-3
+FROM registry.cloudogu.com/official/base:3.19.4-2
 
 LABEL NAME="official/redmine" \
    VERSION="5.1.3-4" \
