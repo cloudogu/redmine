@@ -17,6 +17,7 @@ node('vagrant') {
     Changelog changelog = new Changelog(this)
     Markdown markdown = new Markdown(this, "3.12.2")
     EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
+    Trivy trivy = new Trivy(this, ecoSystem)
 
     timestamps {
         properties([
