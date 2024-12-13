@@ -81,8 +81,8 @@ node('vagrant') {
             }
 
             stage('Trivy scan') {
-                String imageName = this.vagrant().sshOut("jq .Image /dogu/dogu.json")
-                String imageVersion = this.vagrant().sshOut("jq .Version /dogu/dogu.json")
+                String imageName = ecoSystem.vagrant.sshOut("jq .Image /dogu/dogu.json")
+                String imageVersion = ecoSystem.vagrant.sshOut("jq .Version /dogu/dogu.json")
                 def vulns = findVulnerabilitiesWithTrivy(
                         imageName: "${imageName}:${imageVersion}",
                         severity: [params.TrivyScanLevels]
