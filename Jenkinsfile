@@ -30,7 +30,7 @@ node('vagrant') {
                         booleanParam(defaultValue: true, description: 'Enables cypress to record video of the integration tests.', name: 'EnableVideoRecording'),
                         booleanParam(defaultValue: true, description: 'Enables cypress to take screenshots of failing integration tests.', name: 'EnableScreenshotRecording'),
                         string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest'),
-                        choice(name: 'TrivyScanLevels', choices: [TrivyScanLevel.CRITICAL, TrivyScanLevel.HIGH, TrivyScanLevel.MEDIUM, TrivyScanLevel.ALL], description: 'The levels to scan with trivy'),
+                        choice(name: 'TrivyScanLevels', choices: ["CRITICAL", "CRITICAL,HIGH", "CRITICAL,HIGH,MEDIUM", "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"], description: 'The levels to scan with trivy'),
                 ])
         ])
 
@@ -85,7 +85,7 @@ node('vagrant') {
                 String imageVersion = this.vagrant().sshOut("jq .Version /dogu/dogu.json")
                 def vulns = findVulnerabilitiesWithTrivy(
                         imageName: "${imageName}:${imageVersion}",
-                        severity: params.TrivyScanLevels
+                        severity: [params.TrivyScanLevels]
                 )
                 if (vulns.size() > 0) {
                     archiveArtifacts artifacts: '.trivy/trivyOutput.json'
