@@ -31,8 +31,6 @@ node('vagrant') {
                         booleanParam(defaultValue: true, description: 'Enables cypress to take screenshots of failing integration tests.', name: 'EnableScreenshotRecording'),
                         string(defaultValue: '', description: 'Old Dogu version for the upgrade test (optional; e.g. 4.1.0-3)', name: 'OldDoguVersionForUpgradeTest'),
                         choice(name: 'TrivyScanLevels', choices: [TrivyScanLevel.CRITICAL, TrivyScanLevel.HIGH, TrivyScanLevel.MEDIUM, TrivyScanLevel.ALL], description: 'The levels to scan with trivy'),
-                        choice(name: 'TrivyStrategy', choices: [TrivyScanStrategy.UNSTABLE, TrivyScanStrategy.FAIL, TrivyScanStrategy.IGNORE], description: 'Define whether the build should be unstable, fail or whether the error should be ignored if any vulnerability was found.'),
-
                 ])
         ])
 
@@ -83,9 +81,16 @@ node('vagrant') {
             }
 
             stage('Trivy scan') {
-                trivy.scanDogu("/dogu", TrivyScanFormat.HTML, params.TrivyScanLevels, params.TrivyStrategy)
-                trivy.scanDogu("/dogu", TrivyScanFormat.JSON, params.TrivyScanLevels, params.TrivyStrategy)
-                trivy.scanDogu("/dogu", TrivyScanFormat.PLAIN, params.TrivyScanLevels, params.TrivyStrategy)
+                String imageName = this.vagrant().sshOut("jq .Image /dogu/dogu.json")
+                String imageVersion = this.vagrant().sshOut("jq .Version /dogu/dogu.json")
+                def vulns = findVulnerabilitiesWithTrivy(
+                        imageName: "${imageName}:${imageVersion}",
+                        severity: params.TrivyScanLevels
+                )
+                if (vulns.size() > 0) {
+                    archiveArtifacts artifacts: '.trivy/trivyOutput.json'
+                    unstable "Found  ${vulns.size()} vulnerabilities in image. See vulns.json"
+                }
             }
 
             stage('Verify') {
