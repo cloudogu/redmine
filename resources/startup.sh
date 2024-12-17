@@ -17,6 +17,7 @@ echo "                       'V/(/////////////////////////////V'      "
 
 SETUP_DONE_KEY="startup/setup_done"
 
+
 # import util functions:
 # - create_secrets_yml
 # - render_config_ru_template
@@ -152,12 +153,12 @@ function runMain() {
   trigger_imports || true
 
   # Create links
-  if [ ! -e "${WORKDIR}"/public/redmine ]; then
-    ln -s "${WORKDIR}" "${WORKDIR}"/public/
-  fi
-  if [ ! -e "${WORKDIR}"/stylesheets ]; then
-    ln -s "${WORKDIR}"/public/* "${WORKDIR}"
-  fi
+  # if [ ! -e "${WORKDIR}"/public/redmine ]; then
+  #   ln  "${WORKDIR}" "${WORKDIR}"/public/
+  # fi
+  # if [ ! -e "${WORKDIR}"/stylesheets ]; then
+  #   ln  "${WORKDIR}"/public/* "${WORKDIR}"
+  # fi
 
   echo "Generate configuration.yml from template"
   render_configuration_yml_template
@@ -175,13 +176,18 @@ function runMain() {
   chmod -R 755 files log tmp public/plugin_assets
 
   echo "Clearing sessions..."
-  exec_rake db:sessions:clear
-
+  # exec_rake db:sessions:clear
+  exec_rake tmp:clear
   doguctl state "ready"
   doguctl config --rm "local_state"
 
   # Start redmine
+  chmod -R 777 /usr/share/webapps/redmine/
+  chmod -R 777 /usr/lib/ruby/gems/
   echo "Starting redmine..."
+  # This can be removed later, it is a dependency check 
+  bin/rails zeitwerk:check
+
   exec su - redmine -c "AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
 }
 

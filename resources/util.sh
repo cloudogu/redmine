@@ -104,7 +104,7 @@ function exec_rake() {
 }
 
 function create_secrets_yml() {
-if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
+if [ ! -f "${WORKDIR}/config/credentials.yml" ]; then
   if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
     # secret_key_base has not been initialized yet
     echo "Generating secret token..."
@@ -115,8 +115,9 @@ if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
   fi
   # secret_key_base is stored in registry, but secrets.yml is missing
   # this happens after a restore of the dogu, because the config folder is not backed up
-  echo "Rendering config/secrets.yml..."
-  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
+  echo "Rendering config/credentials.yml..."
+  doguctl template "${WORKDIR}/config/credentials.yml.tpl" "${WORKDIR}/config/credentials.yml"
+  rails credentials:edit
 fi
 }
 

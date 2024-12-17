@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.19.4-2
 
 LABEL NAME="official/redmine" \
-   VERSION="5.1.4-1" \
+   VERSION="5.1.3-4" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -15,12 +15,12 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=5.1.4 \
-    REDMINE_TARGZ_SHA256=f5738d6a107f231b8f4b0ae5410e0c45742d75e0ef30c4b31a27c0ac9dafd51c \
+    REDMINE_VERSION=6.0.1 \
+    REDMINE_TARGZ_SHA256=dcee3f15e3c15b9dbefba1fa9d8dfa12e89a7d40b3f3ed82da903d80d2548030 \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
-    EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
-    EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
+    EXTENDED_REST_API_PLUGIN_VERSION=1.2.0 \
+    EXTENDED_REST_API_TARGZ_SHA256=9af32d40e990cf7c3cf83295e664e160c9edb58de49fb254bf2533b57d438127 \
     EXTENDED_REST_API_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_extended_rest_api" \
     # Activerecord session plugin version
     ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.2.0 \
@@ -33,7 +33,8 @@ ENV USER=redmine \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
     THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
-    CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu"
+    CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
+    TESTPATH="/usr/share/testinstall"
 
 COPY resources/ /
 
@@ -102,6 +103,15 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
+   yaml-dev \
+ ## Install Session-Store-Plugin \
+ # install Activerecord-sesion_store gem manually
+ && mkdir -p "${TESTPATH}"
+ RUN git clone https://github.com/customink/activerecord-session_store "${TESTPATH}" \
+ && cd "${TESTPATH}" \
+ && gem build activerecord-session_store.gemspec \
+ && gem install activerecord-session_store-2.1.0.gem \
+ && cd /usr/share/webapps/redmine/ \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
@@ -120,6 +130,7 @@ RUN set -eux -o pipefail \
  && rm -rf rubycas-client \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
+ && echo 'gem "rexml"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
@@ -127,7 +138,7 @@ RUN set -eux -o pipefail \
  # install required and plugin gems \
  # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
- && cd ${WORKDIR} \
+ && cd "${WORKDIR}" \
  && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \
