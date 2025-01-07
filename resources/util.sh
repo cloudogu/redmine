@@ -212,6 +212,7 @@ function default_data_imports_exist() {
 
 function update_password_policy() {
   # setup
+  local ALLOW_LOCAL_USERS
   ALLOW_LOCAL_USERS="$(railsConsole "${RAILS_SCRIPTS_DIR}/get_setting.rb" --key "local_users_enabled" | grep "{\"result\":" | jq -r ".result")"
 
   if [[ "${ALLOW_LOCAL_USERS}" == "null" ]]; then
