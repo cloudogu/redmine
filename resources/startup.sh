@@ -149,11 +149,11 @@ function runMain() {
   # install manual installed plugins
   install_plugins
 
-  # update password policy of redmine to be in sync with the cas configuration
-  update_password_policy
-
   # start project template import - continue even if errors occur
   trigger_imports || true
+
+  # update password policy of redmine to be in sync with the cas configuration
+  update_password_policy
 
   # Create links
   if [ ! -e "${WORKDIR}"/public/redmine ]; then

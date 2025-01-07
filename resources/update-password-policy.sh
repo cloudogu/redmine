@@ -8,46 +8,46 @@ function update_password_policy_setting(){
 
   echo "retrieving config values start"
   local MIN_LENGTH=$(get_password_policy_key "min_length")
-  local UPPERCASE_BOL=$(get_password_policy_key "must_contain_capital_letter")
-  local LOWERCASE_BOL=$(get_password_policy_key "must_contain_lower_case_letter")
-  local DIGITS_BOL=$(get_password_policy_key "must_contain_digit")
-  local SPECIAL_BOL=$(get_password_policy_key "must_contain_special_character")
+  local UPPERCASE_FLAG=$(get_password_policy_key "must_contain_capital_letter")
+  local LOWERCASE_FLAG=$(get_password_policy_key "must_contain_lower_case_letter")
+  local DIGITS_FLAG=$(get_password_policy_key "must_contain_digit")
+  local SPECIAL_FLAG=$(get_password_policy_key "must_contain_special_character")
   echo "retrieving config values end"
 
-  if [[ -z "$MIN_LENGTH" && -z "$UPPERCASE_BOL" && -z "$LOWERCASE_BOL" && -z "$DIGITS_BOL" && -z "$SPECIAL_BOL" ]]; then
-    echo "no password policy configuration found"
-    return 1;
+  if [[ -z "$MIN_LENGTH" && -z "$UPPERCASE_FLAG" && -z "$LOWERCASE_FLAG" && -z "$DIGITS_FLAG" && -z "$SPECIAL_FLAG" ]]; then
+    echo "INFO: no password policy configuration found."
+    local SETTINGS_JSON=$(build_json "" "" "" "" "")
+    # clean up json in case any of the array vals are not filled
+    safe_extended_api_call "settings" "PUT" "${SETTINGS_JSON}" "204"
+    return 0;
+  fi
+
+  if  [[ -z "$MIN_LENGTH" ]]; then
+     MIN_LENGTH = 8; # reset to standard
   fi
 
   local UPPERCASE=""
-  if [[ "$UPPERCASE_BOL" == "true" ]]; then
+  if [[ "$UPPERCASE_FLAG" == "true" ]]; then
     UPPERCASE="uppercase"
   fi
 
   local LOWERCASE=""
-  if [[ "$LOWERCASE_BOL" == "true" ]]; then
+  if [[ "$LOWERCASE_FLAG" == "true" ]]; then
     LOWERCASE="lowercase"
   fi
 
   local DIGITS=""
-  if [[ "$DIGITS_BOL" == "true" ]]; then
+  if [[ "$DIGITS_FLAG" == "true" ]]; then
     DIGITS="digits"
   fi
 
   local SPECIAL=""
-  if [[ "$SPECIAL_BOL" == "true" ]]; then
+  if [[ "$SPECIAL_FLAG" == "true" ]]; then
     SPECIAL="special_chars"
   fi
 
+  local SETTINGS_JSON=$(build_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}")
   echo "calling extended rest api start"
-  local SETTINGS_JSON='
-  {
-    "password_min_length": "%s",
-    "password_required_char_classes": ["%s", "%s", "%s", "%s"]
-  }
-  '
-  SETTINGS_JSON=$(printf "$SETTINGS_JSON" "$MIN_LENGTH" "$UPPERCASE" "$LOWERCASE" "$DIGITS" "$SPECIAL")
-  echo "Settings: ${SETTINGS_JSON}"
 
   # clean up json in case any of the array vals are not filled
   safe_extended_api_call "settings" "PUT" "${SETTINGS_JSON}" "204"
@@ -55,7 +55,26 @@ function update_password_policy_setting(){
   echo "updating password policy in redmine end"
 }
 
-function get_password_policy_key() {
-  local key=$(doguctl config -g -d " " password-policy/${1})
-  echo "${key}"
+function get_password_policy_key(){
+  local configKey=${1}
+  local configValue=$(doguctl config -g -d " " password-policy/${configKey})
+  echo "${configValue}"
+}
+
+function build_json(){
+    local SETTINGS_JSON='
+    {
+      "password_min_length": "%s",
+      "password_required_char_classes": ["%s", "%s", "%s", "%s"]
+    }
+    '
+
+    local MIN_LENGTH="${1}"
+    local UPPERCASE="${2}"
+    local LOWERCASE="${3}"
+    local DIGITS="${4}"
+    local SPECIAL="${5}"
+
+    SETTINGS_JSON=$(printf "${SETTINGS_JSON}" "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}")
+    echo "${SETTINGS_JSON}"
 }
