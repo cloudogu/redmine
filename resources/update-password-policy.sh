@@ -61,7 +61,7 @@ function get_password_policy_key(){
   echo "${configValue}"
 }
 
-function build_json(){
+function build_password_policy_settings_json(){
     local SETTINGS_JSON='{"password_min_length":"%s","password_required_char_classes":["%s","%s","%s","%s"]}'
 
     local MIN_LENGTH="${1}"
