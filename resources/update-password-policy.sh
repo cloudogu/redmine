@@ -46,7 +46,7 @@ function update_password_policy_setting(){
     SPECIAL="special_chars"
   fi
 
-  local SETTINGS_JSON=$(build_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}")
+  local SETTINGS_JSON=$(build_password_policy_settings_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}")
   echo "Calling extended rest api start"
 
   # clean up json in case any of the array vals are not filled
