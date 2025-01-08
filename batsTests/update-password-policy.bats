@@ -65,18 +65,18 @@ teardown() {
   DIGITS="digits"
   SPECIAL="special_char"
 
-  run build_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}"
+  run build_password_policy_settings_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}"
   assert assert_output '{"password_min_length":"14","password_required_char_classes":["uppercase","lowercase","digits","special_char"]}'
   assert assert_success
 
   MIN_LENGTH="8"
-  UPPERCASE=""
-  LOWERCASE=""
-  DIGITS=""
-  SPECIAL=""
+  UPPERCASE=" "
+  LOWERCASE=" "
+  DIGITS=" "
+  SPECIAL=" "
 
-  run build_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}"
-  assert assert_output '{"password_min_length":"8","password_required_char_classes":["","","",""]}'
+  run build_password_policy_settings_json "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}"
+  assert assert_output '{"password_min_length":"8","password_required_char_classes":[" "," "," "," "]}'
   assert assert_success
 }
 
@@ -116,11 +116,11 @@ teardown() {
 
   SETTINGS_JSON='{"password_min_length":"14","password_required_char_classes":["uppercase","lowercase","digits","special_chars"]}'
   run update_password_policy_setting
-  assert assert_output --partial "Updating password policy in redmine start"
+  assert assert_output --partial "Updating password policy in Redmine start"
   assert assert_output --partial "Retrieving config values start"
   assert assert_output --partial "Retrieving config values end"
   assert assert_output --partial "Calling extended rest api start"
   assert assert_output --partial "Call to 'settings' successful with content: '${SETTINGS_JSON}'"
   assert assert_output --partial "Calling extended rest api end"
-  assert assert_output --partial "Updating password policy in redmine end"
+  assert assert_output --partial "Updating password policy in Redmine end"
 }

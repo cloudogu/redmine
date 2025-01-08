@@ -210,8 +210,14 @@ function default_data_imports_exist() {
   fi
 }
 
-function update_password_policy() {
-  # setup
+
+function prepare_redmine_for_background_tasks() {
+  railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
+  create_temporary_admin
+  start_redmine_in_background
+}
+
+function cleanup_redmine_after_background_tasks() {
   local ALLOW_LOCAL_USERS
   ALLOW_LOCAL_USERS="$(railsConsole "${RAILS_SCRIPTS_DIR}/get_setting.rb" --key "local_users_enabled" | grep "{\"result\":" | jq -r ".result")"
 
@@ -219,46 +225,24 @@ function update_password_policy() {
     ALLOW_LOCAL_USERS=0
   fi
 
-  railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
-  create_temporary_admin
-  start_redmine_in_background
-
-  # update policies
-  update_password_policy_setting
-
-  # cleanup
   stop_redmine_daemon
   remove_last_temporary_admin
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
 }
 
+function update_password_policy() {
+  update_password_policy_setting
+}
+
 function trigger_imports(){
-    local EMPTY="<empty>" ALLOW_LOCAL_USERS
-    DEFAULT_DATA=$(doguctl config --default "${EMPTY}" "${DEFAULT_DATA_KEY}")
-    ALLOW_LOCAL_USERS="$(railsConsole "${RAILS_SCRIPTS_DIR}/get_setting.rb" --key "local_users_enabled" | grep "{\"result\":" | jq -r ".result")"
-    if [[ "${ALLOW_LOCAL_USERS}" == "null" ]]; then
-      ALLOW_LOCAL_USERS=0
-    fi
+    local EMPTY="<empty>"
+    DEFAULT_DATA=$(doguctl config --default "${EMPTY}" "${DEFAULT_DATA_KEY}")+
     if [ "$(default_data_imports_exist)" == "true" ]; then
-      # read local_users_enabled from settings and store it so it can be restored after the data import
-      # the import uses a local user
-      railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
-      create_temporary_admin
-      start_redmine_in_background
-
-      if [ "$(default_data_imports_exist)" == "true" ]; then
-        echo "IMPORT-INFO: starting default data import"
-        apply_default_data "${DEFAULT_DATA}"
-      else
-        echo "IMPORT-INFO: no default data to import"
-      fi
-
-      stop_redmine_daemon
-      remove_last_temporary_admin
+      echo "IMPORT-INFO: starting default data import"
+      apply_default_data "${DEFAULT_DATA}"
     else
-      echo "IMPORT-INFO: Startup without any import. No temporary admin will be created."
+      echo "IMPORT-INFO: no default data to import"
     fi
-    railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
 }
 
 function wait_for_redmine_to_get_healthy() {
