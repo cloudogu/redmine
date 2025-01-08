@@ -210,14 +210,9 @@ function default_data_imports_exist() {
   fi
 }
 
-
-function prepare_redmine_for_background_tasks() {
-  railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
-  create_temporary_admin
-  start_redmine_in_background
-}
-
-function cleanup_redmine_after_background_tasks() {
+function background_configuration_tasks() {
+  echo "Start background configuration tasks"
+  # setup
   local ALLOW_LOCAL_USERS
   ALLOW_LOCAL_USERS="$(railsConsole "${RAILS_SCRIPTS_DIR}/get_setting.rb" --key "local_users_enabled" | grep "{\"result\":" | jq -r ".result")"
 
@@ -225,13 +220,20 @@ function cleanup_redmine_after_background_tasks() {
     ALLOW_LOCAL_USERS=0
   fi
 
+  railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
+  create_temporary_admin
+  start_redmine_in_background
+
+  # tasks
+  trigger_imports || true
+  update_password_policy_setting
+
+
+  # cleanup
   stop_redmine_daemon
   remove_last_temporary_admin
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
-}
-
-function update_password_policy() {
-  update_password_policy_setting
+  echo "Finished background configuration tasks"
 }
 
 function trigger_imports(){

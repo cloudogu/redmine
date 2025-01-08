@@ -149,17 +149,8 @@ function runMain() {
   # install manual installed plugins
   install_plugins
 
-  echo "Preparing Redmine for Background Tasks"
-  prepare_redmine_for_background_tasks
-
-  # start project template import - continue even if errors occur
-  trigger_imports || true
-
-  # update password policy of redmine to be in sync with the cas configuration
-  update_password_policy
-
-  cleanup_redmine_after_background_tasks
-  echo "Redmine Background Tasks finished"
+  # tasks that require usage of a temporary admin and redmine daemon
+  background_configuration_tasks
 
   # Create links
   if [ ! -e "${WORKDIR}"/public/redmine ]; then
