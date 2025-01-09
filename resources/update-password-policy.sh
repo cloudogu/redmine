@@ -16,7 +16,7 @@ function update_password_policy_setting(){
   echo "Retrieving config values end"
 
   if  [[ -z "${MIN_LENGTH// }" ]]; then
-     MIN_LENGTH = 8; # reset to standard
+     MIN_LENGTH=8; # reset to standard
   fi
 
   local UPPERCASE=""
