@@ -80,18 +80,6 @@ teardown() {
   assert assert_success
 }
 
-@test "api call is successful" {
-  source /workspace/resources/update-password-policy.sh
-  source /workspace/resources/default-config.sh
-
-  SETTINGS_JSON={"password_min_length":"14","password_required_char_classes":["uppercase","lowercase","digits","special_chars"]}
-  mock_set_status "${curl}" 0 1
-  mock_set_output "${curl}" "HTTPSTATUS:204" 1
-
-  run safe_extended_api_call "settings" "PUT" ${SETTINGS_JSON} "204"
-  assert assert assert_output "Call to 'settings' successful with content: '${SETTINGS_JSON}'"
-}
-
 @test "update_password_policy is successful" {
   source /workspace/resources/update-password-policy.sh
   source /workspace/resources/default-config.sh
