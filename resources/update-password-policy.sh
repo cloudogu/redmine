@@ -66,6 +66,7 @@ function build_password_policy_settings_json(){
     local DIGITS="${4}"
     local SPECIAL="${5}"
 
+    # shellcheck disable=SC2059
     SETTINGS_JSON=$(printf "${SETTINGS_JSON}" "${MIN_LENGTH}" "${UPPERCASE}" "${LOWERCASE}" "${DIGITS}" "${SPECIAL}")
     echo "${SETTINGS_JSON}"
 }
