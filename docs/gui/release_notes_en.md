@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v5.1.4-2] - 2025-01-09
 * Configuration keys of the ecosystem which handle global password policies are also applied to Redmine.
   * This means that the same password policies that apply to CES users will also apply to internal Redmine users.
 
