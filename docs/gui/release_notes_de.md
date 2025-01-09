@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v5.1.4-2] - 2025-01-09
+* Konfigurationsschlüssel des Ecosystems welche globale Passwortrichtlinie behandeln, werden auch auf Redmine angewendet.
+    * Dies bedeutet, dass dieselben Passwortrichtlinien, die für CES-Benutzer gelten, auch für interne Redmine-Benutzer gelten.
+
 ## [v5.1.4-1] - 2024-12-16
 * Das Dogu bietet nun die Redmine-Version 5.1.4 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#514-2024-11-03).
 
