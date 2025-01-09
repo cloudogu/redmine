@@ -149,7 +149,8 @@ function runMain() {
   # install manual installed plugins
   install_plugins
 
-  trigger_imports || true
+  # tasks that require usage of a temporary admin and redmine daemon
+  background_configuration_tasks
 
   # Create links
   if [ ! -e "${WORKDIR}"/public/redmine ]; then
