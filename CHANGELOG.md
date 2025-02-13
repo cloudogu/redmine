@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [#143] Update Redmine to version 5.1.6
+- [#143] change default data import routing to avoid error in Multinode CES environment
+- the key `default_data/new_configuration` will no longer be deleted.
+  Still, measures are taken to keep imports at a minimum.
 
 ## [v5.1.4-2] - 2025-01-09
 ### Added
