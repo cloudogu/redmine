@@ -1,4 +1,4 @@
-# Konfiguration bei Dogustart ausbringen
+# Konfiguration bei Dogu-Start ausbringen
 
 Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die folgende Konfiguration möglich:
 
@@ -10,17 +10,16 @@ Es ist möglich, Konfiguration über den etcd auszubringen. Das ist für die fol
 * Tracker erstellen
 * Issue Statuses erstellen
 
-Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus' ist, dass die REST-API in den Einstellungen
+Hinweis: Voraussetzung für die Funktionsfähigkeit dieses Mechanismus ist es, dass die REST-API in den Einstellungen
 aktiviert ist.
 
-Zum Anwenden der Konfiguration muss der etcd-Key `config/redmine/default_data/new_configuration` gesetzt werden.
-Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann angewandt und anschließend dieser Key
-entfernt.
+Zum Anwenden der Konfiguration muss der Configuration Key `default_data/new_configuration` gesetzt werden.
+Beim Neustart des Redmine-Dogus wird die definierte Konfiguration dann und nur dann angewandt, wenn die zuletzt angewendete Konfiguration sich von der neuen Konfiguration unterscheidet. Das frühere Verhalten von Key-Löschung wird nun nicht mehr unterstützt.
 
-Die zuletzt angewandte Konfiguration wird in dem etcd-Key `config/redmine/default_data/archived/<Zeitstempel>`
-gespeichert.
+Die zuletzt angewandte Konfiguration wird in dem lokalen Configuration Key `default_data/archived/<Zeitstempel>`
+gespeichert. Dieser Key ist grundsätzlich nicht von außen einsehbar und wird nur für die oben beschriebene Mechanik verwendet, um Konfiguration-Mehrfachanwendungen zu vermeiden. 
 
-Bei jedem Import werden ID's und Namen von Rollen, Ticket-Status und Tracker von der Datenbank der aktuellen Instanz abgefragt.
+Bei jedem Import werden IDs und Namen von Rollen, Ticket-Status und Tracker von der Datenbank der aktuellen Instanz abgefragt.
 Dies ermöglicht die Verwendung der genannten Objekte bei der Erstellung von beliebigen Feldern.
 
 ## Beispielkonfiguration
