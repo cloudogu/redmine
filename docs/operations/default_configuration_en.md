@@ -3,7 +3,7 @@
 It is possible to deploy configuration via the etcd. This is possible for the following configuration:
 
 * Change settings
-* Create or change roles
+* Create or change roles 
 * Create workflows
 * Create enumerations
 * Create custom fields
@@ -12,17 +12,14 @@ It is possible to deploy configuration via the etcd. This is possible for the fo
 
 Note: For this mechanism to work, the REST API must be enabled in the settings.
 
-To apply the configuration, the etcd key `config/redmine/default_data/new_configuration` must be set. At
-restart of the Redmine-Dogu, the defined configuration will be applied and afterwards this key will be removed.
+To apply the configuration, the configuration key `default_data/new_configuration` must be set.
+When the Redmine dogu is undergoing a restart, the defined configuration is then and only applied if the last applied configuration differs from the new configuration. The previous behavior of key deletion is no longer supported.
 
-The last applied configuration is stored in the etcd key `config/redmine/default_data/archived/<timestamp>`.
+The last applied configuration is stored in the local configuration key `default_data/archived/<timestamp>`.
+This key is generally not visible from the outside and is only used for the above-described mechanism to avoid multiple configuration applications.
 
 During each import, IDs and names of roles, ticket statuses and trackers are queried from the database of the current instance.
 This enables the use of the mentioned objects when creating any fields.
-
-## Example configuration
-
-In the following a functional example configuration and a rough explanation of the individual fields is deposited.
 
 ## Example configuration
 

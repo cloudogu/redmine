@@ -5,11 +5,14 @@ set -o pipefail
 
 CURRENT_TIMESTAMP="$(date "+%Y%m%d-%H%M%S")"
 DEFAULT_DATA_PREFIX="default_data"
-DEFAULT_DATA_KEY="${DEFAULT_DATA_PREFIX}/new_configuration"
-DEFAULT_DATA_KEY_ARCHIVED="${DEFAULT_DATA_PREFIX}/archived/${CURRENT_TIMESTAMP}"
+# keys that are only modifiable from inside the dogu
+DEFAULT_DATA_ARCHIVE_BRANCH_KEY="${DEFAULT_DATA_PREFIX}/archived"
+DEFAULT_DATA_KEY_LAST_ARCHIVED="${DEFAULT_DATA_ARCHIVE_BRANCH_KEY}/last_timestamp"
+DEFAULT_DATA_KEY_ARCHIVED="${DEFAULT_DATA_ARCHIVE_BRANCH_KEY}/${CURRENT_TIMESTAMP}"
+
 API_RESPONSE_IDS="{}"
 
-# Calls the the api provided by the extended_rest_api plugin.
+# Calls the api provided by the extended_rest_api plugin.
 # ${1} The api to call (settings, workflows, issue_statuses, custom_fields, trackers)
 # ${2} HTTP Method to call (POST, GET, ...)
 # ${3} The body of the call. Must be valid json.
@@ -44,12 +47,12 @@ function curl_extended_api(){
   RESPONSE="{\"body\": ${HTTP_BODY}, \"status\": ${HTTP_STATUS}, \"expectedStatus\": ${EXPECTED_RESPONSE_CODE}, \"command\": \"${CURL_COMMAND//\"/\\\"}\"}"
   echo "${RESPONSE}" | jq
 
-  if [ ! "${HTTP_STATUS}" -eq "${EXPECTED_RESPONSE_CODE}"  ]; then
+  if [ "${HTTP_STATUS}" -ne "${EXPECTED_RESPONSE_CODE}"  ]; then
     exit 1
   fi
 }
 
-# Calls the the api provided by the extended_rest_api plugin. The response is printed out. Even on error, the script will not be exited.
+# Calls the API provided by the extended_rest_api plugin. The response is printed out. Even on error, the script will not be exited.
 # If $5 and $6 are provided, an attribute of the response will be saved in the $API_RESPONSE_IDS variable.
 # ${1} The api to call (settings, workflows, issue_statuses, custom_fields, trackers)
 # ${2} HTTP Method to call (POST, GET, ...)
@@ -323,7 +326,7 @@ function add_enumerations(){
   done < <(echo "${ENUMERATIONS_JSON}" | jq -c -r .[])
 }
 
-# Replaces names in a enumerations-json-object with the ids. Prints out the modified enumerations-json-object
+# Replaces names in an enumerations-json-object with the ids. Prints out the modified enumerations-json-object
 function prepare_enumeration(){
   ENUMERATION="${1}"
   RESULT="$(echo "${ENUMERATION}" | jq "del( .custom_field_values )")"
@@ -341,18 +344,50 @@ function prepare_enumeration(){
 }
 
 # Applies the default configuration which must be provided in arg ${1} as json.
-function apply_default_data(){
+# This function will only be called if there exist default data in the configuration key.
+function apply_default_data_if_new(){
   local DEFAULT_CONFIG="${1}"
-  fetch_remote_creation_ids
+
+
+  if [[ "${DEFAULT_CONFIG}" == "" ]]; then
+    echo "Found empty default data configuration"
+    return
+  fi
 
   echo "Validating default data configuration..."
   # Check if it is possible to parse json
-  echo "${DEFAULT_DATA}" | jq >> /dev/null
+  echo "${DEFAULT_CONFIG}" | jq >> /dev/null
 
-  echo "Archiving etcd key for default data..."
+  local lastImportTimestamp
+  lastImportTimestamp="$(doguctl config --default "no-data" "${DEFAULT_DATA_KEY_LAST_ARCHIVED}")"
+  if [[ "${lastImportTimestamp}" == "no-data" ]] ;then
+    echo "found no archived configuration in default data. Import will commence..."
+  else
+    echo "found archived configuration date ${lastImportTimestamp}. Looking up archived default data..."
+
+    local lastDefaultDataConfig
+    lastDefaultDataConfig="$(doguctl config "${DEFAULT_DATA_ARCHIVE_BRANCH_KEY}/${lastImportTimestamp}")"
+
+    # super simple equality check which is okay because the key changes seldomly. If a better check is required
+    # take a look at https://stackoverflow.com/a/31933234/12529534 which worked but is more complex because of JQ
+    if [[ "${DEFAULT_CONFIG}" == "${lastDefaultDataConfig}" ]]; then
+      # avoid rake import tasks here
+      echo "No changes found between last and current configuration. Skip applying the configuration."
+      return
+    fi
+  fi
+
+  fetch_remote_creation_ids
+
+  echo "Archiving config key for default data..."
   doguctl config "${DEFAULT_DATA_KEY_ARCHIVED}" "${DEFAULT_CONFIG}"
-  echo "Removing etcd key for default data..."
-  doguctl config --rm "${DEFAULT_DATA_KEY}"
+
+  # save timestamp for retrieval during subsequent dogu starts
+  doguctl config "${DEFAULT_DATA_KEY_LAST_ARCHIVED}" "${CURRENT_TIMESTAMP}"
+
+  # At this point we know we have an actual non-empty default-data value to import. Other case combinations can be ruled
+  # out by previous emptiness - or equality checks.
+  echo "found configured default data to import."
 
   echo "============================================================================"
   echo "Reading settings default data..."

@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "5.1.4-2",
+  "Version": "5.1.4-3",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -48,6 +48,11 @@
           "ERROR"
         ]
       }
+    },
+    {
+      "Name": "default_data/new_configuration",
+      "Description": "Import JSON settings to customize Redmine",
+      "Optional": true
     },
     {
       "Name": "container_config/memory_limit",

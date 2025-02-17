@@ -1,0 +1,72 @@
+{
+  "settings": {
+    "app_title": "Updated Redmine"
+  },
+  "roles": [
+    {
+      "name": "User",
+      "permissions": [
+        "add_project"
+      ]
+    }
+  ],
+  "issueStatuses": [
+    {
+      "name": "New",
+      "is_closed": false
+    },
+    {
+      "name": "Done",
+      "is_closed": true
+    }
+  ],
+  "trackers": [
+    {
+      "name": "Bug",
+      "default_status_name": "New",
+      "description": "It's just a bug."
+    }
+  ],
+  "customFields": [
+    {
+      "type": "IssueCustomField",
+      "name": "Story Points",
+      "field_format": "int",
+      "role_names": [
+        "User"
+      ],
+      "tracker_names": [
+        "Bug"
+      ]
+    }
+  ],
+  "enumerations": [
+    {
+      "type": "IssuePriority",
+      "name": "Not important at all"
+    }
+  ],
+  "workflows": [
+    {
+      "role_names": [
+        "User",
+        "Anonymous"
+      ],
+      "tracker_names": [
+        "Bug"
+      ],
+      "transitions": {
+        "New": {
+          "Done": {
+            "always": "1"
+          }
+        },
+        "Done": {
+          "New": {
+            "always": "0"
+          }
+        }
+      }
+    }
+  ]
+}

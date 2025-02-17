@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.4-3] - 2025-02-17
+### Changed
+- [#143] Update Redmine to version 5.1.6
+- [#143] change default data import routing to avoid error in Multinode CES environment
+- the key `default_data/new_configuration` will no longer be deleted.
+  Still, measures are taken to keep imports at a minimum.
+
 ## [v5.1.4-2] - 2025-01-09
 ### Added
 - [#141] configuration keys used for cas password-policies are also applied to redmine
