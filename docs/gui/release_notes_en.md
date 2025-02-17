@@ -6,9 +6,12 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
-## [v5.1.4-3] - 2025-02-17
+## [v5.1.6-1] - 2025-02-17
 * The dogu now offers Redmine version 5.1.6. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#516-2025-01-29).
 * This version ensures multinode compatibility by avoiding deletion of the "default_data" configuration key. You can find more details in the changelogs.
+
+## [v5.1.4-3] - 2025-02-17
+* the version 5.1.6-1 was released under a wrong version. This version was withdrawn and re-released under the now correct version.
 
 ## [v5.1.4-2] - 2025-01-09
 * Configuration keys of the ecosystem which handle global password policies are also applied to Redmine.
