@@ -5,6 +5,8 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v5.1.4-3] - 2025-02-17
 * Das Dogu bietet nun die Redmine-Version 5.1.6 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#516-2025-01-29).
 * Diese Version stellt Multinode-Kompatibilität sicher, indem sie das Löschen des Konfigurationsschlüssels "default_data" vermeidet. Weitere Details finden Sie in den Changelogs.
 
