@@ -6,6 +6,8 @@ set -o pipefail
 # shellcheck disable=SC1090
 # shellcheck disable=SC1091
 source "${STARTUP_DIR}"/default-config.sh
+# keys that are only modifiable from outside the dogu
+DEFAULT_DATA_KEY="${DEFAULT_DATA_PREFIX}/new_configuration"
 # shellcheck disable=SC1090
 # shellcheck disable=SC1091
 source "${STARTUP_DIR}"/update-password-policy.sh
@@ -203,7 +205,8 @@ function remove_last_temporary_admin() {
 }
 
 function default_data_imports_exist() {
-  if [ "${DEFAULT_DATA}" != "${EMPTY}" ]; then
+  local defaultData="${1}"
+  if [ "${defaultData}" != "${EMPTY}" ]; then
     echo "true"
   else
     echo "false"
@@ -238,10 +241,10 @@ function background_configuration_tasks() {
 
 function trigger_imports(){
     local EMPTY="<empty>"
-    DEFAULT_DATA=$(doguctl config --default "${EMPTY}" "${DEFAULT_DATA_KEY}")+
-    if [ "$(default_data_imports_exist)" == "true" ]; then
-      echo "IMPORT-INFO: starting default data import"
-      apply_default_data "${DEFAULT_DATA}"
+    DEFAULT_DATA=$(doguctl config --default "${EMPTY}" "${DEFAULT_DATA_KEY}")
+    if [ "$(default_data_imports_exist "${DEFAULT_DATA}")" == "true" ]; then
+      echo "IMPORT-INFO: found existing default data to apply"
+      apply_default_data_if_new "${DEFAULT_DATA}"
     else
       echo "IMPORT-INFO: no default data to import"
     fi

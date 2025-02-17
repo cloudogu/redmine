@@ -50,6 +50,11 @@
       }
     },
     {
+      "Name": "default_data/new_configuration",
+      "Description": "Import JSON settings to customize Redmine",
+      "Optional": true
+    },
+    {
       "Name": "container_config/memory_limit",
       "Description": "Limits the container's memory usage. Use a positive integer value followed by one of these units [b,k,m,g] (byte, kibibyte, mebibyte, gibibyte).",
       "Optional": true,
