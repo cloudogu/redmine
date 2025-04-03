@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- [#145] Error on startup with helpdesk-plugin on multinode
+- [#145] Fix errors on startup with helpdesk-plugin on multinode
 
 ## [v5.1.6-1] - 2025-02-17
 ### Changed
