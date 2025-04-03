@@ -150,7 +150,6 @@ function runMain() {
   install_plugins
 
   # make sure temp, file and log folders are writable
-  # TODO should tmp be a volume, because of performance?
   mkdir -p tmp tmp/pdf public/plugin_assets
   chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
   chmod -R 755 files log tmp public/plugin_assets
