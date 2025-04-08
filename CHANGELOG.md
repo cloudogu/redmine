@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v5.1.6-1] - 2025-02-17
+## [v5.1.6-2] - 2025-04-04
+### Fixed
+- [#145] Fix errors on startup with helpdesk-plugin on multinode
 
+## [v5.1.6-1] - 2025-02-17
 ### Changed
 - [#143] Update Redmine to version 5.1.6
 - [#143] change default data import routing to avoid error in Multinode CES environment

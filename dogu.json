@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "5.1.6-1",
+  "Version": "5.1.6-2",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -94,6 +94,13 @@
     {
       "Name": "logs",
       "Path": "/usr/share/webapps/redmine/log",
+      "Owner": "1000",
+      "Group": "1000",
+      "NeedsBackup": false
+    },
+    {
+      "Name": "tmp",
+      "Path": "/usr/share/webapps/redmine/tmp",
       "Owner": "1000",
       "Group": "1000",
       "NeedsBackup": false

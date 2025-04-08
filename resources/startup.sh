@@ -149,6 +149,11 @@ function runMain() {
   # install manual installed plugins
   install_plugins
 
+  # make sure temp, file and log folders are writable
+  mkdir -p tmp tmp/pdf public/plugin_assets
+  chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
+  chmod -R 755 files log tmp public/plugin_assets
+
   # tasks that require usage of a temporary admin and redmine daemon
   background_configuration_tasks
 
@@ -168,12 +173,6 @@ function runMain() {
   if [ -f "${RPID}" ]; then
     rm -f "${RPID}"
   fi
-
-  # make sure temp, file and log folders are writable
-  # TODO should tmp be a volume, because of performance?
-  mkdir -p tmp tmp/pdf public/plugin_assets
-  chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
-  chmod -R 755 files log tmp public/plugin_assets
 
   echo "Clearing sessions..."
   exec_rake db:sessions:clear
