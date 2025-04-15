@@ -1,10 +1,15 @@
 # Redmine Changelog
+
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [#147] Update Makefiles to 9.9.1
+- [#147] Update ces-build-lib to 4.2.0
+- [#147] Update dogu-build-lib to 3.2.0
 
 ## [v5.1.6-2] - 2025-04-04
 ### Fixed
