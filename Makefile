@@ -1,4 +1,4 @@
-MAKEFILES_VERSION=9.8.0
+MAKEFILES_VERSION=9.9.1
 
 .DEFAULT_GOAL:=dogu-release
 
@@ -8,7 +8,7 @@ include build/make/release.mk
 include build/make/bats.mk
 include build/make/version-sha.mk
 include build/make/k8s-dogu.mk
-include build/make/bats.mk
+include build/make/prerelease.mk
 
 CAS_PLUGIN_VERSION=v$(shell grep CAS_PLUGIN_VERSION= Dockerfile | sed 's/.*CAS_PLUGIN_VERSION=\([^ ]*\).*/\1/g')
 CLOUDOGU_THEME_VERSION=$(shell grep CLOUDOGU_THEME_VERSION= Dockerfile | sed 's/.*CLOUDOGU_THEME_VERSION=\([^ ]*\).*/\1/g')
