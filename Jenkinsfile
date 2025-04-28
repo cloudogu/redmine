@@ -1,5 +1,5 @@
 #!groovy
-@Library(['github.com/cloudogu/ces-build-lib@4.1.1', 'github.com/cloudogu/dogu-build-lib@v3.1.0']) _
+@Library(['github.com/cloudogu/ces-build-lib@4.2.0', 'github.com/cloudogu/dogu-build-lib@v3.2.0'])
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
 
@@ -59,6 +59,10 @@ node('vagrant') {
             }
 
             stage('Provision') {
+                // change namespace to prerelease_namespace if in develop-branch
+                if (gitflow.isPreReleaseBranch()) {
+                    sh "make prerelease_namespace"
+                }
                 prepareTestPlugin(testPluginName, testPluginVersion, testPluginRepoName)
                 ecoSystem.provision("/dogu");
             }
@@ -144,6 +148,11 @@ node('vagrant') {
 
                 stage('Add Github-Release') {
                     github.createReleaseWithChangelog(releaseVersion, changelog)
+                }
+            } else if (gitflow.isPreReleaseBranch()) {
+                // push to registry in prerelease_namespace
+                stage('Push Prerelease Dogu to registry') {
+                    ecoSystem.pushPreRelease("/dogu")
                 }
             }
         } finally {
