@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- [#149] Set sensible resource requests and limits
 - [#147] Update Makefiles to 9.9.1
 - [#147] Update ces-build-lib to 4.2.0
 - [#147] Update dogu-build-lib to 3.2.0
