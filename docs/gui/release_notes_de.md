@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v5.1.8-1] - 2025-05-13
+### Changed
+* Das Dogu bietet nun die Redmine-Version 5.1.6 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#518-2025-04-20).
+
 ## [v5.1.6-3] - 2025-04-28
 ### Changed
 - Die Verwendung von Speicher und CPU wurden für die Kubernetes-Multinode-Umgebung optimiert.

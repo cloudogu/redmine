@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.8-1] - 2025-05-13
+### Changed
+- [#151] Update Redmine to version 5.1.8
+
 ## [v5.1.6-3] - 2025-04-28
 ### Changed
 - [#149] Set sensible resource requests and limits
