@@ -120,6 +120,8 @@ RUN set -eux -o pipefail \
  && rm -rf rubycas-client \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
+ # Lock the rack version. If adjusted, check if the rack config params are still working.
+ && echo 'gem "rack", "2.2.17"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
