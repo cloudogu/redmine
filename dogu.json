@@ -95,6 +95,16 @@
       "Name": "etcd_redmine_config",
       "Description": "Applies default configuration to redmine.",
       "Optional": true
+    },
+    {
+      "Name": "rack/params_limit",
+      "Description": "Configure the maximum amount of parameters in query strings that the redmine web server (rack) allows. The default is 4096. Depending on the available processing power setting this parameter to high might cause redmine to soft lock.",
+      "Optional": true
+    },
+    {
+      "Name": "rack/bytesize_limit",
+      "Description": "Configure the maximum byte size of query strings that the redmine web server (rack) allows. The default is 4194304 (4 MiB). Depending on the available processing power setting this parameter to high might cause redmine to soft lock.",
+      "Optional": true
     }
   ],
   "Volumes": [

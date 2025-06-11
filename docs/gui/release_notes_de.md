@@ -5,6 +5,12 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Added
+* Zusätzliche Konfigurationsschlüssel rack/params_limit und rack/bytesize_limit hinzugefügt.
+* ``rack/params_limit`` erhöht das Limit an Parametern in Anfragen an Redmine
+    * Achtung: Requests mit sehr vielen Parametern können sehr lange dauern. In dieser Zeit ist das Redmine-Dogu für alle Benutzer in der Funktion eingeschränkt.
+* ``rack/bytesize_limit`` erhöht das die Maximalgröße des Requests
+    * Achtung: Sehr große Requests können sehr lange dauern. In dieser Zeit ist das Redmine-Dogu für alle Benutzer in der Funktion eingeschränkt.
 
 ## [v5.1.8-1] - 2025-05-13
 ### Changed
