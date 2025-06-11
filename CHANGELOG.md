@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.8-2] - 2025-06-11
+### Added
+- [#153] add configurable rack query parameter sizes
+
 ## [v5.1.8-1] - 2025-05-13
 ### Changed
 - [#151] Update Redmine to version 5.1.8
