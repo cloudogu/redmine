@@ -7,6 +7,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 ## [Unreleased]
 ### Added
 * Zusätzliche Konfigurationsschlüssel rack/params_limit und rack/bytesize_limit hinzugefügt.
+* ``rack/params_limit`` erhöht das Limit an Parametern in Anfragen an Redmine
+  * Achtung: Wenn dieses Limit zu stark erhöht wird, kann das Redmine-Dogu abstürzen, wenn Requests mit vielen Parametern asugeführt werden. Weiterführender Schaden am Redmine-Dogu kann nicht ausgeschlossen werden.
+* ``rack/bytesize_limit`` erhöht das die Maximalgröße des Requests
+  * Achtung: Wenn dieses Limit zu stark erhöht wird, kann das Redmine-Dogu abstürzen, wenn Requests mit vielen Parametern asugeführt werden. Weiterführender Schaden am Redmine-Dogu kann nicht ausgeschlossen werden.
 
 ## [v5.1.8-1] - 2025-05-13
 ### Changed
