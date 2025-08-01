@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Security
+- [#155] close CVE GHSA-353f-x4gh-cqq8
+
 ### Changed
 - [#151] Update Redmine to version 5.1.8
 
