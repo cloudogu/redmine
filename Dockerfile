@@ -129,6 +129,9 @@ RUN set -eux -o pipefail \
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
  && bundle config set --local without 'development test' \
+ # Overwriting nokogiri Version
+ && sed -i "/gem ['\"]nokogiri['\"]/d" Gemfile \
+ && echo 'gem "nokogiri", "1.18.9"' >> Gemfile \
  && bundle install \
  && gem install puma \
  # Do not remove the dependency on bigdecimal. Many tools rely on bigdecimal, and it may not be possible to install it in a running dogu
