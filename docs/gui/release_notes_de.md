@@ -10,13 +10,17 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 ### Changed
 * Wir haben nur technische Änderungen vorgenommen. Näheres finden Sie in den Changelogs.
 
-## [v5.1.8-2]
-### Changed
-* Wir haben nur technische Änderungen vorgenommen. Näheres finden Sie in den Changelogs.
+## [v5.1.8-2] - 2025-06-11
+### Added
+* Zusätzliche Konfigurationsschlüssel rack/params_limit und rack/bytesize_limit hinzugefügt.
+* ``rack/params_limit`` erhöht das Limit an Parametern in Anfragen an Redmine
+    * Achtung: Requests mit sehr vielen Parametern können sehr lange dauern. In dieser Zeit ist das Redmine-Dogu für alle Benutzer in der Funktion eingeschränkt.
+* ``rack/bytesize_limit`` erhöht das die Maximalgröße des Requests
+    * Achtung: Sehr große Requests können sehr lange dauern. In dieser Zeit ist das Redmine-Dogu für alle Benutzer in der Funktion eingeschränkt.
 
-## [v5.1.8-1] - 2025-06-03
+## [v5.1.8-1] - 2025-05-13
 ### Changed
-* Das Dogu bietet nun die Redmine-Version 5.1.8 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#518-2025-04-20).
+* Das Dogu bietet nun die Redmine-Version 5.1.6 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#518-2025-04-20).
 
 ## [v5.1.6-3] - 2025-04-28
 ### Changed
