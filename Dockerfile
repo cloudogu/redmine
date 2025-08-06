@@ -107,6 +107,8 @@ RUN set -eux -o pipefail \
  && 2>/dev/null 1>&2 gem update --system --quiet \
  # set temporary database configuration for bundle install
  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
+# Patch vulnerable nokogiri version to >= 1.18.9
+&& sed -i '/gem.*nokogiri/ s/1\.18\.3/1.18.9/' ${WORKDIR}/Gemfile \
  # Install rubycas-client
  && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
  && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
