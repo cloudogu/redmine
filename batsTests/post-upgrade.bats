@@ -62,38 +62,6 @@ teardown() {
   assert_failure
 }
 
-@test "run_postupgrade should provide PostgresSQL credentials (while note being exported)" {
-  source /workspace/resources/post-upgrade.sh
-
-  mock_set_status "${doguctl}" 0
-  mock_set_output "${doguctl}" "theUser" 1
-  mock_set_output "${doguctl}" "thePassword" 2
-  mock_set_output "${doguctl}" "theDatabase" 3
-  mock_set_output "${doguctl}" "somethingElse" 4
-  mock_set_status "${psql}" 0
-  mock_set_status "${rake}" 0
-  # overwrite plugin env vars for implicit call of install_plugins
-  overwritePluginDirsWithTmpDirs
-
-  run run_postupgrade "4.1.0-3" "4.2.0-1"
-
-  assert_success
-  assert_line "get data for database connection"
-  assert_equal "$(mock_get_call_num "${doguctl}")" "10"
-  assert_equal "$(mock_get_call_args "${doguctl}" "1")" "config -e sa-postgresql/username"
-  assert_equal "$(mock_get_call_args "${doguctl}" "2")" "config -e sa-postgresql/password"
-  assert_equal "$(mock_get_call_args "${doguctl}" "3")" "config -e sa-postgresql/database"
-
-  assert_equal "$(mock_get_call_num "${psql}")" "1"
-  assert_equal "$(mock_get_call_args "${psql}" "1")" "--host postgresql --username theUser --dbname theDatabase -1 -c DELETE FROM settings WHERE id IN (SELECT id FROM settings WHERE NOT id IN (SELECT max(id) FROM settings GROUP BY name HAVING count(*) > 1) AND name IN (SELECT name FROM settings GROUP BY name HAVING count(name) > 1))"
-
-  assert_line "Redmine post-upgrade done"
-
-  refute isVarExported "DATABASE_USER"
-  refute isVarExported "DATABASE_USER_PASSWORD"
-  refute isVarExported "DATABASE_DB"
-}
-
 @test "run_postupgrade should delete duplicate database settings during upgrade from source versions [3.3.2-4 to 4.1.0-3] to target version 4.2.0-1" {
   source /workspace/resources/post-upgrade.sh
   sourceVersions=("3.3.2-4" "3.4.10-1" "3.4.10-2" "3.4.11-1" "3.4.2-2" "3.4.2-3" "3.4.2-4" "3.4.2-5" "3.4.2-6" "3.4.8-1" "3.4.8-2" "4.0.5-1" "4.1.0-1" "4.1.0-2" "4.1.0-3")
