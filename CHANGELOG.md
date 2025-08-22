@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [#160] Update Redmine to version 6.0.6
 - [#160] Update ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION to 0.3.0
-- [#160] Added zzz_cloudogu_patches Plugin to fix redmine upgrading issues
+- [#160] Added Cloudogu Redmine Patches Plugin
+- [#160] Upgraded Base Image to v3.21.0-1
 
 ## [v5.1.8-3] - 2025-08-06
 ### Security
