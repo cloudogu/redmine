@@ -145,7 +145,7 @@ RUN set -eux -o pipefail \
  # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
- && mv /usr/share/webapps/redmine/public/themes/Cloudogu \
+ && cp -r /usr/share/webapps/redmine/public/themes/Cloudogu \
         /usr/share/webapps/redmine/themes/ \
  && bundle config set --local without 'development test' \
  && bundle install \
