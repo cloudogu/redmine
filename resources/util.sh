@@ -108,21 +108,69 @@ function exec_rake() {
   RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" rake --trace -f "${WORKDIR}"/Rakefile "$*"
 }
 
-function create_secrets_yml() {
-if [ ! -f "${WORKDIR}/config/secrets.yml" ]; then
-  if [[ $(doguctl config -e secret_key_base > /dev/null; echo $?) -ne 0 ]]; then
-    # secret_key_base has not been initialized yet
-    echo "Generating secret token..."
-    exec_rake generate_secret_token
-    SECRETKEYBASE=$(grep secret_key_base "${WORKDIR}"/config/initializers/secret_token.rb | awk -F \' '{print $2}' )
-    doguctl config -e secret_key_base "${SECRETKEYBASE}"
-    rm "${WORKDIR}/config/initializers/secret_token.rb"
+# Generates & persists a stable key in registry, writes to config/credentials/production.key
+function ensure_production_credentials_key() {
+  if ! doguctl config -e rails_credentials_production_key > /dev/null; then
+    # 16 bytes hex is fine (32 chars)
+    local CRED_KEY
+    CRED_KEY="$(openssl rand -hex 16)"
+    doguctl config -e rails_credentials_production_key "${CRED_KEY}"
   fi
-  # secret_key_base is stored in registry, but secrets.yml is missing
-  # this happens after a restore of the dogu, because the config folder is not backed up
-  echo "Rendering config/secrets.yml..."
-  doguctl template "${WORKDIR}/config/secrets.yml.tpl" "${WORKDIR}/config/secrets.yml"
-fi
+  # Write key file (Rails will auto-pick it in production)
+  install -d -o redmine -g redmine "${WORKDIR}/config/credentials"
+  printf "%s" "$(doguctl config -e rails_credentials_production_key)" > "${WORKDIR}/config/credentials/production.key"
+  chown redmine:redmine "${WORKDIR}/config/credentials/production.key"
+}
+
+# Creates/ensures SECRET_KEY_BASE in registry
+function ensure_secret_key_base() {
+  if ! doguctl config -e secret_key_base > /dev/null; then
+    local SKB
+    SKB="$(openssl rand -hex 64)"
+    doguctl config -e secret_key_base "${SKB}"
+  fi
+}
+
+# Writes config/credentials/production.yml.enc with secret_key_base (non-interactively)
+write_production_credentials_yaml() {
+  local CONTENT_PATH="${WORKDIR}/config/credentials/production.yml.enc"
+  local KEY_PATH="${WORKDIR}/config/credentials/production.key"
+  local SECRET
+  SECRET="$(doguctl config -e secret_key_base)"
+
+  su - redmine -c "cd ${WORKDIR} && \
+    bundle exec ruby - \"${CONTENT_PATH}\" \"${KEY_PATH}\" \"${SECRET}\" <<'RUBY'
+content_path, key_path, secret = ARGV
+require 'active_support/encrypted_file'
+ef = ActiveSupport::EncryptedFile.new(
+  content_path: content_path,
+  key_path:     key_path,
+  env_key:      'RAILS_MASTER_KEY',
+  raise_if_missing_key: true
+)
+ef.write(\"secret_key_base: #{secret}\n\")
+RUBY"
+}
+
+# One-shot helper for startup
+function ensure_production_credentials() {
+  ensure_production_credentials_key
+  ensure_secret_key_base
+  write_production_credentials_yaml
+}
+
+function migrate_secrets_yml_to_credentials() {
+  if [ -f "${WORKDIR}/config/secrets.yml" ] && ! doguctl config -e secret_key_base > /dev/null; then
+    echo "# extract from YAML (production key)"
+    local SKB
+    SKB="$(awk '/^production:/,/^[^ ]/{if($1=="secret_key_base:"){print $2}}' "${WORKDIR}/config/secrets.yml")"
+    if [ -n "${SKB:-}" ]; then
+      doguctl config -e secret_key_base "${SKB}"
+    fi
+  fi
+  ensure_production_credentials
+  # optionally remove legacy file to prevent confusion:
+  rm -f "${WORKDIR}/config/secrets.yml"
 }
 
 function render_config_ru_template() {
@@ -155,6 +203,47 @@ function get_setting_value() {
     --username "${DATABASE_USER}" \
     --dbname "${DATABASE_DB}" \
     -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
+}
+
+create_symlinks() {
+  echo "Creating symlinks..."
+  shopt -s nullglob dotglob
+
+  WORKDIR="/usr/share/webapps/redmine"
+  echo "WORKDIR: $WORKDIR"
+
+  declare -A LINKS=(
+    ["$WORKDIR/assets"]="$WORKDIR/public/assets"
+    ["$WORKDIR/plugin_assets"]="$WORKDIR/public/assets/plugin_assets"
+    ["$WORKDIR/stylesheets"]="$WORKDIR/app/assets/stylesheets"
+  )
+
+  for target in "${!LINKS[@]}"; do
+    source="${LINKS[$target]}"
+
+    # Ensure source exists
+    if [[ ! -d "$source" ]]; then
+      echo "Source '$source' does not exist, skipping."
+      continue
+    fi
+
+    # Create/replace symlink if needed
+    if [[ -L "$target" && "$(readlink -f "$target")" == "$(readlink -f "$source")" ]]; then
+      echo "Symlink already correct: $target → $source"
+    else
+      echo "Creating symlink: $target → $source"
+      rm -rf "$target"
+      ln -s "$source" "$target"
+    fi
+
+    # Fix ownership if needed
+    current_owner=$(stat -c "%U:%G" "$target" 2>/dev/null || true)
+    desired_owner="${USER}:${USER}"
+    if [[ "$current_owner" != "$desired_owner" ]]; then
+      chown -h "$desired_owner" "$target"
+      echo "Ownership set to $desired_owner for $target"
+    fi
+  done
 }
 
 function stop_redmine_daemon(){

@@ -30,8 +30,11 @@ file:
   /usr/share/webapps/redmine/config/initializers/secret_token.rb:
     exists: false
   /usr/share/webapps/redmine/config/secrets.yml:
+    exists: false
+  /usr/share/webapps/redmine/config/credentials/production.key:
     exists: true
-    filetype: file
+  /usr/share/webapps/redmine/config/credentials/production.yml.enc:
+    exists: true
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
