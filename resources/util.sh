@@ -246,56 +246,6 @@ create_symlinks() {
   done
 }
 
-# function create_symlinks() {
-#   echo "Creating symlinks..."
-#   shopt -s nullglob dotglob
-#   echo "WORKDIR: $WORKDIR"
-
-#   rm -rf "$WORKDIR/plugin_assets"
-#   WORKDIR="/usr/share/webapps/redmine"
-#   ln -fs "$WORKDIR/public/assets/"* "$WORKDIR/assets"
-#   ln -fs "$WORKDIR/public/assets/plugin_assets/"* "$WORKDIR/plugin_assets"
-#   ln -fs "$WORKDIR/app/assets/stylesheets/"* "$WORKDIR/stylesheets"
-#   chown -R "${USER}":"${USER}" "$WORKDIR/assets" "$WORKDIR/plugin_assets" "$WORKDIR/stylesheets"
-
-#   # ln -fs "$WORKDIR/app/assets/"* "$WORKDIR/assets/plugin_assets/redmineup/bullet_end.png"
-#   # ln -fs "$WORKDIR/app/assets/"* "$WORKDIR/assets/plugin_assets/redmineup/bullet_go.png"
-#   # ln -fs "$WORKDIR/app/assets/bullet_diamond-"* "$WORKDIR/assets/plugin_assets/redmineup/bullet_diamond.png"
-
-#   # # Symlink public/redmine -> $WORKDIR
-#   # if [ -L "$WORKDIR/public/redmine" ]; then
-#   #   :
-#   # else
-#   #   if [ -e "$WORKDIR/public/redmine" ]; then
-#   #     echo "Removing non-symlink $WORKDIR/public/redmine..."
-#   #     rm -rf "$WORKDIR/public/redmine"
-#   #   fi
-#   #   ln -snv "$WORKDIR" "$WORKDIR/public/redmine"
-#   # fi
-
-#   # # Symlink everything from public/ into WORKDIR (except 'redmine')
-#   # for target in "$WORKDIR"/public/*; do
-#   #   base="${target##*/}"
-#   #   [ "$base" = "redmine" ] && continue
-#   #   dest="$WORKDIR/$base"
-
-#   #   if [ -L "$dest" ]; then
-#   #     current="$(readlink "$dest")"
-#   #     if [ "$current" != "$target" ] && [ "$current" != "public/$base" ]; then
-#   #       echo "Relinking $dest -> $target"
-#   #       rm -f "$dest"
-#   #       ln -snv "$target" "$dest"
-#   #     else
-#   #       echo "Skipping: $dest already symlinked"
-#   #     fi
-#   #   elif [ -e "$dest" ]; then
-#   #     echo "Skipping: $dest exists (not a symlink)"
-#   #   else
-#   #     ln -snv "$target" "$dest"
-#   #   fi
-#   # done
-# }
-
 function stop_redmine_daemon(){
   kill "${PID}"
 }
