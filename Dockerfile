@@ -35,8 +35,8 @@ ENV USER=redmine \
     THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
-    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.4  \
-    CLOUDOGU_PATCHES_PLUGIN_SHA256=fab7fe4969e13c4f0f208e0339ac51f770dd8cf6fb4259f9cda5830e85373c1f \
+    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.6  \
+    CLOUDOGU_PATCHES_PLUGIN_SHA256=ebe4fd1fc5de2050b610d83b572915032fa4db64eba53cd765a70e017a9316ca \
     CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches"
 
 COPY resources/ /
@@ -145,7 +145,7 @@ RUN set -eux -o pipefail \
  # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
- && cp -r /usr/share/webapps/redmine/public/themes/Cloudogu \
+ && mv /usr/share/webapps/redmine/public/themes/Cloudogu \
         /usr/share/webapps/redmine/themes/ \
  && bundle config set --local without 'development test' \
  && bundle install \
