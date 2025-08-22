@@ -1,7 +1,7 @@
-FROM registry.cloudogu.com/official/base:3.19.4-3
+FROM registry.cloudogu.com/official/base:3.21.0-1
 
 LABEL NAME="official/redmine" \
-   VERSION="5.1.8-3" \
+   VERSION="6.0.6-1" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -15,16 +15,16 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=5.1.8 \
-    REDMINE_TARGZ_SHA256=50a30cd16c43d0ae64f256866c8cef4b0e9dd818d6feef489fa24507fbde3a7b \
+    REDMINE_VERSION=6.0.6 \
+    REDMINE_TARGZ_SHA256=b7ac2d28893806b8f4fbd1480b714be546614e830e2029d47a0bf26a352bb3fa \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
-    EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
-    EXTENDED_REST_API_TARGZ_SHA256=7def9dee6a72f7a98c34c3d0beb17dabd414a1af86153624eb03ffe631272b31 \
+    EXTENDED_REST_API_PLUGIN_VERSION=1.2.0 \
+    EXTENDED_REST_API_TARGZ_SHA256=9af32d40e990cf7c3cf83295e664e160c9edb58de49fb254bf2533b57d438127 \
     EXTENDED_REST_API_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_extended_rest_api" \
     # Activerecord session plugin version
-    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.2.0 \
-    ACTIVERECORD_TARGZ_SHA256=6e9bdeef6ddaef3b997251418647bd17b11bb10d36b7a2ad27f387cb511858ea \
+    ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION=0.3.0 \
+    ACTIVERECORD_TARGZ_SHA256=c3b6c4aeed4cc52221f9422d77add2857a70a9081a35c7c9232eeacdef9cdfc3 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
     CAS_PLUGIN_VERSION=2.1.2 \
@@ -33,7 +33,11 @@ ENV USER=redmine \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=2.15.0-2 \
     THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
-    CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu"
+    CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
+    # Cloudogu patches plugin
+    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.6  \
+    CLOUDOGU_PATCHES_PLUGIN_SHA256=ebe4fd1fc5de2050b610d83b572915032fa4db64eba53cd765a70e017a9316ca \
+    CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches"
 
 COPY resources/ /
 
@@ -64,6 +68,12 @@ RUN set -eux -o pipefail \
  && echo "${ACTIVERECORD_TARGZ_SHA256} *v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${ACTIVERECORD_SESSION_STORE_PLUGIN_PATH}" \
  && rm v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz \
+ ## Install Cloudogu-Patches-Plugin \
+ && mkdir -p "${CLOUDOGU_PATCHES_PLUGIN_PATH}" \
+ && wget -O v${CLOUDOGU_PATCHES_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/cloudogu_redmine_patches/archive/v${CLOUDOGU_PATCHES_PLUGIN_VERSION}.tar.gz" \
+ && echo "${CLOUDOGU_PATCHES_PLUGIN_SHA256} *v${CLOUDOGU_PATCHES_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${CLOUDOGU_PATCHES_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${CLOUDOGU_PATCHES_PLUGIN_PATH}" \
+ && rm v${CLOUDOGU_PATCHES_PLUGIN_VERSION}.tar.gz \
  ## Install extended_rest_api Plugin \
  && mkdir -p "${EXTENDED_REST_API_PLUGIN_PATH}" \
  && wget -O v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
@@ -95,6 +105,8 @@ RUN set -eux -o pipefail \
  && apk --no-cache add --virtual /.build-deps \
    build-base \
    ruby-dev \
+   yaml-dev \
+   pkgconf \
    libxslt-dev \
    postgresql-dev \
    sqlite-dev \
@@ -107,8 +119,10 @@ RUN set -eux -o pipefail \
  && 2>/dev/null 1>&2 gem update --system --quiet \
  # set temporary database configuration for bundle install
  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
-# Patch vulnerable nokogiri version to >= 1.18.9
-&& sed -i '/gem.*nokogiri/ s/1\.18\.3/1.18.9/' ${WORKDIR}/Gemfile \
+ # Patch vulnerable nokogiri version to >= 1.18.9
+ && sed -i '/gem.*nokogiri/ s/1\.18\.3/1.18.9/' ${WORKDIR}/Gemfile \
+ # fixes CVE-2025-24293
+ && sed -i '/gem.*rails/ s/7\.2\.2\.1/7.2.2.2/' ${WORKDIR}/Gemfile \
  # Install rubycas-client
  && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
  && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
@@ -122,8 +136,9 @@ RUN set -eux -o pipefail \
  && rm -rf rubycas-client \
  # json gem missing in default installation?
  && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
+ && echo 'gem "rexml", "~> 3.2"' >> ${WORKDIR}/Gemfile \
  # Lock the rack version. If adjusted, check if the rack config params are still working.
- && echo 'gem "rack", "2.2.17"' >> ${WORKDIR}/Gemfile \
+#  && echo 'gem "rack", "3.1.3"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
@@ -132,6 +147,8 @@ RUN set -eux -o pipefail \
  # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
+ && cp -r /usr/share/webapps/redmine/public/themes/Cloudogu \
+        /usr/share/webapps/redmine/themes/ \
  && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \

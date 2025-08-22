@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.0.6-1] - 2025-08-22
+### Changed
+- [#160] Update Redmine to version 6.0.6
+- [#160] Update ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION to 0.3.0
+- [#160] Added Cloudogu Redmine Patches Plugin
+- [#160] Upgraded Base Image to v3.21.0-1
+
+### Security
+- [#160] Fixed activestorage [CVE-2025-24293](https://greg.molnar.io/blog/rails-cve-2025-55193-and-cve-2025-24293/) 
+
 ## [v5.1.8-3] - 2025-08-06
 ### Security
 - [#155] close CVE GHSA-353f-x4gh-cqq8

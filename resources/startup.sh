@@ -88,8 +88,7 @@ function runMain() {
 
   setDoguLogLevel
 
-  # Make sure secrets.yml exists
-  create_secrets_yml
+  migrate_secrets_yml_to_credentials
 
   # wait until postgresql passes all health checks
   echo "wait until postgresql passes all health checks"
@@ -154,16 +153,10 @@ function runMain() {
   chown -R "${USER}":"${USER}" files log tmp public/plugin_assets
   chmod -R 755 files log tmp public/plugin_assets
 
+  create_symlinks
+
   # tasks that require usage of a temporary admin and redmine daemon
   background_configuration_tasks
-
-  # Create links
-  if [ ! -e "${WORKDIR}"/public/redmine ]; then
-    ln -s "${WORKDIR}" "${WORKDIR}"/public/
-  fi
-  if [ ! -e "${WORKDIR}"/stylesheets ]; then
-    ln -s "${WORKDIR}"/public/* "${WORKDIR}"
-  fi
 
   echo "Generate configuration.yml from template"
   render_configuration_yml_template
@@ -175,14 +168,17 @@ function runMain() {
   fi
 
   echo "Clearing sessions..."
-  exec_rake db:sessions:clear
+  exec_rake tmp:clear
+  exec_rake log:clear   # optional
+  # only if using ActiveRecord session store:
+  sql "TRUNCATE TABLE sessions;" || true
 
   doguctl state "ready"
   doguctl config --rm "local_state"
 
   # Start redmine
   echo "Starting redmine..."
-  exec su - redmine -c "AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
+  exec su - redmine -c "RAILS_MASTER_KEY=\$(cat ${WORKDIR}/config/credentials/production.key) AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
 }
 
 # make the script only run when executed, not when sourced from bats tests)

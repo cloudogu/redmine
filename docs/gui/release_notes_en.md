@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.0.6-1] - 2025-08-22
+### Changed
+* The dogu now offers Redmine version 6.0.6. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_6_0#606-2025-07-07)
+
 ## [v5.1.8-3] - 2025-08-06
 ### Changed
 * We have only made technical changes. You can find more details in the changelogs.
@@ -20,7 +24,7 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [v5.1.8-1] - 2025-05-13
 ### Changed
-* The dogu now offers Redmine version 5.1.8. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#518-2025-04-20)
+* The dogu now offers Redmine version 5.1.8. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1)
 
 ## [v5.1.6-3] - 2025-04-28
 ### Changed

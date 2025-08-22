@@ -54,8 +54,8 @@ function run_postupgrade() {
 #  fi
 
 
-  echo "Making sure config/secrets.yml exists..."
-  create_secrets_yml
+  echo "migrating secrets.yaml to credentials..."
+  migrate_secrets_yml_to_credentials
 
   echo "Rendering config.ru template..."
   render_config_ru_template
