@@ -282,7 +282,7 @@ function remove_last_temporary_admin() {
   # Empty string is not possible with doguctl command
   local DEFAULT="<empty>"
   local LAST_TMP_ADMIN
-  LAST_TMP_ADMIN="$(doguctl config -e --default "${DEFAULT}" last_tmp_admin)"
+  LAST_TMP_ADMIN="$(doguctl config --default "${DEFAULT}" last_tmp_admin)"
 
   if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
   then
