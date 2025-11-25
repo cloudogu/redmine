@@ -5,6 +5,12 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Fixed
+* Robustheit des Löschvorgangs von temporären Admins erhöht.
+    * In Fehlerfällen können temporäre Admin Accounts in einem vorherigen Startversuch schon gelöscht wurden sein.
+      * Während der damit verbundene Schlüssel in der Konfiguration darauf hingewiesen hat das ein solcher Account noch existiert. 
+      * Nachfolgende Löschversuche würden demnach fehlschlagen und die Konfiguration nicht richtig aufgeräumt werden, welches den Start des Dogus verhindert. 
+      * Dieses Release behebt diesen Fehler.
 
 ## [v6.0.6-2] - 2025-09-19
 ### Changed
