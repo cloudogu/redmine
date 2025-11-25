@@ -6,6 +6,14 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.0.6-3] - 2025-11-25
+### Fixed
+* Robustness of deletion process for temporary admins improved.
+  * In Error Cases the temporary admin accounts were not properly deleted during a previous start attempt.
+    * While the connected Configuration Key indicated that the admin account was not deleted yet.
+    * Additional attempts at deleting this temporary account would fail and prevent proper Dogu Startup.
+    * This Error was fixed with this Release.
+
 ## [v6.0.6-2] - 2025-09-19
 ### Changed
 * We have only made technical changes. You can find more details in the changelogs.

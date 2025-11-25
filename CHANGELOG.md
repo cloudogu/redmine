@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.0.6-3] - 2025-11-25
+### Fixed
+- [#166] improve stability of background user deletion script for temp admins
+
 ## [v6.0.6-2] - 2025-09-19
 ### Changed
 - [#164] Upgraded Cloudogu Redmine Patches Plugin to v0.0.10 for UI bugfix

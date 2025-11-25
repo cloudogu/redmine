@@ -24,13 +24,13 @@ end
 begin
 opts = RemoveUserHelper::options
 puts "Try to remove user %s" % opts[:username]
-user = User.where(login: opts[:username]).first
-puts 'User did not exist' if user.nil?
-    user.destroy unless user.nil?
-    puts 'User removed successfully.' unless user.nil?
-    rescue Exception => error
-puts '====================================================='
-puts error.message
-puts '====================================================='
-puts 'User remove failed.'
+user = User.find_by_login(opts[:username])
+if user
+  user.destroy!
+else
+  puts "User did not exist"
+end
+rescue StandardError => e
+  warn "User deletion failed: #{e.class}: #{e.message}"
+  raise
 end
