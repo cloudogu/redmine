@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v6.0.6-3] - 2025-11-25
 ### Fixed
 * Robustness of deletion process for temporary admins improved.
   * In Error Cases the temporary admin accounts were not properly deleted during a previous start attempt.
