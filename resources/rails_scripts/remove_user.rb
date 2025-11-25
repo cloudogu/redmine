@@ -32,4 +32,5 @@ else
 end
 rescue StandardError => e
   warn "User deletion failed: #{e.class}: #{e.message}"
+  raise
 end
