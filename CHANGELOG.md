@@ -8,8 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - [#166] improve stability of background user deletion script for temp admins
-- [#166] doguctl check on randomly generated string of characters assumed it was base64 encoded
-  - with 16 characters this is very often true but could cause endless restart loops in cases it doesn't
 
 ## [v6.0.6-2] - 2025-09-19
 ### Changed
