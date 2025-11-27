@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.8-4] - 2025-11-27
+### Fixed
+- [#166] improve stability of background user deletion script for temp admins
+  - backport to redmine 5
+
 ## [v5.1.8-3] - 2025-08-06
 ### Security
 - [#155] close CVE GHSA-353f-x4gh-cqq8

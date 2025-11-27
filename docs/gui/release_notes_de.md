@@ -6,6 +6,14 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v5.1.8-4] - 2025-11-27
+### Fixed
+* Robustheit des Löschvorgangs von temporären Admins erhöht.
+    * In Fehlerfällen können temporäre Admin Accounts in einem vorherigen Startversuch schon gelöscht wurden sein.
+        * Während der damit verbundene Schlüssel in der Konfiguration darauf hingewiesen hat das ein solcher Account noch existiert.
+        * Nachfolgende Löschversuche würden demnach fehlschlagen und die Konfiguration nicht richtig aufgeräumt werden, welches den Start des Dogu's verhindert.
+        * Dieses Release behebt diesen Fehler.
+      
 ## [v5.1.8-3] - 2025-08-06
 ### Changed
 * Wir haben nur technische Änderungen vorgenommen. Näheres finden Sie in den Changelogs.
