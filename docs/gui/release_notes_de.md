@@ -22,6 +22,15 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 ### Changed
 * Das Dogu bietet nun die Redmine-Version 6.0.6 an. Die Release Notes von Redmine finden Sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_6_0#606-2025-07-07).
 
+## [v5.1.8-4] - 2025-11-27
+### Fixed
+* Robustheit des Löschvorgangs von temporären Admins erhöht.
+    * In Fehlerfällen können temporäre Admin Accounts in einem vorherigen Startversuch schon gelöscht wurden sein.
+        * Während der damit verbundene Schlüssel in der Konfiguration darauf hingewiesen hat das ein solcher Account noch existiert.
+        * Nachfolgende Löschversuche würden demnach fehlschlagen und die Konfiguration nicht richtig aufgeräumt werden, welches den Start des Dogu's verhindert.
+        * Dieses Release behebt diesen Fehler.
+    * Backport für die Version 5
+
 ## [v5.1.8-3] - 2025-08-06
 ### Changed
 * Wir haben nur technische Änderungen vorgenommen. Näheres finden Sie in den Changelogs.
