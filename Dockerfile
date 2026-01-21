@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.21.0-1
 
 LABEL NAME="official/redmine" \
-   VERSION="6.0.6-3" \
+   VERSION="6.1.1-0" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -15,8 +15,8 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=6.0.6 \
-    REDMINE_TARGZ_SHA256=b7ac2d28893806b8f4fbd1480b714be546614e830e2029d47a0bf26a352bb3fa \
+    REDMINE_VERSION=6.1.1 \
+    REDMINE_TARGZ_SHA256=1f2e6dd0697062fc733701f88b5041dc0dfc6b536255eb7902f21fb0970e603e \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.2.0 \
@@ -116,7 +116,7 @@ RUN set -eux -o pipefail \
    libffi-dev \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
- && 2>/dev/null 1>&2 gem update --system --quiet \
+ && gem update --system 3.4.22 --no-document \
  # set temporary database configuration for bundle install
  && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
  # Patch vulnerable nokogiri version to >= 1.18.9
