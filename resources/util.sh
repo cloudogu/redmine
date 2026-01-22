@@ -182,7 +182,7 @@ function create_temporary_admin() {
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  railsConsole "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
+  railsConsoleRetryOnce 60 "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -270,6 +270,26 @@ function fetchDatabaseConnection() {
 
 function railsConsole() {
   rails r -e production "$@"
+}
+
+function railsConsoleRetryOnce() {
+  local RETRY_AFTER=${1}
+  local SCRIPT_ARGS=${@:2}
+
+  echo "Run rails script ${SCRIPT_ARGS}"
+  exec rails r -e production "${SCRIPT_ARGS}" &
+
+  local PID=$!
+  for i in $(seq 1 "${RETRY_AFTER}"); do
+    if [[ -d /proc/${PID} ]]; then
+      sleep 1
+    else
+      exit 0
+    fi
+  done
+
+  echo "Run rails script again: ${SCRIPT_ARGS}"
+  exec rails r -e production "${SCRIPT_ARGS}"
 }
 
 # make the script only run when executed, not when sourced
