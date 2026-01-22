@@ -143,7 +143,9 @@ RUN set -eux -o pipefail \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/* \
- && apk add ruby-irb
+ && apk add ruby-irb \
+ && chown -R "${USER}":"${USER}" "${WORKDIR}" \
+ && chmod -R g+w "${WORKDIR}"
 
 WORKDIR ${WORKDIR}
 
