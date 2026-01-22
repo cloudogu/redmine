@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.1-1] - 2026-01-22
+### Changed
+- [#171] Update Redmine to version 6.1.1
+- [#171] Update base image to v3.23.2-2
+
 ## [v6.0.6-3] - 2025-11-25
 ### Fixed
 - [#166] improve stability of background user deletion script for temp admins
@@ -25,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - [#160] Fixed activestorage [CVE-2025-24293](https://greg.molnar.io/blog/rails-cve-2025-55193-and-cve-2025-24293/) 
 
+## [v5.1.8-4] - 2025-11-27
+### Fixed
+- [#166] improve stability of background user deletion script for temp admins
+  - backport to redmine 5
+  
 ## [v5.1.8-3] - 2025-08-06
 ### Security
 - [#155] close CVE GHSA-353f-x4gh-cqq8

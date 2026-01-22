@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.1.1-1] - 2026-01-22
+### Changed
+* The dogu now offers Redmine version 6.0.6. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_6_1#611-2026-01-05)
+
 ## [v6.0.6-3] - 2025-11-25
 ### Fixed
 * Robustness of deletion process for temporary admins improved.
@@ -21,6 +25,15 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 ## [v6.0.6-1] - 2025-08-22
 ### Changed
 * The dogu now offers Redmine version 6.0.6. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_6_0#606-2025-07-07)
+
+## [v5.1.8-4] - 2025-11-27
+### Fixed
+* Robustness of deletion process for temporary admins improved.
+    * In Error Cases the temporary admin accounts were not properly deleted during a previous start attempt.
+        * While the connected Configuration Key indicated that the admin account was not deleted yet.
+        * Additional attempts at deleting this temporary account would fail and prevent proper Dogu Startup.
+        * This Error was fixed with this Release.
+    * Backport for Version 5
 
 ## [v5.1.8-3] - 2025-08-06
 ### Changed
