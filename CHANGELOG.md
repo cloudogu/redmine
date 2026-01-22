@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - [#171] Update Redmine to version 6.1.1
+- [#171] Update base image to v3.23.2-2
 
 ## [v6.0.6-3] - 2025-11-25
 ### Fixed

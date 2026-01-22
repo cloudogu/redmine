@@ -1,4 +1,4 @@
-FROM registry.cloudogu.com/official/base:3.21.0-1
+FROM registry.cloudogu.com/official/base:3.23.2-2
 
 LABEL NAME="official/redmine" \
    VERSION="6.1.1-0" \
@@ -84,7 +84,6 @@ RUN set -eux -o pipefail \
  && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
  && find "${EXTENDED_REST_API_PLUGIN_PATH}" -name 'Gemfile*' -type f -delete \
  && apk update \
- && apk upgrade \
  # add user and group
  && addgroup -S "${USER}" -g 1000 \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
@@ -114,15 +113,8 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
- # update ruby gems
- && echo 'gem: --no-document' > /etc/gemrc \
- && gem update --system 3.4.22 --no-document \
- # set temporary database configuration for bundle install
- && cp ${WORKDIR}/config/database.yml.tpl ${WORKDIR}/config/database.yml \
- # Patch vulnerable nokogiri version to >= 1.18.9
- && sed -i '/gem.*nokogiri/ s/1\.18\.3/1.18.9/' ${WORKDIR}/Gemfile \
- # fixes CVE-2025-24293
- && sed -i '/gem.*rails/ s/7\.2\.2\.1/7.2.2.2/' ${WORKDIR}/Gemfile \
+ && gem install pg -v "~> 1.5.3" --no-document \
+ && echo 'gem "rexml", "~> 3.2"' >> ${WORKDIR}/Gemfile \
  # Install rubycas-client
  && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
  && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
@@ -134,11 +126,6 @@ RUN set -eux -o pipefail \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
  && cd .. \
  && rm -rf rubycas-client \
- # json gem missing in default installation?
- && echo 'gem "json"' >> ${WORKDIR}/Gemfile \
- && echo 'gem "rexml", "~> 3.2"' >> ${WORKDIR}/Gemfile \
- # Lock the rack version. If adjusted, check if the rack config params are still working.
-#  && echo 'gem "rack", "3.1.3"' >> ${WORKDIR}/Gemfile \
  # override environment to run redmine with a context path "/redmine"
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
  # install core plugins
@@ -151,16 +138,13 @@ RUN set -eux -o pipefail \
         /usr/share/webapps/redmine/themes/ \
  && bundle config set --local without 'development test' \
  && bundle install \
+ && chown -R redmine:redmine ${WORKDIR} \
  && gem install puma \
- # Do not remove the dependency on bigdecimal. Many tools rely on bigdecimal, and it may not be possible to install it in a running dogu
- && gem install bigdecimal -v 3.1.6 \
- && bundle add bigdecimal --version=3.1.6 \
  # cleanup
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
- && rm -rf /var/cache/apk/* \
- && apk add ruby-irb
+ && rm -rf /var/cache/apk/* 
 
 WORKDIR ${WORKDIR}
 
