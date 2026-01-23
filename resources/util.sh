@@ -182,7 +182,7 @@ function create_temporary_admin() {
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  railsConsoleRetryOnce 60 "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
+  railsConsoleRetryOnce 300 "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -199,7 +199,7 @@ function remove_last_temporary_admin() {
   then
     echo "Removing last temporary admin..."
     # shellcheck disable=SC1091
-    railsConsole "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
+    railsConsoleRetryOnce 300 "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
     doguctl config --rm last_tmp_admin
   fi
 }
@@ -274,22 +274,28 @@ function railsConsole() {
 
 function railsConsoleRetryOnce() {
   local RETRY_AFTER=${1}
-  local SCRIPT_ARGS=${@:2}
+  local SCRIPT_NAME=${2}
+  local SCRIPT_ARGS=("${@:3}")
 
-  echo "Run rails script ${SCRIPT_ARGS}"
-  exec rails r -e production "${SCRIPT_ARGS}" &
+  echo "Run rails script ${SCRIPT_NAME}"
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}" &
 
+  echo "Waiting up to ${RETRY_AFTER} seconds for script ${SCRIPT_NAME} to finish."
   local PID=$!
-  for i in $(seq 1 "${RETRY_AFTER}"); do
+  for _ in $(seq 1 "${RETRY_AFTER}"); do
     if [[ -d /proc/${PID} ]]; then
       sleep 1
     else
-      exit 0
+      # returns exit code of the background process
+      wait $PID
+      return $?
     fi
   done
 
-  echo "Run rails script again: ${SCRIPT_ARGS}"
-  exec rails r -e production "${SCRIPT_ARGS}"
+  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} second. Kill it and run it again."
+  kill -9 ${PID}
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}"
+  return $?
 }
 
 # make the script only run when executed, not when sourced
