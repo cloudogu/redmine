@@ -182,7 +182,7 @@ function create_temporary_admin() {
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  railsConsoleRetryOnce 300 "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
+  railsConsoleRetryOnce 180 "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -199,7 +199,7 @@ function remove_last_temporary_admin() {
   then
     echo "Removing last temporary admin..."
     # shellcheck disable=SC1091
-    railsConsoleRetryOnce 300 "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
+    railsConsoleRetryOnce 180 "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
     doguctl config --rm last_tmp_admin
   fi
 }
@@ -292,7 +292,7 @@ function railsConsoleRetryOnce() {
     fi
   done
 
-  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} second. Kill it and run it again."
+  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} seconds. Kill it and run it again."
   kill -9 ${PID}
   rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}"
   return $?
