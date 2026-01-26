@@ -292,7 +292,7 @@ function railsConsoleRetryOnce() {
     fi
   done
 
-  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} seconds. Kill it and run it again."
+  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} seconds. Killing it and running it again..."
   kill -9 ${PID}
   rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}"
   return $?

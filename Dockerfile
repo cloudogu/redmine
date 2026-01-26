@@ -144,8 +144,7 @@ RUN set -eux -o pipefail \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/* \
  && apk add ruby-irb \
- && chown -R "${USER}":"${USER}" "${WORKDIR}" \
- && chmod -R g+w "${WORKDIR}"
+ && chown "${USER}":"${USER}" "${WORKDIR}/Gemfile.lock"
 
 WORKDIR ${WORKDIR}
 
