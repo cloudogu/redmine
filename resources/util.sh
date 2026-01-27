@@ -18,6 +18,8 @@ REDMINE_LANG=en
 DATABASE_USER=
 DATABASE_USER_PASSWORD=
 DATABASE_DB=
+CONFIG_ADMIN_NAME="ces-config-admin"
+CONFIG_ADMIN_PASSWORD="please-set-me"
 
 # DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
 # them from the plugin directory
@@ -169,6 +171,42 @@ function start_redmine_in_background(){
   wait_for_redmine_to_get_healthy 300
 }
 
+# create_configuration_admin creates an admin user by using a ruby script to authenticate against the API.
+# The configuration admin is volatile and might be deleted between dogu restarts.
+function create_or_update_configuration_admin() {
+  echo "Creating configuration admin..."
+
+  local doesAdminAlreadyExist
+  doesAdminAlreadyExist=$(sql "SELECT login FROM users WHERE login='${CONFIG_ADMIN_NAME}';" | grep -c "${CONFIG_ADMIN_NAME}"  || true) # always true: grep count returns an exitcode of 1 if not found but will still print the value "0"
+
+  if [[ ${doesAdminAlreadyExist} != "0" ]]; then
+    echo "Found already existing configuration admin."
+    sql "update users set status = '1' where login = 'ces-config-admin';" # enable config_admin
+    update_configuration_admin_password
+    return
+  fi
+
+  create_random_admin_password
+
+  railsConsole "/${RAILS_SCRIPTS_DIR}/create_admin.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}" || exit 1
+}
+
+function create_random_admin_password() {
+  # The Password must contain a special character, a lowercase letter, a capital letter and a number...
+  local CONFIG_ADMIN_PASSWORD_SUFFIX="aB&5"
+  local ADMIN_RANDOMIZED_STR
+  ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
+  CONFIG_ADMIN_PASSWORD="${ADMIN_RANDOMIZED_STR}${CONFIG_ADMIN_PASSWORD_SUFFIX}"
+}
+
+function update_configuration_admin_password() {
+  create_random_admin_password
+
+  railsConsole "/${RAILS_SCRIPTS_DIR}/update_admin_pw.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}"
+  echo "Configuration admin received a new password."
+}
+
+
 # Creates an admin user by using the create_admin.rb script
 function create_temporary_admin() {
   echo "Creating temporary admin..."
@@ -224,7 +262,12 @@ function background_configuration_tasks() {
   fi
 
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
-  create_temporary_admin
+
+  #create_temporary_admin
+  create_or_update_configuration_admin
+  TMP_ADMIN_NAME=${CONFIG_ADMIN_NAME}
+  TMP_ADMIN_PASSWORD=${CONFIG_ADMIN_PASSWORD}
+
   start_redmine_in_background
 
   # tasks
@@ -234,7 +277,10 @@ function background_configuration_tasks() {
 
   # cleanup
   stop_redmine_daemon
-  remove_last_temporary_admin
+
+  #remove_last_temporary_admin
+  sql "update users set status = '3' where login = 'ces-config-admin';" # disable config_admin
+
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
   echo "Finished background configuration tasks"
 }
