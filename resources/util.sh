@@ -206,42 +206,6 @@ function update_configuration_admin_password() {
   echo "Configuration admin received a new password."
 }
 
-
-# Creates an admin user by using the create_admin.rb script
-function create_temporary_admin() {
-  echo "Creating temporary admin..."
-  # The Password must contain a special character, a lowercase letter, a capital letter and a number...
-  local TMP_ADMIN_PASSWORD_SUFFIX="aB&5"
-  TMP_ADMIN_NAME="$(doguctl random)"
-  local TMP_ADMIN_RANDOMIZED_STR
-  TMP_ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
-  TMP_ADMIN_PASSWORD="${TMP_ADMIN_RANDOMIZED_STR}${TMP_ADMIN_PASSWORD_SUFFIX}"
-
-  # In case we are in restart loop to prevent infinite admin users...
-  remove_last_temporary_admin
-
-  railsConsole "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
-  doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
-}
-
-# Removes the temporary admin created by 'create_temporary_admin' function.
-# Uses etcd key 'last_tmp_admin' to get the name of the last temporary admin.
-# After successfully removing the admin, the key 'last_tmp_admin' is also removed.
-function remove_last_temporary_admin() {
-  # Empty string is not possible with doguctl command
-  local DEFAULT="<empty>"
-  local LAST_TMP_ADMIN
-  LAST_TMP_ADMIN="$(doguctl config -e --default "${DEFAULT}" last_tmp_admin)"
-
-  if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
-  then
-    echo "Removing last temporary admin..."
-    # shellcheck disable=SC1091
-    railsConsole "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
-    doguctl config --rm last_tmp_admin
-  fi
-}
-
 function default_data_imports_exist() {
   local defaultData="${1}"
   if [ "${defaultData}" != "${EMPTY}" ]; then
@@ -265,15 +229,12 @@ function background_configuration_tasks() {
 
   #create_temporary_admin
   create_or_update_configuration_admin
-  TMP_ADMIN_NAME=${CONFIG_ADMIN_NAME}
-  TMP_ADMIN_PASSWORD=${CONFIG_ADMIN_PASSWORD}
 
   start_redmine_in_background
 
   # tasks
   trigger_imports || true
   update_password_policy_setting
-
 
   # cleanup
   stop_redmine_daemon
@@ -299,7 +260,7 @@ function trigger_imports(){
 function wait_for_redmine_to_get_healthy() {
   WAIT_TIMEOUT=${1}
   echo "Waiting up to ${WAIT_TIMEOUT} seconds for Redmine endpoint to get ready..."
-  if ! doguctl wait-for-http -u "${TMP_ADMIN_NAME}" -p "${TMP_ADMIN_PASSWORD}" --timeout "${WAIT_TIMEOUT}" --method GET "http://127.0.0.1:3000/redmine/extended_api/v1/settings"; then
+  if ! doguctl wait-for-http -u "${CONFIG_ADMIN_NAME}" -p "${CONFIG_ADMIN_PASSWORD}" --timeout "${WAIT_TIMEOUT}" --method GET "http://127.0.0.1:3000/redmine/extended_api/v1/settings"; then
     echo "timeout reached while waiting for Redmine endpoint to be available"
     exit 1
   else
