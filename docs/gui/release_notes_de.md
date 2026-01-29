@@ -6,6 +6,13 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v5.1.8-5] - 2026-01-29
+### Fixed
+* Manchmal wurden E-Mails versendet, wenn temporäre Administratorkonten erstellt wurden. 
+  Das verwirrte die Administratoren, da sie nicht erkennen konnten, ob es sich um ein Sicherheitsproblem handelte. 
+  Wir verwenden nun ein einziges internes Administratorkonto, das nur einmal erstellt wird, anstatt bei jedem Systemstart 
+  ein neues zu erstellen und zu löschen. Dies sollte die Anzahl dieser E-Mails verringern.
+
 ## [v5.1.8-4] - 2025-11-27
 ### Fixed
 * Robustheit des Löschvorgangs von temporären Admins erhöht.

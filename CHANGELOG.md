@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.8-5] - 2026-01-29
+### Fixed
+- [#176] use permanent config admin instead of a temporary one. This should reduce
+  the number of emails sent when creating an admin user.
+  - backport to redmine 5
+
 ## [v5.1.8-4] - 2025-11-27
 ### Fixed
 - [#166] improve stability of background user deletion script for temp admins

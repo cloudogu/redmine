@@ -34,8 +34,8 @@ setup() {
   jq="$(mock_create)"
   export jq
   ln -s "${jq}" "${BATS_TMPDIR}/jq"
-  export TMP_ADMIN_NAME="adminAdmin"
-  export TMP_ADMIN_PASSWORD="adminPW"
+  export CONFIG_ADMIN_NAME="adminAdmin"
+  export CONFIG_ADMIN_PASSWORD="adminPW"
 }
 
 teardown() {
@@ -46,8 +46,8 @@ teardown() {
   unset RAILS_ENV
   unset curl
   unset jq
-  unset TMP_ADMIN_NAME
-  unset TMP_ADMIN_PASSWORD
+  unset CONFIG_ADMIN_NAME
+  unset CONFIG_ADMIN_PASSWORD
   rm "${BATS_TMPDIR}/doguctl"
   rm "${BATS_TMPDIR}/mysql"
   rm "${BATS_TMPDIR}/rake"

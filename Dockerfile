@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.19.4-3
 
 LABEL NAME="official/redmine" \
-   VERSION="5.1.8-4" \
+   VERSION="5.1.8-5" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -143,7 +143,8 @@ RUN set -eux -o pipefail \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/* \
- && apk add ruby-irb
+ && apk add ruby-irb \
+ && chown "${USER}":"${USER}" "${WORKDIR}/Gemfile.lock"
 
 WORKDIR ${WORKDIR}
 
