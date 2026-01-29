@@ -189,7 +189,7 @@ function create_or_update_configuration_admin() {
   create_random_admin_password
 
   RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
-  railsConsoleRetryOnce "${RAILS_TIMEOUT}"  "/${RAILS_SCRIPTS_DIR}/create_admin.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}" || exit 1
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}"  "${RAILS_SCRIPTS_DIR}/create_admin.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}" || exit 1
 }
 
 function create_random_admin_password() {
@@ -204,7 +204,7 @@ function update_configuration_admin_password() {
   create_random_admin_password
 
   RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
-  railsConsoleRetryOnce "${RAILS_TIMEOUT}" "/${RAILS_SCRIPTS_DIR}/update_admin_pw.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}"
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}" "${RAILS_SCRIPTS_DIR}/update_admin_pw.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}"
   echo "Configuration admin received a new password."
 }
 
