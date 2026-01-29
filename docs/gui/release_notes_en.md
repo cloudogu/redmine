@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v5.1.8-5] - 2026-01-29
 ### Fixed
 * Sometimes emails were sent when temporary administrator account were created. This confused 
   the administrators, as they couldn't tell if it was a security issue. We now use
