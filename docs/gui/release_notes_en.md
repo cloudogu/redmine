@@ -6,6 +6,11 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.1.1-2] - 2026-01-29
+
+### Security
+- [#178] fixed [cve-2025-15467](https://avd.aquasec.com/nvd/2025/cve-2025-15467/)
+
 ## [v6.1.1-1] - 2026-01-22
 ### Changed
 * The dogu now offers Redmine version 6.0.6. You can find the Redmine release notes [here](https://www.redmine.org/projects/redmine/wiki/Changelog_6_1#611-2026-01-05)
