@@ -178,11 +178,12 @@ function create_temporary_admin() {
   local TMP_ADMIN_RANDOMIZED_STR
   TMP_ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
   TMP_ADMIN_PASSWORD="${TMP_ADMIN_RANDOMIZED_STR}${TMP_ADMIN_PASSWORD_SUFFIX}"
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
 
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  railsConsoleRetryOnce 180 "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}"  "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -194,12 +195,13 @@ function remove_last_temporary_admin() {
   local DEFAULT="<empty>"
   local LAST_TMP_ADMIN
   LAST_TMP_ADMIN="$(doguctl config -e --default "${DEFAULT}" last_tmp_admin)"
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
 
   if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
   then
     echo "Removing last temporary admin..."
     # shellcheck disable=SC1091
-    railsConsoleRetryOnce 180 "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
+    railsConsoleRetryOnce "${RAILS_TIMEOUT}" "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
     doguctl config --rm last_tmp_admin
   fi
 }
