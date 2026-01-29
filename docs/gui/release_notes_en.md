@@ -8,7 +8,7 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 ### Fixed
 * Sometimes emails were sent when temporary administrator account were created. This confused 
   the administrators, as they couldn't tell if it was a security issue. We now use
-  one administrator account that is created only ones, instead of creating and deleting
+  one internal administrator account that is created only once, instead of creating and deleting
   a new one every time the system starts. This should reduce the number of these emails.
 
 ## [v5.1.8-4] - 2025-11-27

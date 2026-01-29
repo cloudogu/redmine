@@ -181,7 +181,7 @@ function create_or_update_configuration_admin() {
 
   if [[ ${doesAdminAlreadyExist} != "0" ]]; then
     echo "Found already existing configuration admin."
-    sql "update users set status = '1' where login = 'ces-config-admin';" # enable config_admin
+    sql "update users set status = '1' where login = '${CONFIG_ADMIN_NAME}';" # enable config_admin
     update_configuration_admin_password
     return
   fi
@@ -238,7 +238,7 @@ function background_configuration_tasks() {
 
   # cleanup
   stop_redmine_daemon
-  sql "update users set status = '3' where login = 'ces-config-admin';" # disable config_admin
+  sql "update users set status = '3' where login = '${CONFIG_ADMIN_NAME}';" # disable config_admin
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
   echo "Finished background configuration tasks"
 }
