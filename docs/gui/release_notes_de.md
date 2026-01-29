@@ -5,6 +5,9 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Fixed
+* Die Skripte, die beim Systemstart temporäre Administratoren erstellen und entfernen, werden manchmal nicht beendet.
+  Dieser Fehler wurde in dieser Version behoben.
 
 ## [v5.1.8-4] - 2025-11-27
 ### Fixed

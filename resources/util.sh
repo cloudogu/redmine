@@ -178,11 +178,12 @@ function create_temporary_admin() {
   local TMP_ADMIN_RANDOMIZED_STR
   TMP_ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
   TMP_ADMIN_PASSWORD="${TMP_ADMIN_RANDOMIZED_STR}${TMP_ADMIN_PASSWORD_SUFFIX}"
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
 
   # In case we are in restart loop to prevent infinite admin users...
   remove_last_temporary_admin
 
-  railsConsole "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}"  "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
   doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
 }
 
@@ -194,12 +195,13 @@ function remove_last_temporary_admin() {
   local DEFAULT="<empty>"
   local LAST_TMP_ADMIN
   LAST_TMP_ADMIN="$(doguctl config -e --default "${DEFAULT}" last_tmp_admin)"
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
 
   if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
   then
     echo "Removing last temporary admin..."
     # shellcheck disable=SC1091
-    railsConsole "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
+    railsConsoleRetryOnce "${RAILS_TIMEOUT}" "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
     doguctl config --rm last_tmp_admin
   fi
 }
@@ -270,6 +272,32 @@ function fetchDatabaseConnection() {
 
 function railsConsole() {
   rails r -e production "$@"
+}
+
+function railsConsoleRetryOnce() {
+  local RETRY_AFTER=${1}
+  local SCRIPT_NAME=${2}
+  local SCRIPT_ARGS=("${@:3}")
+
+  echo "Run rails script ${SCRIPT_NAME}"
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}" &
+
+  echo "Waiting up to ${RETRY_AFTER} seconds for script ${SCRIPT_NAME} to finish."
+  local PID=$!
+  for _ in $(seq 1 "${RETRY_AFTER}"); do
+    if [[ -d /proc/${PID} ]]; then
+      sleep 1
+    else
+      # returns exit code of the background process
+      wait $PID
+      return $?
+    fi
+  done
+
+  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} seconds. Killing it and running it again..."
+  kill -9 ${PID}
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}"
+  return $?
 }
 
 # make the script only run when executed, not when sourced
