@@ -18,7 +18,7 @@ API_RESPONSE_IDS="{}"
 # ${3} The body of the call. Must be valid json.
 # ${4} The expected response code from that api. If nothing else provided, response code 200 is expected.
 #
-# Uses TMP_ADMIN_NAME and TMP_ADMIN_PASSWORD global variables. Must be set before calling this function!
+# Uses CONFIG_ADMIN_NAME and CONFIG_ADMIN_PASSWORD global variables. Must be set before calling this function!
 #
 # Prints out a json with the body, the response code and the expected response code.
 # Exits with 1 if expected and actual response code are not equal.
@@ -33,7 +33,7 @@ function curl_extended_api(){
 
   URL="${BASE_URL}/${API}"
 
-  local CURL_COMMAND="curl -L -H 'accept: */*' -H 'Content-Type: application/json' -X ${METHOD} -u \"${TMP_ADMIN_NAME}:${TMP_ADMIN_PASSWORD}\" --silent --write-out 'HTTPSTATUS:%{http_code}' -d '${PAYLOAD}' ${URL}"
+  local CURL_COMMAND="curl -L -H 'accept: */*' -H 'Content-Type: application/json' -X ${METHOD} -u \"${CONFIG_ADMIN_NAME}:${CONFIG_ADMIN_PASSWORD}\" --silent --write-out 'HTTPSTATUS:%{http_code}' -d '${PAYLOAD}' ${URL}"
   HTTP_RESPONSE=$(bash -c "${CURL_COMMAND}")
   # shellcheck disable=SC2001 ### Doesn't work
   HTTP_BODY=$(echo "$HTTP_RESPONSE" | sed -e 's/HTTPSTATUS\:.*//g')

@@ -155,10 +155,8 @@ function runMain() {
 
   create_symlinks
 
-  create_or_update_configuration_admin
-  # tasks that require usage of a temporary admin and redmine daemon
+  # tasks that require usage of a internal config admin and redmine daemon
   background_configuration_tasks
-  sql "update users set status = '3' where login = 'ces-config-admin';" # disable config_admin
 
   echo "Generate configuration.yml from template"
   render_configuration_yml_template

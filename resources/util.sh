@@ -213,18 +213,19 @@ function create_or_update_configuration_admin() {
   echo "Creating configuration admin..."
 
   local doesAdminAlreadyExist
-  doesAdminAlreadyExist=$(sql "SELECT login FROM users WHERE login='${CONFIG_ADMIN_NAME}';" | grep -c 'login' || true) # always true: grep count returns an exitcode of 1 if not found but will still print the value "0"
+  doesAdminAlreadyExist=$(sql "SELECT login FROM users WHERE login='${CONFIG_ADMIN_NAME}';" | grep -c "${CONFIG_ADMIN_NAME}" || true) # always true: grep count returns an exitcode of 1 if not found but will still print the value "0"
 
   if [[ ${doesAdminAlreadyExist} != "0" ]]; then
     echo "Found already existing configuration admin."
-    sql "update users set status = '1' where login = 'ces-config-admin';" # enable config_admin
+    sql "update users set status = '1' where login = '${CONFIG_ADMIN_NAME}';" # enable config_admin
     update_configuration_admin_password
     return
   fi
 
   create_random_admin_password
 
-  railsConsole "/${RAILS_SCRIPTS_DIR}/create_admin.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}" || exit 1
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}" "${RAILS_SCRIPTS_DIR}/create_admin.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}" || exit 1
 }
 
 function create_random_admin_password() {
@@ -238,7 +239,8 @@ function create_random_admin_password() {
 function update_configuration_admin_password() {
   create_random_admin_password
 
-  railsConsole "/${RAILS_SCRIPTS_DIR}/update_admin_pw.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}"
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}" "${RAILS_SCRIPTS_DIR}/update_admin_pw.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}"
   echo "Configuration admin received a new password."
 }
 
@@ -315,7 +317,8 @@ function background_configuration_tasks() {
   fi
 
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
-  create_temporary_admin
+
+  create_or_update_configuration_admin
   start_redmine_in_background
 
   # tasks
@@ -325,7 +328,7 @@ function background_configuration_tasks() {
 
   # cleanup
   stop_redmine_daemon
-  remove_last_temporary_admin
+  sql "update users set status = '3' where login = '${CONFIG_ADMIN_NAME}';" # disable config_admin
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
   echo "Finished background configuration tasks"
 }
@@ -361,6 +364,32 @@ function fetchDatabaseConnection() {
 
 function railsConsole() {
   rails r -e production "$@"
+}
+
+function railsConsoleRetryOnce() {
+  local RETRY_AFTER=${1}
+  local SCRIPT_NAME=${2}
+  local SCRIPT_ARGS=("${@:3}")
+
+  echo "Run rails script ${SCRIPT_NAME}"
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}" &
+
+  echo "Waiting up to ${RETRY_AFTER} seconds for script ${SCRIPT_NAME} to finish."
+  local PID=$!
+  for _ in $(seq 1 "${RETRY_AFTER}"); do
+    if [[ -d /proc/${PID} ]]; then
+      sleep 1
+    else
+      # returns exit code of the background process
+      wait $PID
+      return $?
+    fi
+  done
+
+  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} seconds. Killing it and running it again..."
+  kill -9 ${PID}
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}"
+  return $?
 }
 
 # make the script only run when executed, not when sourced

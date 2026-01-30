@@ -41,8 +41,8 @@ teardown() {
 
 @test "apply_default_data_if_new() should return early on config key with empty string" {
   # given
-  export TMP_ADMIN_NAME="admin"
-  export TMP_ADMIN_PASSWORD="Password1!"
+  export CONFIG_ADMIN_NAME="admin"
+  export CONFIG_ADMIN_PASSWORD="Password1!"
   mock_set_status "${doguctl}" 0
 
   mock_set_output "${curl}" 'HTTPSTATUS:200'
@@ -64,8 +64,8 @@ teardown() {
 
 @test "apply_default_data_if_new() should import default-data on empty archive config key" {
   # given
-  export TMP_ADMIN_NAME="admin"
-  export TMP_ADMIN_PASSWORD="Password1!"
+  export CONFIG_ADMIN_NAME="admin"
+  export CONFIG_ADMIN_PASSWORD="Password1!"
   mock_set_status "${doguctl}" 0
   mock_set_output "${doguctl}" 'no-data' 1
   mock_set_output "${doguctl}" '' 2
@@ -92,8 +92,8 @@ teardown() {
 
 @test "apply_default_data_if_new() should import default-data on config key with valid JSON" {
   # given
-  export TMP_ADMIN_NAME="admin"
-  export TMP_ADMIN_PASSWORD="Password1!"
+  export CONFIG_ADMIN_NAME="admin"
+  export CONFIG_ADMIN_PASSWORD="Password1!"
   mock_set_status "${doguctl}" 0
   mock_set_output "${doguctl}" '2025-01-01-010100' 1
   mock_set_output "${doguctl}" 'totally different json than the input json' 2
