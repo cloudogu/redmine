@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.1-2] - 2026-01-29
+
+### Security
+- [#178] CVE fixed: [cve-2025-15467](https://avd.aquasec.com/nvd/2025/cve-2025-15467/)
+
+## [v6.1.1-1] - 2026-01-22
+### Changed
+- [#171] Update Redmine to version 6.1.1
+- [#171] Update base image to v3.23.2-2
+
 ## [v6.0.6-3] - 2025-11-25
 ### Fixed
 - [#166] improve stability of background user deletion script for temp admins
