@@ -18,6 +18,8 @@ REDMINE_LANG=en
 DATABASE_USER=
 DATABASE_USER_PASSWORD=
 DATABASE_DB=
+CONFIG_ADMIN_NAME="ces-config-admin"
+CONFIG_ADMIN_PASSWORD="please-set-me"
 
 # DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
 # them from the plugin directory
@@ -205,6 +207,43 @@ function get_setting_value() {
     -1 -c "SELECT value FROM settings WHERE name='${SETTING_NAME}';"
 }
 
+# create_configuration_admin creates an admin user by using a ruby script to authenticate against the API.
+# The configuration admin is volatile and might be deleted between dogu restarts.
+function create_or_update_configuration_admin() {
+  echo "Creating configuration admin..."
+
+  local doesAdminAlreadyExist
+  doesAdminAlreadyExist=$(sql "SELECT login FROM users WHERE login='${CONFIG_ADMIN_NAME}';" | grep -c "${CONFIG_ADMIN_NAME}" || true) # always true: grep count returns an exitcode of 1 if not found but will still print the value "0"
+
+  if [[ ${doesAdminAlreadyExist} != "0" ]]; then
+    echo "Found already existing configuration admin."
+    sql "update users set status = '1' where login = '${CONFIG_ADMIN_NAME}';" # enable config_admin
+    update_configuration_admin_password
+    return
+  fi
+
+  create_random_admin_password
+
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}" "${RAILS_SCRIPTS_DIR}/create_admin.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}" || exit 1
+}
+
+function create_random_admin_password() {
+  # The Password must contain a special character, a lowercase letter, a capital letter and a number...
+  local CONFIG_ADMIN_PASSWORD_SUFFIX="aB&5"
+  local ADMIN_RANDOMIZED_STR
+  ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
+  CONFIG_ADMIN_PASSWORD="${ADMIN_RANDOMIZED_STR}${CONFIG_ADMIN_PASSWORD_SUFFIX}"
+}
+
+function update_configuration_admin_password() {
+  create_random_admin_password
+
+  RAILS_TIMEOUT="$(doguctl config rails_script_timeout)"
+  railsConsoleRetryOnce "${RAILS_TIMEOUT}" "${RAILS_SCRIPTS_DIR}/update_admin_pw.rb" --username "${CONFIG_ADMIN_NAME}" --password "${CONFIG_ADMIN_PASSWORD}"
+  echo "Configuration admin received a new password."
+}
+
 create_symlinks() {
   echo "Creating symlinks..."
   shopt -s nullglob dotglob
@@ -258,41 +297,6 @@ function start_redmine_in_background(){
   wait_for_redmine_to_get_healthy 300
 }
 
-# Creates an admin user by using the create_admin.rb script
-function create_temporary_admin() {
-  echo "Creating temporary admin..."
-  # The Password must contain a special character, a lowercase letter, a capital letter and a number...
-  local TMP_ADMIN_PASSWORD_SUFFIX="aB&5"
-  TMP_ADMIN_NAME="$(doguctl random)"
-  local TMP_ADMIN_RANDOMIZED_STR
-  TMP_ADMIN_RANDOMIZED_STR="$(doguctl random -l 60)"
-  TMP_ADMIN_PASSWORD="${TMP_ADMIN_RANDOMIZED_STR}${TMP_ADMIN_PASSWORD_SUFFIX}"
-
-  # In case we are in restart loop to prevent infinite admin users...
-  remove_last_temporary_admin
-
-  railsConsole "/rails_scripts/create_admin.rb" --username "${TMP_ADMIN_NAME}" --password "${TMP_ADMIN_PASSWORD}" || exit 1
-  doguctl config -e "last_tmp_admin" "${TMP_ADMIN_NAME}"
-}
-
-# Removes the temporary admin created by 'create_temporary_admin' function.
-# Uses etcd key 'last_tmp_admin' to get the name of the last temporary admin.
-# After successfully removing the admin, the key 'last_tmp_admin' is also removed.
-function remove_last_temporary_admin() {
-  # Empty string is not possible with doguctl command
-  local DEFAULT="<empty>"
-  local LAST_TMP_ADMIN
-  LAST_TMP_ADMIN="$(doguctl config -e --default "${DEFAULT}" last_tmp_admin)"
-
-  if [ "${LAST_TMP_ADMIN}" != "${DEFAULT}" ]
-  then
-    echo "Removing last temporary admin..."
-    # shellcheck disable=SC1091
-    railsConsole "/rails_scripts/remove_user.rb" --username "${LAST_TMP_ADMIN}" || exit 1
-    doguctl config --rm last_tmp_admin
-  fi
-}
-
 function default_data_imports_exist() {
   local defaultData="${1}"
   if [ "${defaultData}" != "${EMPTY}" ]; then
@@ -313,7 +317,8 @@ function background_configuration_tasks() {
   fi
 
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "1"
-  create_temporary_admin
+
+  create_or_update_configuration_admin
   start_redmine_in_background
 
   # tasks
@@ -323,7 +328,7 @@ function background_configuration_tasks() {
 
   # cleanup
   stop_redmine_daemon
-  remove_last_temporary_admin
+  sql "update users set status = '3' where login = '${CONFIG_ADMIN_NAME}';" # disable config_admin
   railsConsole "${RAILS_SCRIPTS_DIR}/update_settings.rb" --allow_local_users "${ALLOW_LOCAL_USERS}"
   echo "Finished background configuration tasks"
 }
@@ -342,7 +347,7 @@ function trigger_imports(){
 function wait_for_redmine_to_get_healthy() {
   WAIT_TIMEOUT=${1}
   echo "Waiting up to ${WAIT_TIMEOUT} seconds for Redmine endpoint to get ready..."
-  if ! doguctl wait-for-http -u "${TMP_ADMIN_NAME}" -p "${TMP_ADMIN_PASSWORD}" --timeout "${WAIT_TIMEOUT}" --method GET "http://127.0.0.1:3000/redmine/extended_api/v1/settings"; then
+  if ! doguctl wait-for-http -u "${CONFIG_ADMIN_NAME}" -p "${CONFIG_ADMIN_PASSWORD}" --timeout "${WAIT_TIMEOUT}" --method GET "http://127.0.0.1:3000/redmine/extended_api/v1/settings"; then
     echo "timeout reached while waiting for Redmine endpoint to be available"
     exit 1
   else
@@ -359,6 +364,32 @@ function fetchDatabaseConnection() {
 
 function railsConsole() {
   rails r -e production "$@"
+}
+
+function railsConsoleRetryOnce() {
+  local RETRY_AFTER=${1}
+  local SCRIPT_NAME=${2}
+  local SCRIPT_ARGS=("${@:3}")
+
+  echo "Run rails script ${SCRIPT_NAME}"
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}" &
+
+  echo "Waiting up to ${RETRY_AFTER} seconds for script ${SCRIPT_NAME} to finish."
+  local PID=$!
+  for _ in $(seq 1 "${RETRY_AFTER}"); do
+    if [[ -d /proc/${PID} ]]; then
+      sleep 1
+    else
+      # returns exit code of the background process
+      wait $PID
+      return $?
+    fi
+  done
+
+  echo "Script ${SCRIPT_NAME} did not finish after ${RETRY_AFTER} seconds. Killing it and running it again..."
+  kill -9 ${PID}
+  rails r -e production "${SCRIPT_NAME}" "${SCRIPT_ARGS[@]}"
+  return $?
 }
 
 # make the script only run when executed, not when sourced

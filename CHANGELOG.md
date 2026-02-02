@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.1-3] - 2026-02-02
+### Fixed
+- [#168] use permanent config admin instead of a temporary one. This should reduce
+  the number of emails sent when creating an admin user.
+
 ## [v6.1.1-2] - 2026-01-29
 
 ### Security

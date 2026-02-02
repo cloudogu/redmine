@@ -155,7 +155,7 @@ function runMain() {
 
   create_symlinks
 
-  # tasks that require usage of a temporary admin and redmine daemon
+  # tasks that require usage of a internal config admin and redmine daemon
   background_configuration_tasks
 
   echo "Generate configuration.yml from template"
