@@ -83,9 +83,6 @@ RUN set -eux -o pipefail \
    postgresql16-client \
    imagemagick \
    tzdata \
-   ruby \
-   ruby-bundler \
-   ruby-rdoc \
    tini \
    libffi \
    su-exec \
@@ -94,7 +91,6 @@ RUN set -eux -o pipefail \
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
    build-base \
-   ruby-dev \
    libxslt-dev \
    postgresql-dev \
    sqlite-dev \
@@ -102,6 +98,16 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
+# Redmine 5.1.x needs ruby < 3.3.0. The base image does not contain a suitable version so we use  \
+# the package repository of alpine-3.19 to install ruby 3.2.8
+ && echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/main" > /tmp/old-repos \
+ && echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/community" >> /tmp/old-repos \
+ && apk add --no-cache  --repositories-file=/tmp/old-repos  --virtual /.run-deps \
+    ruby \
+    ruby-bundler \
+    ruby-rdoc \
+    ruby-dev \
+ && rm -f /tmp/old-repos \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
