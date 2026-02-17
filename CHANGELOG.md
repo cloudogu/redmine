@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Security
+- [#183] upgrade base image to fix CVE-2025-61732 and CVE-2025-68121
 
 ## [v6.1.1-3] - 2026-02-02
 ### Fixed
