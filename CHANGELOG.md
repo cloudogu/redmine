@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v5.1.8-6] - 2026-02-17
 ### Security
 - [#181] upgrade to base image 3.19.x to fix CVE-2025-61732 and CVE-2025-68121. 
   This is the latest version of the base-image that contains ruby < 3.3.0. This is 
