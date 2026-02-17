@@ -5,7 +5,7 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
-### Fixed
+### Security
 * Fix of CVE-2025-61732 and CVE-2025-68121 in a library dependency.
 
 ## [v5.1.8-5] - 2026-01-29
