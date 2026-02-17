@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v5.1.8-6] - 2026-02-17
+### Security
+* Fix of CVE-2025-61732 and CVE-2025-68121 in a library dependency.
+
 ## [v5.1.8-5] - 2026-01-29
 ### Fixed
 * Sometimes emails were sent when temporary administrator account were created. This confused 

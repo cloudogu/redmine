@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.1.8-6] - 2026-02-17
+### Security
+- [#181] upgrade to base image 3.19.x to fix CVE-2025-61732 and CVE-2025-68121. 
+  This is the latest version of the base-image that contains ruby < 3.3.0. This is 
+  a requirement for Redmine 5.x.
+
 ## [v5.1.8-5] - 2026-01-29
 ### Fixed
 - [#176] use permanent config admin instead of a temporary one. This should reduce

@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v5.1.8-6] - 2026-02-17
+### Security
+* Behebung von CVE-2025-61732 and CVE-2025-68121 in einer abhängigen Bibliothek. 
+
 ## [v5.1.8-5] - 2026-01-29
 ### Fixed
 * Manchmal wurden E-Mails versendet, wenn temporäre Administratorkonten erstellt wurden. 
