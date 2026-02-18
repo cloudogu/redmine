@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.1.1-4] - 2026-02-18
+### Security
+* Fixed CVE-2025-61732 and CVE-2025-68121
+
 ## [v6.1.1-3] - 2026-02-02
 ### Fixed
 * Sometimes emails were sent when temporary administrator account were created. This confused

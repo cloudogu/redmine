@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.1-4] - 2026-02-18
+### Security
+- [#183] upgrade base image to fix CVE-2025-61732 and CVE-2025-68121
+
 ## [v6.1.1-3] - 2026-02-02
 ### Fixed
 - [#168] use permanent config admin instead of a temporary one. This should reduce

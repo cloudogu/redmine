@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v6.1.1-4] - 2026-02-18
+### Security
+- [#183] Sicherheitslücke CVE-2025-61732 und CVE-2025-68121 geschlossen
+
 ## [v6.1.1-3] - 2026-02-02
 ### Fixed
 * Manchmal wurden E-Mails versendet, wenn temporäre Administratorkonten erstellt wurden.
