@@ -5,6 +5,8 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v6.1.1-5] - 2026-02-24
 ### Fixed
 - [#185] HTTPS-Kommunikation von Redmine zu einem anderen Dogu mit
   selbstsignierten Zertifikaten behoben
