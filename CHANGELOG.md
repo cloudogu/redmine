@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v6.1.1-5] - 2026-02-24
 ### Fixed
 - [#185] fix inter dogu https communication with self sigend certificates
 
