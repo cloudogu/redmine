@@ -176,9 +176,12 @@ function runMain() {
   doguctl state "ready"
   doguctl config --rm "local_state"
 
+  # install ca certificates, to allow communication with other dogus via https
+  create-ca-certificates.sh
+
   # Start redmine
   echo "Starting redmine..."
-  exec su - redmine -c "RAILS_MASTER_KEY=\$(cat ${WORKDIR}/config/credentials/production.key) AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} puma -e ${RAILS_ENV} -p 3000"
+  exec su - redmine -c "RAILS_MASTER_KEY=\$(cat ${WORKDIR}/config/credentials/production.key) AUTO_MANAGED=true RAILS_RELATIVE_URL_ROOT=${RAILS_RELATIVE_URL_ROOT} SSL_CERT_FILE=/etc/ssl/ca-certificates.crt puma -e ${RAILS_ENV} -p 3000"
 }
 
 # make the script only run when executed, not when sourced from bats tests)

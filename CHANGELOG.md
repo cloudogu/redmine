@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.1-5] - 2026-02-24
+### Fixed
+- [#185] fix inter dogu https communication with self sigend certificates
+
 ## [v6.1.1-4] - 2026-02-18
 ### Security
 - [#183] upgrade base image to fix CVE-2025-61732 and CVE-2025-68121

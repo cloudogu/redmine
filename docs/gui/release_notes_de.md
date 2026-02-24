@@ -6,6 +6,11 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v6.1.1-5] - 2026-02-24
+### Fixed
+- [#185] HTTPS-Kommunikation von Redmine zu einem anderen Dogu mit
+  selbstsignierten Zertifikaten behoben
+
 ## [v6.1.1-4] - 2026-02-18
 ### Security
 - [#183] Sicherheitslücke CVE-2025-61732 und CVE-2025-68121 geschlossen

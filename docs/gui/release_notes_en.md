@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.1.1-5] - 2026-02-24
+### Fixed
+- [#185] Fixed inter dogu https communication with self sigend certificates
+
 ## [v6.1.1-4] - 2026-02-18
 ### Security
 * Fixed CVE-2025-61732 and CVE-2025-68121
