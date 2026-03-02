@@ -53,7 +53,7 @@ file:
     exists: true
     filetype: file
     contains:
-      - "config.logger = Logger.new(STDOUT)"
+      - "config.logger = ActiveSupport::TaggedLogging.new(logger)"
       - "config.log_level ="
   /usr/share/webapps/redmine/public/themes/Cloudogu:
     exists: true
