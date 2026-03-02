@@ -28,6 +28,13 @@ com.cloudogu.ces.dogubuildlib.EcoSystem ecoSystem = pipe.ecoSystem
 
 pipe.setBuildProperties()
 pipe.addDefaultStages()
+
+pipe.overrideStage('Checkout') {
+  pipe.checkout_updatemakefiles(pipe.updateSubmodules)
+  ecoSystem.loginBackend('cesmarvin-setup')
+  ecoSystem.setup([additionalDependencies: ['official/postgresql', 'official/usermgt', 'official/cas']])
+}
+
 pipe.overrideStage('Setup') {
   ecoSystem.loginBackend('cesmarvin-setup')
   ecoSystem.setup([additionalDependencies: ['official/postgresql']])
