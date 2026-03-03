@@ -22,12 +22,14 @@ def pipe = new com.cloudogu.sos.pipebuildlib.DoguPipe(this, [
     doBatsTests        : true,
     runIntegrationTests: true,
     cypressImage       : "cypress/included:13.14.2",
-    defaultBranch      : "master"
+    defaultBranch      : "master",
+    additionalDogus     : ['official/postgresql', 'official/usermgt', 'official/cas'],
 ])
 com.cloudogu.ces.dogubuildlib.EcoSystem ecoSystem = pipe.ecoSystem
 
 pipe.setBuildProperties()
 pipe.addDefaultStages()
+
 pipe.overrideStage('Setup') {
   ecoSystem.loginBackend('cesmarvin-setup')
   ecoSystem.setup([additionalDependencies: ['official/postgresql']])
