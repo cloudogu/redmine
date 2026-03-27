@@ -38,8 +38,9 @@ file:
   /usr/share/webapps/redmine/config/environment.rb:
     exists: true
     filetype: file
-    contains: ["ENV['RAILS_RELATIVE_URL_ROOT'] = \"/redmine\""]
-    contains: ["Redmine::Utils::relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']"]
+    contains:
+      - "ENV['RAILS_RELATIVE_URL_ROOT'] = \"/redmine\""
+      - "Redmine::Utils::relative_url_root = ENV['RAILS_RELATIVE_URL_ROOT']"
   /usr/share/webapps/redmine/config/database.yml:
     exists: true
     filetype: file
@@ -51,8 +52,9 @@ file:
   /usr/share/webapps/redmine/config/additional_environment.rb:
     exists: true
     filetype: file
-    contains: ["config.logger = Logger.new(STDOUT)"]
-    contains: ["config.log_level ="]
+    contains:
+      - "config.logger = ActiveSupport::TaggedLogging.new(logger)"
+      - "config.log_level ="
   /usr/share/webapps/redmine/public/themes/Cloudogu:
     exists: true
     filetype: directory

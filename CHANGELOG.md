@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.1-6] - 2026-03-27
+### Changed
+- [#189] Update base-image to v3.23.3-6
+- [#189] Upgrade makefiles to v10.7.2
+### Security
+- [#189] Fixed Vulnerability [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184)
+
 ## [v6.1.1-5] - 2026-02-24
 ### Fixed
 - [#185] fix inter dogu https communication with self sigend certificates

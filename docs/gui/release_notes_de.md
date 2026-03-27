@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v6.1.1-6] - 2026-03-27
+### Security
+- Sicherheitslücke [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184) geschlossen
+
 ## [v6.1.1-5] - 2026-02-24
 ### Fixed
 - [#185] HTTPS-Kommunikation von Redmine zu einem anderen Dogu mit
