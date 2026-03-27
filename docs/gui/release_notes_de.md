@@ -5,6 +5,10 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Changed
+- Das Dogu bietet nun Redmine in Version 6.1.2. Den Redmine changelog finden sie [hier](https://www.redmine.org/projects/redmine/wiki/Changelog_6_1#612-2026-03-16)
+### Security
+- Sicherheitslücke [CVE-2026-22184](https://avd.aquasec.com/nvd/cve-2026-22184) geschlossen
 
 ## [v6.1.1-5] - 2026-02-24
 ### Fixed
