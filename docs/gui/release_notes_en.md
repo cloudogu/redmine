@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v6.1.1-7] - 2026-04-30
 ### Security
 - Fixed Vulnerability [CVE-2026-31789](https://avd.aquasec.com/nvd/cve-2026-31789)
 
