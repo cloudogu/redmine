@@ -31,8 +31,8 @@ ENV USER=redmine \
     CAS_PLUGIN_TARGZ_SHA256=0a0234fca4224aa3da47e60fb20f633a6a11f328dfdac11c33548bfbd6dd1baf \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
-    CLOUDOGU_THEME_VERSION=2.15.0-2 \
-    THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
+    CLOUDOGU_THEME_VERSION=1.6.7 \
+    THEME_TARGZ_SHA256=a79125fee023be8a552ea4479b473457d99f41408939e4dba7cf74fdc8ad92d5 \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
     CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.10  \
@@ -58,10 +58,10 @@ RUN set -eux -o pipefail \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
  ## Install Cloudogu Theme
  && mkdir -p "${CLOUDOGU_THEME_PATH}" \
- && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
- && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
- && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${CLOUDOGU_THEME_PATH}" \
- && rm v${CLOUDOGU_THEME_VERSION}.tar.gz \
+ && wget -O ${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/gagnieray/opale/archive/refs/tags/${CLOUDOGU_THEME_VERSION}.tar.gz" \
+ && echo "${THEME_TARGZ_SHA256} *${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz ${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${CLOUDOGU_THEME_PATH}" \
+ && rm ${CLOUDOGU_THEME_VERSION}.tar.gz \
  ## Install Session-Store-Plugin \
  && mkdir -p "${ACTIVERECORD_SESSION_STORE_PLUGIN_PATH}" \
  && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \

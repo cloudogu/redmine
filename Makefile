@@ -22,7 +22,7 @@ sums: ## Print out all versions
 	@echo "Cas Plugin"
 	@make --no-print-directory sha-sum SHA_SUM_REPOSITORY=redmine_cas SHA_SUM_VERSION=${CAS_PLUGIN_VERSION}
 	@echo "Cloudogu Theme"
-	@make --no-print-directory sha-sum SHA_SUM_URL="https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz"
+	@make --no-print-directory sha-sum SHA_SUM_URL="https://github.com/gagnieray/opale/archive/refs/tags/${CLOUDOGU_THEME_VERSION}.tar.gz"
 	@echo "Sessionstore Plugin"
 	@make --no-print-directory sha-sum SHA_SUM_REPOSITORY=redmine_activerecord_session_store SHA_SUM_VERSION=${SESSION_STORE_VERSION}
 	@echo "Rest API Plugin"
