@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v6.1.1-9] - 2026-06-19
+### Changed
+- Updated PurpleMine2 version.
+
 ## [v6.1.1-8] - 2026-05-06
 ### Security
 - Fixed Vulnerability [CVE-2026-31789](https://avd.aquasec.com/nvd/cve-2026-31789)
