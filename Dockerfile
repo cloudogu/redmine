@@ -31,8 +31,8 @@ ENV USER=redmine \
     CAS_PLUGIN_TARGZ_SHA256=0a0234fca4224aa3da47e60fb20f633a6a11f328dfdac11c33548bfbd6dd1baf \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
-    CLOUDOGU_THEME_VERSION=2.15.0-2 \
-    THEME_TARGZ_SHA256=bf3f96cecb8b030f0207fda60d69ac957f14327403819e1da4592ed6bbe99057 \
+    CLOUDOGU_THEME_VERSION=2.15.0-3 \
+    THEME_TARGZ_SHA256=6812f765328f2b6ca37238f4b7bfe37182a76528a93cae16f92d8fed938a6e18 \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
     CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.10  \
