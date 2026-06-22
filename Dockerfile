@@ -32,7 +32,7 @@ ENV USER=redmine \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
     CLOUDOGU_THEME_VERSION=1.6.7 \
-    THEME_TARGZ_SHA256=a79125fee023be8a552ea4479b473457d99f41408939e4dba7cf74fdc8ad92d5 \
+    THEME_TARGZ_SHA256=00342490dce72b85cea442d29e62ede57a85c2b2c345cf9bfd1cf39600464c91 \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
     CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.10  \
@@ -58,7 +58,7 @@ RUN set -eux -o pipefail \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
  ## Install Cloudogu Theme
  && mkdir -p "${CLOUDOGU_THEME_PATH}" \
- && wget -O ${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/gagnieray/opale/archive/refs/tags/${CLOUDOGU_THEME_VERSION}.tar.gz" \
+ && wget -O ${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/opale/archive/refs/tags/${CLOUDOGU_THEME_VERSION}.tar.gz" \
  && echo "${THEME_TARGZ_SHA256} *${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
  && tar xfz ${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${CLOUDOGU_THEME_PATH}" \
  && rm ${CLOUDOGU_THEME_VERSION}.tar.gz \
