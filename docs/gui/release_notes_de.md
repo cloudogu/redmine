@@ -5,6 +5,8 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Changed
+- Fehlerhafte Redmine-Styles behoben
 
 ## [v6.1.1-9] - 2026-06-19
 ### Changed
