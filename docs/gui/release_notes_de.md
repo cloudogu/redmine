@@ -6,7 +6,7 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 ### Changed
-- Fehlerhafte Redmine-Styles behoben
+- Redmine-Theme PurpleMine2 durch opale ersetzt
 
 ## [v6.1.1-9] - 2026-06-19
 ### Changed

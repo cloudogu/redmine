@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- [#196] Replace PurpleMine2 theme with opale
+- [#196] Replace theme PurpleMine2 with opale
 - [#196] Update Cloudogu patches plugin to v0.0.11
 
 ## [v6.1.1-9] - 2026-06-19
