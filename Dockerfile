@@ -31,12 +31,12 @@ ENV USER=redmine \
     CAS_PLUGIN_TARGZ_SHA256=0a0234fca4224aa3da47e60fb20f633a6a11f328dfdac11c33548bfbd6dd1baf \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
-    CLOUDOGU_THEME_VERSION=2.15.0-3 \
-    THEME_TARGZ_SHA256=6812f765328f2b6ca37238f4b7bfe37182a76528a93cae16f92d8fed938a6e18 \
+    CLOUDOGU_THEME_VERSION=1.6.7 \
+    THEME_TARGZ_SHA256=f3eca6dbb71eeb82d080fb77fc0fa96d0f0ae576158fb13b6406f12996b34865 \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
-    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.10  \
-    CLOUDOGU_PATCHES_PLUGIN_SHA256=1d7f8c12d30c4fca8fdda3a4eed00f0c8809fd20e5f4a107ecb76652f54eb2a7 \
+    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.11  \
+    CLOUDOGU_PATCHES_PLUGIN_SHA256=3878461d7431314ee02925e883129461278a94b95031b85ce684e635dc0a5d51 \
     CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches"
 
 COPY resources/ /
@@ -58,10 +58,10 @@ RUN set -eux -o pipefail \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
  ## Install Cloudogu Theme
  && mkdir -p "${CLOUDOGU_THEME_PATH}" \
- && wget -O v${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/PurpleMine2/releases/download/v${CLOUDOGU_THEME_VERSION}/CloudoguRedmineTheme-${CLOUDOGU_THEME_VERSION}.tar.gz" \
- && echo "${THEME_TARGZ_SHA256} *v${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
- && tar xfz v${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${CLOUDOGU_THEME_PATH}" \
- && rm v${CLOUDOGU_THEME_VERSION}.tar.gz \
+ && wget -O ${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/opale/archive/refs/tags/${CLOUDOGU_THEME_VERSION}.tar.gz" \
+ && echo "${THEME_TARGZ_SHA256} *${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz ${CLOUDOGU_THEME_VERSION}.tar.gz --strip-components=1 -C "${CLOUDOGU_THEME_PATH}" \
+ && rm ${CLOUDOGU_THEME_VERSION}.tar.gz \
  ## Install Session-Store-Plugin \
  && mkdir -p "${ACTIVERECORD_SESSION_STORE_PLUGIN_PATH}" \
  && wget -O v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_activerecord_session_store/archive/v${ACTIVERECORD_SESSION_STORE_PLUGIN_VERSION}.tar.gz" \

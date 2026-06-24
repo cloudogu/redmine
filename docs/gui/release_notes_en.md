@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Changed
+- Replace Redmine theme PurpleMine2 with opale
 
 ## [v6.1.1-9] - 2026-06-19
 ### Changed
