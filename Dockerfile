@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.23.4-1
 
 LABEL NAME="official/redmine" \
-   VERSION="6.1.1-10" \
+   VERSION="6.1.3-1" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -15,8 +15,8 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=6.1.1 \
-    REDMINE_TARGZ_SHA256=1f2e6dd0697062fc733701f88b5041dc0dfc6b536255eb7902f21fb0970e603e \
+    REDMINE_VERSION=6.1.3 \
+    REDMINE_TARGZ_SHA256=61db3008c7fd18a3afc559ed656fd38fdf8df8220ac69598b319095183190b7a \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.2.0 \
@@ -31,8 +31,8 @@ ENV USER=redmine \
     CAS_PLUGIN_TARGZ_SHA256=0a0234fca4224aa3da47e60fb20f633a6a11f328dfdac11c33548bfbd6dd1baf \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
-    CLOUDOGU_THEME_VERSION=1.6.7 \
-    THEME_TARGZ_SHA256=f3eca6dbb71eeb82d080fb77fc0fa96d0f0ae576158fb13b6406f12996b34865 \
+    CLOUDOGU_THEME_VERSION=1.6.7-1 \
+    THEME_TARGZ_SHA256=ae998b904ea8b30108c8048fc9939338cea515cce679e60109b89c093a0bfce4 \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
     CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.11  \

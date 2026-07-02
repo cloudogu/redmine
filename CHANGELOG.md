@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.3-1] - 2026-07-02
+### Changed
+- [#200] Update Redmine to v6.1.3
+- [#200] Smaller styling adjustments
+
 ## [v6.1.1-10] - 2026-06-24
 ### Changed
 - [#196] Replace theme PurpleMine2 with opale
