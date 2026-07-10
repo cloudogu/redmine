@@ -58,13 +58,19 @@ package:
     installed: true
   imagemagick:
     installed: true
+  ghostscript:
+    installed: true
   libffi:
     installed: true
   postgresql16-client:
     installed: true
-  ruby:
+  subversion:
     installed: true
-  ruby-bundler:
+  mercurial:
+    installed: true
+  cvs:
+    installed: true
+  breezy:
     installed: true
   su-exec:
     installed: true

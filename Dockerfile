@@ -1,7 +1,7 @@
-FROM registry.cloudogu.com/official/base:3.19.4-4
+FROM registry.cloudogu.com/official/base:3.24.1-1
 
 LABEL NAME="official/redmine" \
-   VERSION="5.1.8-6" \
+   VERSION="5.1.13-0" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -11,12 +11,18 @@ ENV USER=redmine \
     RAILS_ENV=production \
     RAILS_RELATIVE_URL_ROOT=/redmine \
     STARTUP_DIR=/ \
+    # Ruby version
+    RUBY_VERSION=3.2.11 \
+    RUBY_TARGZ_SHA256=b3eeabd6636f334531db3ffdc3229eb05e524740e6c84fdc043720573cf2f8b2 \
+    # ruby-install version
+    RUBY_INSTALL_VERSION=0.10.2 \
+    RUBY_INSTALL_TARGZ_SHA256=65836158b8026992b2e96ed344f3d888112b2b105d0166ecb08ba3b4a0d91bf6 \
     # Rubycas-client version
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=5.1.8 \
-    REDMINE_TARGZ_SHA256=50a30cd16c43d0ae64f256866c8cef4b0e9dd818d6feef489fa24507fbde3a7b \
+    REDMINE_VERSION=5.1.13 \
+    REDMINE_TARGZ_SHA256=1a3d1039e474e787cebf223da148bf28373e4bca262197a53cfa6139640ebe5f \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.1.0 \
@@ -82,19 +88,26 @@ RUN set -eux -o pipefail \
  && apk --no-cache add --virtual /.run-deps \
    postgresql16-client \
    imagemagick \
+   ghostscript \
    tzdata \
-   ruby \
-   ruby-bundler \
-   ruby-rdoc \
+   openssl \
+   yaml \
+   readline \
+   zlib \
+   gmp \
+   ncurses-libs \
    tini \
    libffi \
    su-exec \
    git \
+   subversion \
+   mercurial \
+   cvs \
+   breezy \
    curl \
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
    build-base \
-   ruby-dev \
    libxslt-dev \
    postgresql-dev \
    sqlite-dev \
@@ -102,6 +115,25 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
+   openssl-dev \
+   yaml-dev \
+   readline-dev \
+   zlib-dev \
+   gmp-dev \
+   ncurses-dev \
+   bzip2 \
+   xz \
+ # install Ruby
+ && wget -O ruby-install-${RUBY_INSTALL_VERSION}.tar.gz "https://github.com/postmodern/ruby-install/releases/download/v${RUBY_INSTALL_VERSION}/ruby-install-${RUBY_INSTALL_VERSION}.tar.gz" \
+ && echo "${RUBY_INSTALL_TARGZ_SHA256} *ruby-install-${RUBY_INSTALL_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz ruby-install-${RUBY_INSTALL_VERSION}.tar.gz \
+ && make -C ruby-install-${RUBY_INSTALL_VERSION} install \
+ && rm -rf ruby-install-${RUBY_INSTALL_VERSION} ruby-install-${RUBY_INSTALL_VERSION}.tar.gz \
+ && ruby-install --system --cleanup --no-install-deps \
+   --url "https://cache.ruby-lang.org/pub/ruby/3.2/ruby-${RUBY_VERSION}.tar.gz" \
+   --sha256 "${RUBY_TARGZ_SHA256}" \
+   ruby "${RUBY_VERSION}" \
+   -- --disable-install-doc --enable-shared \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
@@ -135,6 +167,7 @@ RUN set -eux -o pipefail \
  && bundle config set --local without 'development test' \
  && bundle install \
  && gem install puma \
+ && ln -sf /usr/local/bin/puma /usr/bin/puma \
  # Do not remove the dependency on bigdecimal. Many tools rely on bigdecimal, and it may not be possible to install it in a running dogu
  && gem install bigdecimal -v 3.1.6 \
  && bundle add bigdecimal --version=3.1.6 \
@@ -143,7 +176,6 @@ RUN set -eux -o pipefail \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \
  && rm -rf /var/cache/apk/* \
- && apk add ruby-irb \
  && chown "${USER}":"${USER}" "${WORKDIR}/Gemfile.lock"
 
 WORKDIR ${WORKDIR}
