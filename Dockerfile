@@ -11,6 +11,12 @@ ENV USER=redmine \
     RAILS_ENV=production \
     RAILS_RELATIVE_URL_ROOT=/redmine \
     STARTUP_DIR=/ \
+    # Ruby version
+    RUBY_VERSION=3.2.11 \
+    RUBY_TARGZ_SHA256=b3eeabd6636f334531db3ffdc3229eb05e524740e6c84fdc043720573cf2f8b2 \
+    # ruby-install version
+    RUBY_INSTALL_VERSION=0.10.2 \
+    RUBY_INSTALL_TARGZ_SHA256=65836158b8026992b2e96ed344f3d888112b2b105d0166ecb08ba3b4a0d91bf6 \
     # Rubycas-client version
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
@@ -82,19 +88,26 @@ RUN set -eux -o pipefail \
  && apk --no-cache add --virtual /.run-deps \
    postgresql16-client \
    imagemagick \
+   ghostscript \
    tzdata \
-   ruby \
-   ruby-bundler \
-   ruby-rdoc \
+   openssl \
+   yaml \
+   readline \
+   zlib \
+   gmp \
+   ncurses-libs \
    tini \
    libffi \
    su-exec \
    git \
+   subversion \
+   mercurial \
+   cvs \
+   breezy \
    curl \
  # install build dependencies
  && apk --no-cache add --virtual /.build-deps \
    build-base \
-   ruby-dev \
    libxslt-dev \
    postgresql-dev \
    sqlite-dev \
@@ -102,6 +115,25 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
+   openssl-dev \
+   yaml-dev \
+   readline-dev \
+   zlib-dev \
+   gmp-dev \
+   ncurses-dev \
+   bzip2 \
+   xz \
+ # install Ruby
+ && wget -O ruby-install-${RUBY_INSTALL_VERSION}.tar.gz "https://github.com/postmodern/ruby-install/releases/download/v${RUBY_INSTALL_VERSION}/ruby-install-${RUBY_INSTALL_VERSION}.tar.gz" \
+ && echo "${RUBY_INSTALL_TARGZ_SHA256} *ruby-install-${RUBY_INSTALL_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz ruby-install-${RUBY_INSTALL_VERSION}.tar.gz \
+ && make -C ruby-install-${RUBY_INSTALL_VERSION} install \
+ && rm -rf ruby-install-${RUBY_INSTALL_VERSION} ruby-install-${RUBY_INSTALL_VERSION}.tar.gz \
+ && ruby-install --system --cleanup --no-install-deps \
+   --url "https://cache.ruby-lang.org/pub/ruby/3.2/ruby-${RUBY_VERSION}.tar.gz" \
+   --sha256 "${RUBY_TARGZ_SHA256}" \
+   ruby "${RUBY_VERSION}" \
+   -- --disable-install-doc --enable-shared \
  # update ruby gems
  && echo 'gem: --no-document' > /etc/gemrc \
  && 2>/dev/null 1>&2 gem update --system --quiet \
