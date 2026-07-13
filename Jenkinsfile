@@ -132,7 +132,7 @@ node('sos-testing-preflight') {
 
                     stage('Setup') {
                         ecoSystem.loginBackend('cesmarvin-setup')
-                        ecoSystem.setup([additionalDependencies: ['official/postgresql', 'official/usermgt', 'official/cas']])
+                        ecoSystem.setup([additionalDependencies: ['official/postgresql']])
                     }
 
                     stage('Wait for dependencies') {
@@ -242,7 +242,7 @@ node('sos-testing-preflight') {
                         timeout(time: 70, unit: 'MINUTES') {
                             mn.setup([
                                     clustername    : params.ClusterName,
-                                    additionalDogus: ['official/postgresql', 'official/usermgt', 'official/cas'],
+                                    additionalDogus: ['official/postgresql'],
                                     nodeCount      : '1',
                             ])
                         }
