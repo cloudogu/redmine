@@ -3,7 +3,7 @@
         // renovate: datasource=github-tags depName=cloudogu/ces-build-lib
         'github.com/cloudogu/ces-build-lib@5.5.0',
         // DISABLED renovate: datasource=github-tags depName=cloudogu/dogu-build-lib
-        'github.com/cloudogu/dogu-build-lib@fix/vagrant-race',
+        'github.com/cloudogu/dogu-build-lib@test/florian-changes-for-worker-update',
 ])
 import com.cloudogu.ces.cesbuildlib.*
 import com.cloudogu.ces.dogubuildlib.*
@@ -263,14 +263,6 @@ node('sos-testing-preflight') {
                     }
 
                     stage('MN-Integration Tests') {
-                        // TEMPORARY: Classic's EcoSystem.updateCypressConfiguration() writes
-                        // integrationTests/cypress.env.json into this same shared workspace, and
-                        // cypress.env.json outranks cypress.config.js's env values - so it can
-                        // silently override MultiNodeEcoSystem's own AdminGroup patch (e.g. to
-                        // "CesAdministrators" instead of "cesAdmin"). Remove it before running so
-                        // MultiNode's own config wins. Exploratory fix - the real fix belongs in
-                        // dogu-build-lib's MultiNodeEcoSystem.runCypressIntegrationTests().
-                        sh "rm -f integrationTests/cypress.env.json"
                         mn.runCypressIntegrationTests([
                                 cypressImage     : 'cypress/included:13.14.2',
                                 enableVideo      : params.EnableVideoRecording,
