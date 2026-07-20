@@ -1,7 +1,7 @@
 #!groovy
 @Library([
         // DISABLED renovate: datasource=github-tags depName=cloudogu/ces-build-lib
-        'github.com/cloudogu/ces-build-lib@feature/replace-snap',
+        'github.com/cloudogu/ces-build-lib@feature/tool-install',
         // DISABLED renovate: datasource=github-tags depName=cloudogu/dogu-build-lib
         'github.com/cloudogu/dogu-build-lib@test/florian-changes-for-worker-update',
 ])
