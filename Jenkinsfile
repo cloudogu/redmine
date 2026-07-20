@@ -282,6 +282,21 @@ spec:
   version: ${doguJson.Version}
 """
                         k3d.installDogu(doguName, doguImage, doguCrPath)
+
+                        // installDogu() patches the Deployment's container image to the pullable
+                        // k3d-<registry>:<port> reference, but the k8s-dogu-operator reconciles the
+                        // Deployment's image straight back to the dogu descriptor's
+                        // k3d-<registry>.local:5000 reference shortly after - that reference is only
+                        // resolvable by CoreDNS (which installDogu()'s CoreDNS patch covers for pods,
+                        // e.g. the operator's own crane-based image lookup), not by the k3s node's own
+                        // containerd, which is what actually pulls the image. The imperative patch
+                        // loses that race every time, leaving the pod stuck in ImagePullBackOff.
+                        // Fix: make the node itself resolve the same .local hostname (mirroring the
+                        // CoreDNS patch), so the operator's own (repeatedly reconciled) image
+                        // reference is pullable natively and we stop fighting its reconcile loop.
+                        String registryHost = "k3d-${k3d.getRegistryName()}"
+                        String registryIp = sh(returnStdout: true, script: "docker inspect -f '{{ (index .NetworkSettings.Networks \"${registryHost}\").IPAddress }}' ${registryHost}").trim()
+                        sh "docker exec ${registryHost}-server-0 sh -c \"echo '${registryIp} ${registryHost}.local' >> /etc/hosts\""
                     }
 
                     stage('MN-Wait for Dogu') {
