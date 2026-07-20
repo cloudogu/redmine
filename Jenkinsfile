@@ -252,6 +252,8 @@ node('sos-testing-preflight') {
                     // teardown, see MN-Clean below.
                     stage('MN-Setup') {
                         timeout(time: 70, unit: 'MINUTES') {
+                            k3d.installKubectlManually()
+                            k3d.installHelmManually()
                             k3d.startK3d()
                             k3d.setup([
                                     adminUsername         : adminUsername,
