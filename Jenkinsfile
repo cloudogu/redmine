@@ -307,6 +307,31 @@ server = "http://${registryIp}:5000"
 [host."http://${registryIp}:5000"]
   capabilities = ["pull", "resolve"]
 EOF'"""
+
+                        // redmine's own dogu-config (the "redmine-config" ConfigMap installDogu()'s
+                        // Dogu CR apply just created) has no container_config overrides, so the
+                        // k8s-dogu-operator falls back to a generic low default (100m CPU / 261Mi
+                        // memory observed on a real run) - too tight for a Rails/Puma boot with the
+                        // CAS client and ImageMagick bindings, causing redmine's own
+                        // wait_for_redmine_to_get_healthy() startup check to time out and exit 1
+                        // before Puma ever answers (confirmed via kubectl logs --previous on a real
+                        // run; other dogus like postgresql/cas ship their own ~2.4Gi memory default in
+                        // their dogu.json, redmine's is unset). dogu.json documents cpu_core_limit as
+                        // "only applicable to the Multinode-EcoSystem", i.e. this is the intended,
+                        // documented tuning knob for exactly this situation. Patch it in before waiting
+                        // for the rollout, matching the config.yaml block-scalar format already used by
+                        // the operator (confirmed via the collected redmine-config ConfigMap).
+                        String configPatchPath = "target/${doguName}-config-patch.yaml"
+                        writeFile file: configPatchPath, text: """
+data:
+  config.yaml: |
+    container_config:
+      cpu_core_request: "1.0"
+      cpu_core_limit: "2.0"
+      memory_request: "1Gi"
+      memory_limit: "2Gi"
+"""
+                        k3d.kubectl("patch configmap ${doguName}-config --type merge --patch-file ${configPatchPath}")
                     }
 
                     stage('MN-Wait for Dogu') {
