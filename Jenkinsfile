@@ -307,31 +307,6 @@ server = "http://${registryIp}:5000"
 [host."http://${registryIp}:5000"]
   capabilities = ["pull", "resolve"]
 EOF'"""
-
-                        // redmine's own dogu-config (the "redmine-config" ConfigMap installDogu()'s
-                        // Dogu CR apply just created) has no container_config overrides, so the
-                        // k8s-dogu-operator falls back to a generic low default (100m CPU / 261Mi
-                        // memory observed on a real run) - too tight for a Rails/Puma boot with the
-                        // CAS client and ImageMagick bindings, causing redmine's own
-                        // wait_for_redmine_to_get_healthy() startup check to time out and exit 1
-                        // before Puma ever answers (confirmed via kubectl logs --previous on a real
-                        // run; other dogus like postgresql/cas ship their own ~2.4Gi memory default in
-                        // their dogu.json, redmine's is unset). dogu.json documents cpu_core_limit as
-                        // "only applicable to the Multinode-EcoSystem", i.e. this is the intended,
-                        // documented tuning knob for exactly this situation. Patch it in before waiting
-                        // for the rollout, matching the config.yaml block-scalar format already used by
-                        // the operator (confirmed via the collected redmine-config ConfigMap).
-                        String configPatchPath = "target/${doguName}-config-patch.yaml"
-                        writeFile file: configPatchPath, text: """
-data:
-  config.yaml: |
-    container_config:
-      cpu_core_request: "1.0"
-      cpu_core_limit: "2.0"
-      memory_request: "1Gi"
-      memory_limit: "2Gi"
-"""
-                        k3d.kubectl("patch configmap ${doguName}-config --type merge --patch-file ${configPatchPath}")
                     }
 
                     stage('MN-Wait for Dogu') {
@@ -357,51 +332,6 @@ data:
                                         echo k3d.kubectl("logs ${podName} --previous", true)
                                     } catch (Exception noPreviousLogs) {
                                         echo "No previous container log for ${podName}: ${noPreviousLogs}"
-                                    }
-                                    // Builds #29-31 show redmine's own startup script exiting after its
-                                    // wait_for_redmine_to_get_healthy() check times out against
-                                    // 127.0.0.1:3000 - resources aren't the cause (build #31 still failed
-                                    // identically with 2 CPU/2Gi). Puma's own stdout is redirected to
-                                    // /dev/null by that script (resources/util.sh:
-                                    // start_redmine_in_background), so there is no log to read even
-                                    // though Rails itself logs to STDOUT - the only way to see what's
-                                    // actually happening is to probe the live container directly, if it
-                                    // still happens to be running.
-                                    try {
-                                        echo k3d.kubectl("exec ${podName} -- ps aux", true)
-                                    } catch (Exception noExec) {
-                                        echo "Failed to exec into ${podName} for ps: ${noExec}"
-                                    }
-                                    try {
-                                        // curl -v writes its connection-level diagnostics to stderr;
-                                        // redirect into stdout inside the exec'd shell so
-                                        // returnStdout actually captures it.
-                                        echo k3d.kubectl("exec ${podName} -- sh -c 'curl -v http://127.0.0.1:3000/redmine/extended_api/v1/settings 2>&1'", true)
-                                    } catch (Exception noCurl) {
-                                        echo "Failed to curl redmine's own healthcheck endpoint in ${podName}: ${noCurl}"
-                                    }
-                                    try {
-                                        // The unauthenticated curl above only proves Basic Auth is
-                                        // enforced (expected) - it says nothing about whether
-                                        // doguctl wait-for-http's own -u/-p credentials (visible but
-                                        // possibly truncated by ps aux's column width) actually work.
-                                        // Read the exact, untruncated args from /proc/<pid>/cmdline and
-                                        // replay the same authenticated request to check for real.
-                                        String probeScript = '''
-PID=$(ps aux | grep "doguctl wait-for-http" | grep -v grep | awk "{print \\$1}")
-if [ -z "$PID" ]; then
-  echo "No running doguctl wait-for-http process found"
-  exit 0
-fi
-tr "\\0" "\\n" < /proc/$PID/cmdline > /tmp/cmdline_args
-AUTH_USER=$(awk "/^-u\\$/{getline; print; exit}" /tmp/cmdline_args)
-AUTH_PASS=$(awk "/^-p\\$/{getline; print; exit}" /tmp/cmdline_args)
-echo "doguctl is using user=\\"${AUTH_USER}\\" password_length=${#AUTH_PASS}"
-curl -s -o /dev/null -w "Authenticated request result: HTTP %{http_code}\\n" -u "${AUTH_USER}:${AUTH_PASS}" http://127.0.0.1:3000/redmine/extended_api/v1/settings
-'''
-                                        echo k3d.kubectl("exec ${podName} -- sh -c '${probeScript}'", true)
-                                    } catch (Exception noAuthProbe) {
-                                        echo "Failed to replay doguctl's authenticated request in ${podName}: ${noAuthProbe}"
                                     }
                                 }
                                 echo k3d.kubectl("get events --sort-by=.lastTimestamp", true)
