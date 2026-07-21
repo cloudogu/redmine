@@ -358,6 +358,28 @@ data:
                                     } catch (Exception noPreviousLogs) {
                                         echo "No previous container log for ${podName}: ${noPreviousLogs}"
                                     }
+                                    // Builds #29-31 show redmine's own startup script exiting after its
+                                    // wait_for_redmine_to_get_healthy() check times out against
+                                    // 127.0.0.1:3000 - resources aren't the cause (build #31 still failed
+                                    // identically with 2 CPU/2Gi). Puma's own stdout is redirected to
+                                    // /dev/null by that script (resources/util.sh:
+                                    // start_redmine_in_background), so there is no log to read even
+                                    // though Rails itself logs to STDOUT - the only way to see what's
+                                    // actually happening is to probe the live container directly, if it
+                                    // still happens to be running.
+                                    try {
+                                        echo k3d.kubectl("exec ${podName} -- ps aux", true)
+                                    } catch (Exception noExec) {
+                                        echo "Failed to exec into ${podName} for ps: ${noExec}"
+                                    }
+                                    try {
+                                        // curl -v writes its connection-level diagnostics to stderr;
+                                        // redirect into stdout inside the exec'd shell so
+                                        // returnStdout actually captures it.
+                                        echo k3d.kubectl("exec ${podName} -- sh -c 'curl -v http://127.0.0.1:3000/redmine/extended_api/v1/settings 2>&1'", true)
+                                    } catch (Exception noCurl) {
+                                        echo "Failed to curl redmine's own healthcheck endpoint in ${podName}: ${noCurl}"
+                                    }
                                 }
                                 echo k3d.kubectl("get events --sort-by=.lastTimestamp", true)
                             } catch (Exception diagnosticFailure) {
