@@ -300,7 +300,27 @@ spec:
                     }
 
                     stage('MN-Wait for Dogu') {
-                        k3d.waitForDeploymentRollout(doguName, 300, 5)
+                        try {
+                            k3d.waitForDeploymentRollout(doguName, 300, 5)
+                        } catch (Exception e) {
+                            // Diagnostics only, no behavior change: collectAndArchiveLogs() (used in
+                            // MN-Clean) captures "kubectl describe -l app=ces", which drops the Events
+                            // section for multi-match label-selector describes - so past failures never
+                            // showed the actual ImagePullBackOff/CrashLoop reason, only the end state.
+                            // Dump a single-resource describe (which does include Events) plus recent
+                            // cluster events to the console before re-throwing.
+                            try {
+                                String podName = k3d.kubectl("get pod --template '{{range .items}}{{.metadata.name}}{{\"\\n\"}}{{end}}'", true)
+                                        .trim().split("\n").find { it.contains(doguName) }
+                                if (podName) {
+                                    echo k3d.kubectl("describe pod ${podName}", true)
+                                }
+                                echo k3d.kubectl("get events --sort-by=.lastTimestamp", true)
+                            } catch (Exception diagnosticFailure) {
+                                echo "Failed to collect diagnostics: ${diagnosticFailure}"
+                            }
+                            throw e
+                        }
                     }
 
                     stage('MN-Verify') {
