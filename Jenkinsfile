@@ -324,6 +324,15 @@ EOF'"""
                                         .trim().split("\n").find { it.contains(doguName) }
                                 if (podName) {
                                     echo k3d.kubectl("describe pod ${podName}", true)
+                                    // kubectl logs without --previous only shows the currently running
+                                    // attempt - if the container already crashed once (or twice, as seen
+                                    // in build #29: Exit Code 1, Restart Count 2), the log of the actual
+                                    // failed attempt is otherwise never captured.
+                                    try {
+                                        echo k3d.kubectl("logs ${podName} --previous", true)
+                                    } catch (Exception noPreviousLogs) {
+                                        echo "No previous container log for ${podName}: ${noPreviousLogs}"
+                                    }
                                 }
                                 echo k3d.kubectl("get events --sort-by=.lastTimestamp", true)
                             } catch (Exception diagnosticFailure) {
