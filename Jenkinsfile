@@ -380,6 +380,29 @@ data:
                                     } catch (Exception noCurl) {
                                         echo "Failed to curl redmine's own healthcheck endpoint in ${podName}: ${noCurl}"
                                     }
+                                    try {
+                                        // The unauthenticated curl above only proves Basic Auth is
+                                        // enforced (expected) - it says nothing about whether
+                                        // doguctl wait-for-http's own -u/-p credentials (visible but
+                                        // possibly truncated by ps aux's column width) actually work.
+                                        // Read the exact, untruncated args from /proc/<pid>/cmdline and
+                                        // replay the same authenticated request to check for real.
+                                        String probeScript = '''
+PID=$(ps aux | grep "doguctl wait-for-http" | grep -v grep | awk "{print \\$1}")
+if [ -z "$PID" ]; then
+  echo "No running doguctl wait-for-http process found"
+  exit 0
+fi
+tr "\\0" "\\n" < /proc/$PID/cmdline > /tmp/cmdline_args
+AUTH_USER=$(awk "/^-u\\$/{getline; print; exit}" /tmp/cmdline_args)
+AUTH_PASS=$(awk "/^-p\\$/{getline; print; exit}" /tmp/cmdline_args)
+echo "doguctl is using user=\\"${AUTH_USER}\\" password_length=${#AUTH_PASS}"
+curl -s -o /dev/null -w "Authenticated request result: HTTP %{http_code}\\n" -u "${AUTH_USER}:${AUTH_PASS}" http://127.0.0.1:3000/redmine/extended_api/v1/settings
+'''
+                                        echo k3d.kubectl("exec ${podName} -- sh -c '${probeScript}'", true)
+                                    } catch (Exception noAuthProbe) {
+                                        echo "Failed to replay doguctl's authenticated request in ${podName}: ${noAuthProbe}"
+                                    }
                                 }
                                 echo k3d.kubectl("get events --sort-by=.lastTimestamp", true)
                             } catch (Exception diagnosticFailure) {
