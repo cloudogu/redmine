@@ -286,17 +286,27 @@ spec:
                         // installDogu() patches the Deployment's container image to the pullable
                         // k3d-<registry>:<port> reference, but the k8s-dogu-operator reconciles the
                         // Deployment's image straight back to the dogu descriptor's
-                        // k3d-<registry>.local:5000 reference shortly after - that reference is only
-                        // resolvable by CoreDNS (which installDogu()'s CoreDNS patch covers for pods,
-                        // e.g. the operator's own crane-based image lookup), not by the k3s node's own
-                        // containerd, which is what actually pulls the image. The imperative patch
-                        // loses that race every time, leaving the pod stuck in ImagePullBackOff.
-                        // Fix: make the node itself resolve the same .local hostname (mirroring the
-                        // CoreDNS patch), so the operator's own (repeatedly reconciled) image
-                        // reference is pullable natively and we stop fighting its reconcile loop.
+                        // k3d-<registry>.local:5000 reference shortly after - and that reference has
+                        // no containerd registry config on the node at all (k3d's --registry-use only
+                        // configures the k3d-<registry>:<port> host, not the .local:5000 variant), so
+                        // containerd defaults to HTTPS and fails with "server gave HTTP response to
+                        // HTTPS client" (confirmed via kubectl describe pod on a real run, and
+                        // reproduced/verified locally with a throwaway k3d cluster). The imperative
+                        // patch loses that race every time, leaving the pod stuck in ImagePullBackOff.
+                        // Fix: give the node a containerd hosts.toml for the .local:5000 host too,
+                        // mirroring the one k3d already generates for k3d-<registry>:<port>, pointing
+                        // at the same registry via plain HTTP. containerd's config_path mechanism
+                        // picks this up live, no k3s/containerd restart needed (verified locally).
                         String registryHost = "k3d-${k3d.getRegistryName()}"
                         String registryIp = sh(returnStdout: true, script: "docker inspect -f '{{ (index .NetworkSettings.Networks \"${registryHost}\").IPAddress }}' ${registryHost}").trim()
-                        sh "docker exec ${registryHost}-server-0 sh -c \"echo '${registryIp} ${registryHost}.local' >> /etc/hosts\""
+                        String certsDir = "/var/lib/rancher/k3s/agent/etc/containerd/certs.d/${registryHost}.local:5000"
+                        sh "docker exec ${registryHost}-server-0 mkdir -p '${certsDir}'"
+                        sh """docker exec ${registryHost}-server-0 sh -c 'cat > "${certsDir}/hosts.toml" <<EOF
+server = "http://${registryIp}:5000"
+
+[host."http://${registryIp}:5000"]
+  capabilities = ["pull", "resolve"]
+EOF'"""
                     }
 
                     stage('MN-Wait for Dogu') {
