@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Added
+- [#205] Configuration for using a proxy
 
 ## [v6.1.3-1] - 2026-07-02
 ### Changed

@@ -111,6 +111,27 @@
       "Description": "Define after how many seconds the execution of critical rails scripts in the startup process is terminated and tried again",
       "Optional": true,
       "Default": "180"
+    },
+    {
+      "Name": "proxy/enabled",
+      "Description": "Whether the configured proxy should be used. Defaults to false",
+      "Optional": true,
+      "Default": "false"
+    },
+    {
+      "Name": "proxy/http",
+      "Description": "HTTP proxy to be used for outgoing connections. Is set via the http_proxy / HTTP_PROXY environment variables",
+      "Optional": true
+    },
+    {
+      "Name": "proxy/https",
+      "Description": "HTTPS proxy to be used for outgoing connections. Is set via the https_proxy / HTTPS_PROXY environment variables",
+      "Optional": true
+    },
+    {
+      "Name": "proxy/no_proxy",
+      "Description": "Exceptions where the configured proxy should not be used when connecting. Contains a list of hosts. Is set via the no_proxy / NO_PROXY environment variables.",
+      "Optional": true
     }
   ],
   "Volumes": [

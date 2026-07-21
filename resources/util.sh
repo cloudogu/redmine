@@ -3,6 +3,15 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+if [[ "$(doguctl config proxy/enabled --default "false")" == "true" ]]; then
+  export HTTP_PROXY="$(doguctl config proxy/http)"
+  export http_proxy="${HTTP_PROXY}"
+  export HTTPS_PROXY="$(doguctl config proxy/https)"
+  export https_proxy="${HTTPS_PROXY}"
+  export NO_PROXY="$(doguctl config proxy/no_proxy)"
+  export no_proxy="${NO_PROXY}"
+fi
+
 # shellcheck disable=SC1090
 # shellcheck disable=SC1091
 source "${STARTUP_DIR}"/default-config.sh
