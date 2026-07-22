@@ -324,6 +324,53 @@ EOF'"""
                                     } catch (Exception noPreviousLogs) {
                                         echo "No previous container log for ${podName}: ${noPreviousLogs}"
                                     }
+                                    // The previous container log always shows redmine's own
+                                    // wait_for_redmine_to_get_healthy() timing out on a 401 from its
+                                    // own healthcheck request. redmine_cas's check_password? override
+                                    // returns false unconditionally whenever a user has no auth_source
+                                    // (true for the internal-only config-admin account) and
+                                    // RedmineCas.local_user_enabled? is false - independent of whether
+                                    // the password is actually correct. Read the exact credentials
+                                    // doguctl is using from /proc/<pid>/cmdline (same technique as the
+                                    // describe/logs diagnostics above) and check directly, inside the
+                                    // running Rails process, whether that's what's happening - rather
+                                    // than guessing further from outside.
+                                    try {
+                                        String probeScript = '''
+PID=$(ps aux | grep "doguctl wait-for-http" | grep -v grep | awk "{print \\$1}")
+if [ -z "$PID" ]; then
+  echo "No running doguctl wait-for-http process found"
+  exit 0
+fi
+tr "\\0" "\\n" < /proc/$PID/cmdline > /tmp/cmdline_args
+AUTH_USER=$(awk "/^-u\\$/{getline; print; exit}" /tmp/cmdline_args)
+AUTH_PASS=$(awk "/^-p\\$/{getline; print; exit}" /tmp/cmdline_args)
+printf "%s" "$AUTH_USER" > /tmp/auth_user.txt
+printf "%s" "$AUTH_PASS" > /tmp/auth_pass.txt
+cat > /tmp/auth_check.rb <<RUBY_EOF
+login = File.read("/tmp/auth_user.txt")
+password = File.read("/tmp/auth_pass.txt")
+u = User.find_by_login(login)
+if u.nil?
+  puts "user not found: #{login}"
+else
+  puts "login=#{u.login} status=#{u.status} admin=#{u.admin?} auth_source_id=#{u.auth_source_id.inspect} hashed_password_present=#{!u.hashed_password.to_s.empty?}"
+  puts "RedmineCas.enabled?=#{RedmineCas.enabled?} RedmineCas.local_user_enabled?=#{RedmineCas.local_user_enabled?}"
+  puts "Setting.rest_api_enabled?=#{Setting.rest_api_enabled?}"
+  puts "check_password_result=#{u.check_password?(password)}"
+end
+RUBY_EOF
+chown redmine:redmine /tmp/auth_check.rb /tmp/auth_user.txt /tmp/auth_pass.txt
+echo "=== auth check via rails runner ==="
+su - redmine -c "cd /usr/share/webapps/redmine && RAILS_ENV=production bin/rails runner /tmp/auth_check.rb"
+echo "=== authenticated curl ==="
+curl -s -o /dev/null -w "HTTP %{http_code}\\n" -u "${AUTH_USER}:${AUTH_PASS}" http://127.0.0.1:3000/redmine/extended_api/v1/settings
+rm -f /tmp/auth_user.txt /tmp/auth_pass.txt
+'''
+                                        echo k3d.kubectl("exec ${podName} -- sh -c '${probeScript}'", true)
+                                    } catch (Exception noAuthCheck) {
+                                        echo "Failed to run auth check in ${podName}: ${noAuthCheck}"
+                                    }
                                 }
                                 echo k3d.kubectl("get events --sort-by=.lastTimestamp", true)
                             } catch (Exception diagnosticFailure) {
