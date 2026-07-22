@@ -1,7 +1,7 @@
 #!groovy
 @Library([
-        // DISABLED renovate: datasource=github-tags depName=cloudogu/ces-build-lib
-        'github.com/cloudogu/ces-build-lib@feature/tool-install',
+        // renovate: datasource=github-tags depName=cloudogu/ces-build-lib
+        'github.com/cloudogu/ces-build-lib@5.6.0',
         // DISABLED renovate: datasource=github-tags depName=cloudogu/dogu-build-lib
         'github.com/cloudogu/dogu-build-lib@test/florian-changes-for-worker-update',
 ])
@@ -70,11 +70,6 @@ node('sos-testing-preflight') {
                                 ],
                                 defaultValue: TrivyScanStrategy.UNSTABLE,
                         ),
-                        string(
-                                name: 'ClusterName',
-                                description: 'Optional: Name of the multinode integration test cluster. A new instance gets created if this parameter is not supplied',
-                                defaultValue: '',
-                        ),
                         booleanParam(
                                 name: 'KeepCluster',
                                 description: 'Optional: If True, the cluster will not be deleted after the build execution',
@@ -123,19 +118,19 @@ node('sos-testing-preflight') {
             EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
             branches['Classic'] = {
                 try {
-                    stage('Provision') {
+                    stage('Classic: Provision') {
                         if (gitflow.isPreReleaseBranch()) {
                             sh "make prerelease_namespace"
                         }
                         ecoSystem.provision("/dogu", "n1-standard-4", 30)
                     }
 
-                    stage('Setup') {
+                    stage('Classic: Setup') {
                         ecoSystem.loginBackend('cesmarvin-setup')
                         ecoSystem.setup([additionalDependencies: ['official/postgresql']])
                     }
 
-                    stage('Wait for dependencies') {
+                    stage('Classic: Wait for dependencies') {
                         timeout(15) {
                             ecoSystem.waitForDogu("cas")
                             ecoSystem.waitForDogu("usermgt")
@@ -143,11 +138,11 @@ node('sos-testing-preflight') {
                         }
                     }
 
-                    stage('Build') {
+                    stage('Classic: Build') {
                         ecoSystem.build("/dogu")
                     }
 
-                    stage('Trivy scan') {
+                    stage('Classic: Trivy scan') {
                         ecoSystem.copyDoguImageToJenkinsWorker("/dogu")
                         Trivy trivy = new Trivy(this)
                         trivy.scanDogu(".", params.TrivySeverityLevels, params.TrivyStrategy)
@@ -161,18 +156,18 @@ node('sos-testing-preflight') {
                     // trivy-archive-s3-keys). Decide whether to port it back before this becomes the
                     // real pipeline, since it may feed a central vulnerability dashboard.
 
-                    stage('Verify') {
+                    stage('Classic: Verify') {
                         ecoSystem.verify("/dogu")
                     }
 
-                    stage('Integration Tests') {
+                    stage('Classic: Integration Tests') {
                         ecoSystem.runCypressIntegrationTests([cypressImage     : "cypress/included:13.14.2",
                                                               enableVideo      : params.EnableVideoRecording,
                                                               enableScreenshots: params.EnableScreenshotRecording])
                     }
 
                     if (params.TestDoguUpgrade != null && params.TestDoguUpgrade) {
-                        stage('Upgrade dogu') {
+                        stage('Classic: Upgrade dogu') {
                             ecoSystem.purgeDogu(doguName)
 
                             if (params.OldDoguVersionForUpgradeTest != '' && !params.OldDoguVersionForUpgradeTest.contains('v')) {
@@ -189,7 +184,7 @@ node('sos-testing-preflight') {
                             ecoSystem.waitUntilAvailable(doguName)
                         }
 
-                        stage('Integration Tests - After Upgrade') {
+                        stage('Classic: Integration Tests (Post-Upgrade)') {
                             ecoSystem.runCypressIntegrationTests([
                                     cypressImage     : "cypress/included:13.14.2",
                                     enableVideo      : params.EnableVideoRecording,
@@ -201,15 +196,15 @@ node('sos-testing-preflight') {
                     if (gitflow.isReleaseBranch()) {
                         String releaseVersion = git.getSimpleBranchName()
 
-                        stage('Finish Release') {
+                        stage('Classic: Finish Release') {
                             gitflow.finishRelease(releaseVersion)
                         }
 
-                        stage('Push Dogu to registry') {
+                        stage('Classic: Push Dogu to registry') {
                             ecoSystem.push("/dogu")
                         }
 
-                        stage('Add Github-Release') {
+                        stage('Classic: Add Github-Release') {
                             github.createReleaseWithChangelog(releaseVersion, changelog)
                         }
 
@@ -217,12 +212,12 @@ node('sos-testing-preflight') {
                         // here that posted a release announcement (repo/version/changelog link) to a
                         // webhook. Decide whether to port it back so release notifications keep going out.
                     } else if (gitflow.isPreReleaseBranch()) {
-                        stage('Push Prerelease Dogu to registry') {
+                        stage('Classic: Push Prerelease Dogu to registry') {
                             ecoSystem.pushPreRelease("/dogu")
                         }
                     }
                 } finally {
-                    stage('Clean') {
+                    stage('Classic: Clean') {
                         ecoSystem.destroy()
                     }
                 }
@@ -244,14 +239,10 @@ node('sos-testing-preflight') {
                 try {
                     // TODO: TestDoguUpgrade / OldDoguVersionForUpgradeTest are not handled in this
                     // MultiNode branch (the old pipe-build-lib MultinodeStages wired up an upgrade test
-                    // here, installing the old version during MN-Setup). Currently this combination
+                    // here, installing the old version during Setup stage). Currently this combination
                     // silently no-ops in MultiNode mode; only the Classic branch tests dogu upgrades.
-                    // NOTE: ClusterName/KeepCluster's "reuse an existing cluster" semantics don't apply
-                    // to k3d - K3d.createClusterName() always generates a fresh random cluster name with
-                    // no override, so ClusterName is unused here. KeepCluster still applies to skipping
-                    // teardown, see MN-Clean below.
-                    stage('MN-Setup') {
-                        timeout(time: 70, unit: 'MINUTES') {
+                    stage('MultiNode: Setup') {
+                        timeout(time: 15, unit: 'MINUTES') {
                             k3d.installKubectlManually()
                             k3d.installHelmManually()
                             k3d.startK3d()
@@ -265,7 +256,7 @@ node('sos-testing-preflight') {
                     }
 
                     def doguImage
-                    stage('MN-Build') {
+                    stage('MultiNode: Build') {
                         def doguJson = readJSON(file: 'dogu.json')
                         doguImage = k3d.buildAndPushToLocalRegistry(doguJson.Name, doguJson.Version)
 
@@ -309,12 +300,12 @@ server = "http://${registryIp}:5000"
 EOF'"""
                     }
 
-                    stage('MN-Wait for Dogu') {
+                    stage('MultiNode: Wait for Dogu') {
                         try {
                             k3d.waitForDeploymentRollout(doguName, 300, 30)
                         } catch (Exception e) {
                             // Diagnostics only, no behavior change: collectAndArchiveLogs() (used in
-                            // MN-Clean) captures "kubectl describe -l app=ces", which drops the Events
+                            // Clean stage) captures "kubectl describe -l app=ces", which drops the Events
                             // section for multi-match label-selector describes - so past failures never
                             // showed the actual ImagePullBackOff/CrashLoop reason, only the end state.
                             // Dump a single-resource describe (which does include Events) plus recent
@@ -325,9 +316,9 @@ EOF'"""
                                 if (podName) {
                                     echo k3d.kubectl("describe pod ${podName}", true)
                                     // kubectl logs without --previous only shows the currently running
-                                    // attempt - if the container already crashed once (or twice, as seen
-                                    // in build #29: Exit Code 1, Restart Count 2), the log of the actual
-                                    // failed attempt is otherwise never captured.
+                                    // attempt - if the container already crashed (e.g. Exit Code 1 with
+                                    // a higher Restart Count), the log of the actual failed attempt is
+                                    // otherwise never captured.
                                     try {
                                         echo k3d.kubectl("logs ${podName} --previous", true)
                                     } catch (Exception noPreviousLogs) {
@@ -342,7 +333,7 @@ EOF'"""
                         }
                     }
 
-                    stage('MN-Verify') {
+                    stage('MultiNode: Verify') {
                         // Bespoke, redmine-only goss check: K3d has no verify()/goss helper (unlike
                         // EcoSystem.verify(), which shells into a Vagrant VM and runs "cesapp verify" -
                         // that doesn't exist for a k8s-deployed dogu). Downloads a static goss binary,
@@ -363,7 +354,7 @@ EOF'"""
                         archiveArtifacts artifacts: 'verify.xml', allowEmptyArchive: true
                     }
 
-                    stage('MN-Integration Tests') {
+                    stage('MultiNode: Integration Tests') {
                         // Cypress.runIntegrationTests(EcoSystem) can't be reused as-is - its parameter
                         // is statically typed to EcoSystem and K3d isn't one. Reuse what doesn't need an
                         // EcoSystem (config defaults, passwd file, pre/post-test hooks) and drive the
@@ -406,7 +397,7 @@ EOF'"""
                         cypress.archiveVideosAndScreenshots()
                     }
                 } finally {
-                    stage('MN-Clean') {
+                    stage('MultiNode: Clean') {
                         k3d.collectAndArchiveLogs()
                         if (!params.KeepCluster) {
                             k3d.deleteK3d()
