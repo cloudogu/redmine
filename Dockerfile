@@ -139,8 +139,8 @@ RUN set -eux -o pipefail \
  && bundle install \
  && chown -R redmine:redmine ${WORKDIR} \
  && gem install puma \
- # Do not remove the dependency on pg without testing the dogu upgrade. \
- # If pg is not here during an upgrade, it will be fetched, which causes problems in air-gapped environments. \
+ # Do not remove the dependency on pg without testing if an upgrade would work in an air-gapped environment \
+ # See docs/development/test_air-gapped_en.md for more information. \
  && gem install pg -v "~> 1.5.3" --no-document \
  && bundle add pg --version="~> 1.5.3" \
  # cleanup \
