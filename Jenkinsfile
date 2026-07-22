@@ -26,8 +26,8 @@ node('sos-testing-preflight') {
                         choice(
                                 name: 'PipelineMode',
                                 description: 'Which CES variation to run tests in',
-                                choices: ['Both', 'Classic', 'MultiNode'],
-                                defaultValue: 'Both',
+                                choices: ['Full', 'Classic', 'MultiNode'],
+                                defaultValue: 'Full',
                         ),
                         booleanParam(
                                 name: 'TestDoguUpgrade',
@@ -114,7 +114,7 @@ node('sos-testing-preflight') {
 
         def branches = [failFast: false]
 
-        if (params.PipelineMode in ['Both', 'Classic']) {
+        if (params.PipelineMode in ['Full', 'Classic']) {
             EcoSystem ecoSystem = new EcoSystem(this, "gcloud-ces-operations-internal-packer", "jenkins-gcloud-ces-operations-internal")
             branches['Classic'] = {
                 try {
@@ -224,7 +224,7 @@ node('sos-testing-preflight') {
             }
         }
 
-        if (params.PipelineMode in ['Both', 'MultiNode']) {
+        if (params.PipelineMode in ['Full', 'MultiNode']) {
             // TODO: handle submodule checkout if redmine ever adds submodules
             // NOTE: MultiNode is being migrated from MultiNodeEcoSystem (Coder/GKE) to a local K3d
             // (K3s-in-Docker) cluster, since MultiNodeEcoSystem's admin-credential extraction from the
