@@ -113,7 +113,6 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
- && gem install pg -v "~> 1.5.3" --no-document \
  && echo 'gem "rexml", "~> 3.2"' >> ${WORKDIR}/Gemfile \
  # Install rubycas-client \
  && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
@@ -140,6 +139,10 @@ RUN set -eux -o pipefail \
  && bundle install \
  && chown -R redmine:redmine ${WORKDIR} \
  && gem install puma \
+ # Do not remove the dependency on pg without testing the dogu upgrade. \
+ # If pg is not here during an upgrade, it will be fetched, which causes problems in air-gapped environments. \
+ && gem install pg -v "~> 1.5.3" --no-document \
+ && bundle add pg --version="~> 1.5.3" \
  # cleanup \
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
