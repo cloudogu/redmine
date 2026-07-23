@@ -298,6 +298,30 @@ server = "http://${registryIp}:5000"
 [host."http://${registryIp}:5000"]
   capabilities = ["pull", "resolve"]
 EOF'"""
+
+                        // redmine's own dogu-config (the "redmine-config" ConfigMap installDogu()'s
+                        // Dogu CR apply just created) has no container_config overrides, so the
+                        // k8s-dogu-operator falls back to a generic low default (100m CPU / 261Mi
+                        // memory) - too tight for a Rails boot that installs gems and runs plugin
+                        // migrations at container startup, causing an OOMKilled crash loop (confirmed
+                        // via kubectl describe pod on a real run: Reason: OOMKilled, Exit Code 137,
+                        // Restart Count climbing). There is no way to set this on the Dogu CR itself -
+                        // its spec.resources field only covers volume/storage sizing (dataVolumeSize,
+                        // storageClassName), not CPU/memory (confirmed against k8s-dogu-lib's
+                        // api/v2/dogu_types.go) - so the dogu-config ConfigMap is the only mechanism.
+                        // dogu.json documents cpu_core_limit/memory_limit as "only applicable to the
+                        // Multinode-EcoSystem", i.e. this is the intended, documented tuning knob.
+                        String configPatchPath = "target/${doguName}-config-patch.yaml"
+                        writeFile file: configPatchPath, text: """
+data:
+  config.yaml: |
+    container_config:
+      cpu_core_request: "1.0"
+      cpu_core_limit: "2.0"
+      memory_request: "1Gi"
+      memory_limit: "2Gi"
+"""
+                        k3d.kubectl("patch configmap ${doguName}-config --type merge --patch-file ${configPatchPath}")
                     }
 
                     stage('MultiNode: Wait for Dogu') {
