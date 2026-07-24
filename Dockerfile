@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.23.4-1
 
 LABEL NAME="official/redmine" \
-   VERSION="6.1.3-1" \
+   VERSION="6.1.3-2" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -42,7 +42,7 @@ ENV USER=redmine \
 COPY resources/ /
 
 RUN set -eux -o pipefail \
- ## Install Redmine
+ ## Install Redmine \
  && mkdir -p ${REDMINE_PATH} \
  && mkdir -p /redmine_source \
  && wget "https://www.redmine.org/releases/redmine-${REDMINE_VERSION}.tar.gz" \
@@ -50,13 +50,13 @@ RUN set -eux -o pipefail \
  && tar -xf redmine-${REDMINE_VERSION}.tar.gz --strip-components=1 -C ${REDMINE_PATH} \
  && mv redmine-${REDMINE_VERSION}.tar.gz /redmine_source/redmine-${REDMINE_VERSION}.tar.gz \
  && mkdir -p ${REDMINE_PATH}/app/assets/config && touch ${REDMINE_PATH}/app/assets/config/manifest.js \
- ## Install redmine_cas Plugin
+ ## Install redmine_cas Plugin \
  && mkdir -p "${CAS_PLUGIN_PATH}" \
  && wget -O v${CAS_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine_cas/archive/v${CAS_PLUGIN_VERSION}.tar.gz" \
  && echo "${CAS_PLUGIN_TARGZ_SHA256} *v${CAS_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
  && tar -C "${CAS_PLUGIN_PATH}" --strip-components=2 -zxf "v${CAS_PLUGIN_VERSION}.tar.gz" "redmine_cas-${CAS_PLUGIN_VERSION}/src" \
  && rm v${CAS_PLUGIN_VERSION}.tar.gz \
- ## Install Cloudogu Theme
+ ## Install Cloudogu Theme \
  && mkdir -p "${CLOUDOGU_THEME_PATH}" \
  && wget -O ${CLOUDOGU_THEME_VERSION}.tar.gz "https://github.com/cloudogu/opale/archive/refs/tags/${CLOUDOGU_THEME_VERSION}.tar.gz" \
  && echo "${THEME_TARGZ_SHA256} *${CLOUDOGU_THEME_VERSION}.tar.gz" | sha256sum -c - \
@@ -84,10 +84,10 @@ RUN set -eux -o pipefail \
  && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
  && find "${EXTENDED_REST_API_PLUGIN_PATH}" -name 'Gemfile*' -type f -delete \
  && apk update \
- # add user and group
+ # add user and group \
  && addgroup -S "${USER}" -g 1000 \
  && adduser -S -h "${WORKDIR}" -G "${USER}" -u 1000 -s /bin/bash "${USER}" \
- # install runtime packages
+ # install runtime packages \
  && apk --no-cache add --virtual /.run-deps \
    postgresql16-client \
    imagemagick \
@@ -100,7 +100,7 @@ RUN set -eux -o pipefail \
    su-exec \
    git \
    curl \
- # install build dependencies
+ # install build dependencies \
  && apk --no-cache add --virtual /.build-deps \
    build-base \
    ruby-dev \
@@ -113,9 +113,8 @@ RUN set -eux -o pipefail \
    patch \
    coreutils \
    libffi-dev \
- && gem install pg -v "~> 1.5.3" --no-document \
  && echo 'gem "rexml", "~> 3.2"' >> ${WORKDIR}/Gemfile \
- # Install rubycas-client
+ # Install rubycas-client \
  && wget -O v${RUBYCASVERSION}.tar.gz "https://github.com/cloudogu/rubycas-client/archive/v${RUBYCASVERSION}.tar.gz" \
  && echo "${RUBYCAS_TARGZ_SHA256} *v${RUBYCASVERSION}.tar.gz" | sha256sum -c - \
  && mkdir rubycas-client \
@@ -126,12 +125,12 @@ RUN set -eux -o pipefail \
  && gem install rubycas-client-${RUBYCASVERSION}.gem \
  && cd .. \
  && rm -rf rubycas-client \
- # override environment to run redmine with a context path "/redmine"
+ # override environment to run redmine with a context path "/redmine" \
  && mv ${WORKDIR}/config/environment.ces.rb ${WORKDIR}/config/environment.rb \
- # install core plugins
+ # install core plugins \
  && mkdir -p "${WORKDIR}/plugins" \
  # install required and plugin gems \
- # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access
+ # copy the plugins to the plugin directory in order to gain all gems and gem checksums for machines without internet access \
  && cp -r "${WORKDIR}"/defaultPlugins/* "${WORKDIR}/plugins/" \
  && cd ${WORKDIR} \
  && cp -r /usr/share/webapps/redmine/public/themes/Cloudogu \
@@ -140,7 +139,11 @@ RUN set -eux -o pipefail \
  && bundle install \
  && chown -R redmine:redmine ${WORKDIR} \
  && gem install puma \
- # cleanup
+ # Do not remove the dependency on pg without testing if an upgrade would work in an air-gapped environment \
+ # See docs/development/test_air-gapped_en.md for more information. \
+ && gem install pg -v "~> 1.5.3" --no-document \
+ && bundle add pg --version="~> 1.5.3" \
+ # cleanup \
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
  && apk --purge del /.build-deps \

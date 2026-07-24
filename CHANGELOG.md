@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.3-2] - 2026-07-24
+### Fixed
+- [#207] Redmine is now installable in air-gapped environments again
+  - Previously, redmine fetched ruby gems from the internet
+    during the post-upgrade.
+  - This was broken since v6.1.1-1
+
 ## [v6.1.3-1] - 2026-07-02
 ### Changed
 - [#200] Update Redmine to v6.1.3
