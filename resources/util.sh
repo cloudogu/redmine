@@ -55,7 +55,7 @@ function installMissingGems() {
 
   rakeExitCode=0
   # if you want to see which gems get installed, replace --quiet with --verbose
-  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install --verbose || rakeExitCode=$?
+  RAILS_ENV="${RAILS_ENV}" REDMINE_LANG="${REDMINE_LANG}" bundle install --quiet || rakeExitCode=$?
   if [[ ${rakeExitCode} -ne 0 ]]; then
     echo "ERROR: bundle install returned with an error during the gem installation"
     sleep 300
