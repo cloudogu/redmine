@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#211] Update Redmine to v7.0.0
 - [#211] Bump base image to v3.24.1-2
 - [#211] Bump redmine_cas to v2.2.0
+- [#211] Bump opale to v1.7.1-1
 
 ## [v6.1.3-2] - 2026-07-24
 ### Fixed
