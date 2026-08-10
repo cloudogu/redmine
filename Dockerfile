@@ -141,8 +141,8 @@ RUN set -eux -o pipefail \
  && gem install puma \
  # Do not remove the dependency on pg without testing if an upgrade would work in an air-gapped environment \
  # See docs/development/test_air-gapped_en.md for more information. \
- && gem install pg -v "~> 1.5.3" --no-document \
- && bundle add pg --version="~> 1.5.3" \
+ && gem install pg -v "~> 1.6.2" --no-document \
+ && bundle add pg --version="~> 1.6.2" \
  # cleanup \
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
