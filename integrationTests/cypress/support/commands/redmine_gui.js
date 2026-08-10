@@ -24,6 +24,7 @@ const redmineDeleteUserViaUI = (username) => {
 
     // confirm delete
     cy.get('input[name="commit"]').filter(':visible').click()
+    confirmSudoModeIfPresent()
     cy.redmineLogout()
 }
 
@@ -47,6 +48,7 @@ const redmineGiveAdminRights = (username) => {
 
     //save changes
     cy.get('input[type="submit"]').filter(':visible').click({multiple: true})
+    confirmSudoModeIfPresent()
     cy.redmineLogout()
 }
 
@@ -68,6 +70,7 @@ const redmineRemoveAdminRights = (username) => {
     cy.get('input[id="user_admin"]').uncheck()
     //save changes
     cy.get('input[type="submit"]').filter(':visible').click({multiple: true})
+    confirmSudoModeIfPresent()
     cy.redmineLogout()
 }
 
@@ -77,6 +80,19 @@ const redmineRemoveAdminRights = (username) => {
 const redmineLogout = () => {
     cy.get('#account .dropdown-trigger').click()
     cy.get('a[href="/redmine/logout"]').click()
+}
+
+/**
+ * Redmine's "sudo mode" re-asks for the current user's password before the first
+ * administrative action per session/timeout window. Fills and submits it when shown.
+ */
+const confirmSudoModeIfPresent = () => {
+    cy.get('body').then(($body) => {
+        if ($body.find('input#sudo_password').length) {
+            cy.get('input#sudo_password').type(Cypress.env('AdminPassword'))
+            cy.get('input[type="submit"]').filter(':visible').click()
+        }
+    })
 }
 
 
