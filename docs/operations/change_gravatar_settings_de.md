@@ -9,6 +9,6 @@ Redmine verwendet Gravatar, um Bilder der Nutzenden anzuzeigen. Dies kann in den
 ![Gravatar](./figures/gravatar_de.png)
 
 ## Über die Registry
-* Setzen Sie den registry-Key `config/redmine/default_data/new_configuration` auf den Wert `{settings:{gravatar_enabled:0}}` und starten Sie das Dogu neu
+* Setzen Sie den registry-Key `default_data/new_configuration` auf den Wert `{settings:{gravatar_enabled:0}}` und starten Sie das Dogu neu
 * Die Konfiguration wird nun automatisch angepasst
 
