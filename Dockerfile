@@ -135,14 +135,17 @@ RUN set -eux -o pipefail \
  && cd ${WORKDIR} \
  && cp -r /usr/share/webapps/redmine/public/themes/Cloudogu \
         /usr/share/webapps/redmine/themes/ \
- && bundle config set --local without 'development test' \
- && bundle install \
- && chown -R redmine:redmine ${WORKDIR} \
- && gem install puma \
+ # Gemfile only declares pg once config/database.yml exists (rendered at container startup, not build time), \
+ # stub it so bundle install locks pg into Gemfile.lock now, keeping upgrades air-gapped. \
  # Do not remove the dependency on pg without testing if an upgrade would work in an air-gapped environment \
  # See docs/development/test_air-gapped_en.md for more information. \
+ && printf 'production:\n  adapter: postgresql\n' > ${WORKDIR}/config/database.yml \
+ && bundle config set --local without 'development test' \
+ && bundle install \
+ && rm -f ${WORKDIR}/config/database.yml \
+ && chown -R redmine:redmine ${WORKDIR} \
+ && gem install puma \
  && gem install pg -v "~> 1.6.2" --no-document \
- && bundle add pg --version="~> 1.6.2" \
  # cleanup \
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
