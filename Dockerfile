@@ -35,8 +35,8 @@ ENV USER=redmine \
     THEME_TARGZ_SHA256=671f1fe13a2164c92f289343cf2b1a2143abf5047c1289ea9745c48b0474798a \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
-    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.11  \
-    CLOUDOGU_PATCHES_PLUGIN_SHA256=3878461d7431314ee02925e883129461278a94b95031b85ce684e635dc0a5d51 \
+    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.12  \
+    CLOUDOGU_PATCHES_PLUGIN_SHA256=818f79ba9bb8fdc9b22f0bf8102fb3ed8bb788a103fb25ef59eac435bc6f7979 \
     CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches"
 
 COPY resources/ /
