@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v7.0.0-1] - 2026-08-14
+### Changed
+- [#211] Update Redmine to v7.0.0
+- [#211] Bump base image to v3.24.1-2
+- [#211] Bump opale theme to v1.7.1-1
+- [#211] Bump redmine_cas plugin to v2.2.0
+- [#211] Bump Cloudogu patches plugin to v0.0.12
+
 ## [v6.1.3-2] - 2026-07-24
 ### Fixed
 - [#207] Redmine is now installable in air-gapped environments again

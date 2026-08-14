@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v7.0.0-1] - 2026-08-14
+### Changed
+* The dogu now offers [Redmine v7.0.0](https://www.redmine.org/projects/redmine/wiki/Changelog_7_0#700-2026-06-30).
+
 ## [v6.1.3-2] - 2026-07-24
 ### Fixed
 * Redmine is now usable in air-gap environments again.

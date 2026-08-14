@@ -1,7 +1,7 @@
-FROM registry.cloudogu.com/official/base:3.23.4-1
+FROM registry.cloudogu.com/official/base:3.24.1-2
 
 LABEL NAME="official/redmine" \
-   VERSION="6.1.3-2" \
+   VERSION="7.0.0-1" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -15,8 +15,8 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=6.1.3 \
-    REDMINE_TARGZ_SHA256=61db3008c7fd18a3afc559ed656fd38fdf8df8220ac69598b319095183190b7a \
+    REDMINE_VERSION=7.0.0 \
+    REDMINE_TARGZ_SHA256=857e9f8860c31e4c531389e5d93eea26488dba69830484a3b0aa904be615e90a \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.2.0 \
@@ -27,16 +27,16 @@ ENV USER=redmine \
     ACTIVERECORD_TARGZ_SHA256=c3b6c4aeed4cc52221f9422d77add2857a70a9081a35c7c9232eeacdef9cdfc3 \
     ACTIVERECORD_SESSION_STORE_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_activerecord_session_store" \
     # CAS-Plugin version
-    CAS_PLUGIN_VERSION=2.1.2 \
-    CAS_PLUGIN_TARGZ_SHA256=0a0234fca4224aa3da47e60fb20f633a6a11f328dfdac11c33548bfbd6dd1baf \
+    CAS_PLUGIN_VERSION=2.2.0 \
+    CAS_PLUGIN_TARGZ_SHA256=06d815702ddf13f9121e78e64f2e201d0b2a955244b40b00af9f2dd9041ed02c \
     CAS_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/redmine_cas" \
     # Cloudogu theme version
-    CLOUDOGU_THEME_VERSION=1.6.7-1 \
-    THEME_TARGZ_SHA256=ae998b904ea8b30108c8048fc9939338cea515cce679e60109b89c093a0bfce4 \
+    CLOUDOGU_THEME_VERSION=1.7.1-1 \
+    THEME_TARGZ_SHA256=671f1fe13a2164c92f289343cf2b1a2143abf5047c1289ea9745c48b0474798a \
     CLOUDOGU_THEME_PATH="/usr/share/webapps/redmine/public/themes/Cloudogu" \
     # Cloudogu patches plugin
-    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.11  \
-    CLOUDOGU_PATCHES_PLUGIN_SHA256=3878461d7431314ee02925e883129461278a94b95031b85ce684e635dc0a5d51 \
+    CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.12  \
+    CLOUDOGU_PATCHES_PLUGIN_SHA256=818f79ba9bb8fdc9b22f0bf8102fb3ed8bb788a103fb25ef59eac435bc6f7979 \
     CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches"
 
 COPY resources/ /
@@ -135,14 +135,17 @@ RUN set -eux -o pipefail \
  && cd ${WORKDIR} \
  && cp -r /usr/share/webapps/redmine/public/themes/Cloudogu \
         /usr/share/webapps/redmine/themes/ \
- && bundle config set --local without 'development test' \
- && bundle install \
- && chown -R redmine:redmine ${WORKDIR} \
- && gem install puma \
+ # Gemfile only declares pg once config/database.yml exists (rendered at container startup, not build time), \
+ # stub it so bundle install locks pg into Gemfile.lock now, keeping upgrades air-gapped. \
  # Do not remove the dependency on pg without testing if an upgrade would work in an air-gapped environment \
  # See docs/development/test_air-gapped_en.md for more information. \
- && gem install pg -v "~> 1.5.3" --no-document \
- && bundle add pg --version="~> 1.5.3" \
+ && printf 'production:\n  adapter: postgresql\n' > ${WORKDIR}/config/database.yml \
+ && bundle config set --local without 'development test' \
+ && bundle install \
+ && rm -f ${WORKDIR}/config/database.yml \
+ && chown -R redmine:redmine ${WORKDIR} \
+ && gem install puma \
+ && gem install pg -v "~> 1.6.2" --no-document \
  # cleanup \
  && gem cleanup all \
  && rm -rf /root/* /tmp/* $(gem env gemdir)/cache \
