@@ -9,5 +9,5 @@ Redmine uses Gravatar to display images of the users. This can be disabled in th
 ![Gravatar](./figures/gravatar_en.png)
 
 ## About the registry
-* Set the registry key `config/redmine/default_data/new_configuration` to the value `{settings:{gravatar_enabled:0}}` and restart the Dogu
+* Set the registry key `default_data/new_configuration` to the value `{settings:{gravatar_enabled:0}}` and restart the Dogu
 * The configuration will now be adjusted automatically

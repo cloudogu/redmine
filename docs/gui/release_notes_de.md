@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v7.0.0-2] - 2026-09-01
+### Changed
+- Die Dokumentation veralteter Versionen wurde entfernt. Referenzen auf Classic-CES wurden durch MN-CES ersetzt.
+
 ## [v7.0.0-1] - 2026-08-14
 ### Changed
 * Das Dogu bietet nun [Redmine v7.0.0](https://www.redmine.org/projects/redmine/wiki/Changelog_7_0#700-2026-06-30) an.

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v7.0.0-2] - 2026-09-01
+### Added
+- [#209] update docs for multinode
+
 ## [v7.0.0-1] - 2026-08-14
 ### Changed
 - [#211] Update Redmine to v7.0.0
