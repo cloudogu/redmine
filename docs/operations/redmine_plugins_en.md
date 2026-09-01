@@ -7,13 +7,13 @@ Redmine can be extended with plugins. The management on the file level is simple
 New plugins must be located as a directory inside the `plugins` volume of the Redmine Dogu. The path is
 
 ```
-/var/lib/ces/redmine/volumes/plugins
+/var/tmp/redmine/plugins
 ```
 
 Example directory view using the CAS plugin:
 
 ```
-/var/lib/ces/redmine/volumes/plugins/
+/var/tmp/redmine/plugins
 ├─ redmine_cas/
    ├─ app
       ├─ ...
@@ -31,20 +31,20 @@ To add a new plugin, copy the directory of the new plugin to Redmine's plugins v
 
 New plugins will most likely require additional Gem dependencies. Usually, these are delivered via https://rubygems.org.
 
-In Cloudogu EcoSystem instances without Internet access available, this step is therefore **not easily possible**. One possible solution would be to copy the dependencies to the Ruby-Gem cache inside the container using `docker cp` and so on. Currently, the cache is located at `/usr/lib/ruby/gems/2.7.0`, but the location may change in feature releases. See `docker exec redmine gem environment` for more information.
+In Cloudogu EcoSystem instances without Internet access available, this step is therefore **not easily possible**. One possible solution would be to copy the dependencies to the Ruby-Gem cache inside the container using `kubectl cp` and so on. Currently, the cache is located at `/usr/lib/ruby/gems/2.7.0`, but the location may change in feature releases. See `kubectl exec -n ecosystem $(kubectl get pod -l dogu.name=redmine -o jsonpath='{.items[0].metadata.name}') -- gem environment` for more information.
 
 Plugins included in the dogu by default are not affected since all required dependencies were installed during the docker image build.
 
 ## Removing plugins
 
-The Redmine Dogu comes with an exposed command to uninstall plugins which can be executed via the cesapp. As the removal 
+The Redmine Dogu comes with an exposed command to uninstall plugins which can be executed via kubectl. As the removal 
 of installed plugins may result in database changes it is recommended to create a backup of the database beforce removing
 the plugin.
 
 The commend
 
 ```
-cesapp command redmine delete-plugin <plugin name> --force
+kubectl exec -n ecosystem $(kubectl get pod -l dogu.name=redmine -o jsonpath='{.items[0].metadata.name}') -- delete-plugin <plugin name> --force
 ```
 
 removes the plugin `<plugin name` completely from the current Redmine installation. To complete the uninstallation process,
