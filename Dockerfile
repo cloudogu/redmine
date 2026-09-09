@@ -41,7 +41,7 @@ ENV USER=redmine \
     # MCP Plugin
     MCP_PLUGIN_VERSION=0.1.2 \
     MCP_PLUGIN_TARGZ_SHA256=89cad3a9795edc5c02ab2a1af2cb215872d21e8a55cfc4eab7c6e204d749f154 \
-    MCP_PLUGIN_PATH="/usr/share/webapps/redmine/optionalPlugins/redmine_mcp_plugin" \
+    MCP_PLUGIN_PATH="/usr/share/webapps/redmine/optionalPlugins/redmine_mcp_plugin"
 
 COPY resources/ /
 
