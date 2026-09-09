@@ -24,6 +24,7 @@ CONFIG_ADMIN_PASSWORD="please-set-me"
 # DEFAULT_PLUGIN_DIRECTORY contains plugins that come bundled with the dogu. They must be re-installed if a user deletes
 # them from the plugin directory
 DEFAULT_PLUGIN_DIRECTORY="${WORKDIR}/defaultPlugins"
+OPTIONAL_PLUGIN_DIRECTORY="${WORKDIR}/optionalPlugins"
 PLUGIN_STORE="/var/tmp/redmine/plugins"
 PLUGIN_DIRECTORY="${WORKDIR}/plugins"
 
@@ -33,7 +34,7 @@ function install_plugins(){
   echo "installing plugins..."
 
   installBundledPlugins
-
+  installOptionalPlugins
   installCustomPlugins
 
   # Installing Gems needs either an internet connection for pulling Gem dependencies or
@@ -90,6 +91,17 @@ function installBundledPlugins() {
   PLUGINS=$(ls "${DEFAULT_PLUGIN_DIRECTORY}")
   for PLUGIN_PACKAGE in ${PLUGINS}; do
     install_plugin "${DEFAULT_PLUGIN_DIRECTORY}" "${PLUGIN_PACKAGE}"
+  done
+}
+
+function installOptionalPlugins() {
+  echo "install optional plugins ..."
+
+  PLUGINS=$(ls "${OPTIONAL_PLUGIN_DIRECTORY}")
+  for PLUGIN_PACKAGE in ${PLUGINS}; do
+    if [ "$(doguctl config "plugins/${PLUGIN_PACKAGE}")" = "true" ]; then
+      install_plugin "${OPTIONAL_PLUGIN_DIRECTORY}" "${PLUGIN_PACKAGE}"
+    fi
   done
 }
 
