@@ -37,7 +37,11 @@ ENV USER=redmine \
     # Cloudogu patches plugin
     CLOUDOGU_PATCHES_PLUGIN_VERSION=0.0.12  \
     CLOUDOGU_PATCHES_PLUGIN_SHA256=818f79ba9bb8fdc9b22f0bf8102fb3ed8bb788a103fb25ef59eac435bc6f7979 \
-    CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches"
+    CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches" \
+    # MCP Plugin
+    MCP_PLUGIN_VERSION=0.2.0 \
+    MCP_PLUGIN_TARGZ_SHA256=044a5e2957ad730cc6c319019da2cb6fb23968d6601bbef8acd311f88287b1f3 \
+    MCP_PLUGIN_PATH="/usr/share/webapps/redmine/optionalPlugins/redmine_mcp"
 
 COPY resources/ /
 
@@ -83,6 +87,12 @@ RUN set -eux -o pipefail \
  && tar -C "${EXTENDED_REST_API_PLUGIN_PATH}" --strip-components=2 -xvf v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz "${SUB_DIR}" \
  && rm v${EXTENDED_REST_API_PLUGIN_VERSION}.tar.gz \
  && find "${EXTENDED_REST_API_PLUGIN_PATH}" -name 'Gemfile*' -type f -delete \
+ ## Install MCP Plugin \
+ && mkdir -p "${MCP_PLUGIN_PATH}" \
+ && wget -O v${MCP_PLUGIN_VERSION}.tar.gz "https://github.com/cloudogu/redmine-mcp-plugin/archive/v${MCP_PLUGIN_VERSION}.tar.gz" \
+ && echo "${MCP_PLUGIN_TARGZ_SHA256} *v${MCP_PLUGIN_VERSION}.tar.gz" | sha256sum -c - \
+ && tar xfz v${MCP_PLUGIN_VERSION}.tar.gz --strip-components=1 -C "${MCP_PLUGIN_PATH}" \
+ && rm v${MCP_PLUGIN_VERSION}.tar.gz \
  && apk update \
  # add user and group \
  && addgroup -S "${USER}" -g 1000 \

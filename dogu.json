@@ -111,6 +111,12 @@
       "Description": "Define after how many seconds the execution of critical rails scripts in the startup process is terminated and tried again",
       "Optional": true,
       "Default": "180"
+    },
+    {
+      "Name": "plugins/redmine_mcp",
+      "Description": "Specifies whether the MCP plugin should be enabled.",
+      "Optional": true,
+      "Default": "false"
     }
   ],
   "Volumes": [
