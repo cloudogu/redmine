@@ -39,9 +39,9 @@ ENV USER=redmine \
     CLOUDOGU_PATCHES_PLUGIN_SHA256=818f79ba9bb8fdc9b22f0bf8102fb3ed8bb788a103fb25ef59eac435bc6f7979 \
     CLOUDOGU_PATCHES_PLUGIN_PATH="/usr/share/webapps/redmine/defaultPlugins/zzz_cloudogu_redmine_patches" \
     # MCP Plugin
-    MCP_PLUGIN_VERSION=0.1.2 \
-    MCP_PLUGIN_TARGZ_SHA256=89cad3a9795edc5c02ab2a1af2cb215872d21e8a55cfc4eab7c6e204d749f154 \
-    MCP_PLUGIN_PATH="/usr/share/webapps/redmine/optionalPlugins/redmine_mcp_plugin"
+    MCP_PLUGIN_VERSION=0.2.0 \
+    MCP_PLUGIN_TARGZ_SHA256=044a5e2957ad730cc6c319019da2cb6fb23968d6601bbef8acd311f88287b1f3 \
+    MCP_PLUGIN_PATH="/usr/share/webapps/redmine/optionalPlugins/redmine_mcp"
 
 COPY resources/ /
 

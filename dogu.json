@@ -113,7 +113,7 @@
       "Default": "180"
     },
     {
-      "Name": "plugins/redmine_mcp_plugin",
+      "Name": "plugins/redmine_mcp",
       "Description": "Specifies whether the MCP plugin should be enabled.",
       "Optional": true,
       "Default": "false"
