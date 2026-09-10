@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v7.0.0-3] - 2026-09-10
+### Added
+- Das Dogu bietet nun ein optionales MCP-Plugin (`plugins/redmine_mcp`, standardmäßig deaktiviert), das über die Dogu-Konfiguration aktiviert werden kann.
+
 ## [v7.0.0-2] - 2026-09-01
 ### Changed
 - Die Dokumentation veralteter Versionen wurde entfernt. Referenzen auf Classic-CES wurden durch MN-CES ersetzt.
