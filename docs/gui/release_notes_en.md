@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Added
+- The dogu now offers an optional MCP plugin (`plugins/redmine_mcp`, disabled by default), which can be enabled via the dogu configuration.
 
 ## [v7.0.0-2] - 2026-09-01
 ### Changed
