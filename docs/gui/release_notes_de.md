@@ -5,6 +5,8 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v7.0.0-3] - 2026-09-10
 ### Added
 - Das Dogu bietet nun ein optionales MCP-Plugin (`plugins/redmine_mcp`, standardmäßig deaktiviert), das über die Dogu-Konfiguration aktiviert werden kann.
 
