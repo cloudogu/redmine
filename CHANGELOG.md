@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [#215] Update Redmine to v7.0.1
+- [#215] Update base image to v3.24.1-3
+
+### Security
+- [#215] Fix [CVE-2026-56854](https://avd.aquasec.com/nvd/cve-2026-56854)
 
 ## [v7.0.0-3] - 2026-09-10
 ### Added
