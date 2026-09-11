@@ -1,7 +1,7 @@
 FROM registry.cloudogu.com/official/base:3.24.1-3
 
 LABEL NAME="official/redmine" \
-   VERSION="7.0.1-0" \
+   VERSION="7.0.0-3" \
    maintainer="hello@cloudogu.com"
 
 ENV USER=redmine \
@@ -15,8 +15,8 @@ ENV USER=redmine \
     RUBYCASVERSION=2.4.0 \
     RUBYCAS_TARGZ_SHA256=1fb29cf6a2331dc91b7cdca3d9b231866a4cfc36c4c5f03cedd89c74cc5aae05 \
     # Redmine version
-    REDMINE_VERSION=7.0.1 \
-    REDMINE_TARGZ_SHA256=68538b4310fa50ac79a521045cb55fe3bcffed5c1562d6844cf90e66e7619209 \
+    REDMINE_VERSION=7.0.0 \
+    REDMINE_TARGZ_SHA256=857e9f8860c31e4c531389e5d93eea26488dba69830484a3b0aa904be615e90a \
     REDMINE_PATH="/usr/share/webapps/redmine" \
     # Rest-API-Plugin version
     EXTENDED_REST_API_PLUGIN_VERSION=1.2.0 \

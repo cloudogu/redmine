@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- [#215] Update Redmine to v7.0.1
 - [#215] Update base image to v3.24.1-3
 
 ### Security
