@@ -27,12 +27,16 @@ Given(/^the user has an internal redmine account with admin privileges granted b
 //
 
 When(/^the admin logs into redmine$/, function () {
-  cy.login(env.GetAdminUsername(), env.GetAdminPassword())
-  cy.logout()
+  env.GetAdminCredentials().then(({AdminUsername, AdminPassword}) => {
+    cy.login(AdminUsername, AdminPassword)
+    cy.logout()
+  })
 });
 
 When(/^the admin user logs into redmine$/, function () {
-  cy.login(env.GetAdminUsername(), env.GetAdminPassword())
+  env.GetAdminCredentials().then(({AdminUsername, AdminPassword}) => {
+    cy.login(AdminUsername, AdminPassword)
+  })
 });
 
 When("the admin navigates to the plugin overview", function () {
