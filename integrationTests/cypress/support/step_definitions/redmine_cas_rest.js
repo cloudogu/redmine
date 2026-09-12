@@ -28,10 +28,12 @@ Given(/^the user has invalid login credentials$/, function () {
 
 Given(/^the user has a valid api key$/, function () {
     if (fixtureUsedToLogin === "admin") {
-        cy.redmineGetCurrentUserJsonWithBasic(env.GetAdminUsername(), env.GetAdminPassword()).then(function (response) {
-            console.log(response)
-            expect(response.status).to.eq(200)
-            apikeyUsedForLogin = response.body.user.api_key
+        env.GetAdminCredentials().then(({AdminUsername, AdminPassword}) => {
+            cy.redmineGetCurrentUserJsonWithBasic(AdminUsername, AdminPassword).then(function (response) {
+                console.log(response)
+                expect(response.status).to.eq(200)
+                apikeyUsedForLogin = response.body.user.api_key
+            })
         })
     } else {
         cy.fixture(fixtureUsedToLogin).then(userdata => {
@@ -57,8 +59,10 @@ Given(/^the user has an invalid api key$/, function () {
 
 When(/^the user authenticate via basic authentication$/, function () {
     if (fixtureUsedToLogin === "admin") {
-        cy.redmineGetCurrentUserJsonWithBasic(env.GetAdminUsername(), env.GetAdminPassword(), false).then(function (response) {
-            authenticationResponse = response
+        env.GetAdminCredentials().then(({AdminUsername, AdminPassword}) => {
+            cy.redmineGetCurrentUserJsonWithBasic(AdminUsername, AdminPassword, false).then(function (response) {
+                authenticationResponse = response
+            })
         })
     } else {
         cy.fixture(fixtureUsedToLogin).then(userdata => {
@@ -85,7 +89,9 @@ Then(/^the user receives a json response with valid cas attributes$/, function (
     expect(authenticationResponse.status).to.eq(200)
     expect(authenticationResponse.body).to.have.property('user')
     if (fixtureUsedToLogin === "admin") {
-        expect(authenticationResponse.body.user).to.have.property('login', env.GetAdminUsername())
+        env.GetAdminUsername().then((AdminUsername) => {
+            expect(authenticationResponse.body.user).to.have.property('login', AdminUsername)
+        })
     } else {
         cy.fixture(fixtureUsedToLogin).then(userdata => {
             expect(authenticationResponse.body.user).to.have.property('login', userdata.username)
