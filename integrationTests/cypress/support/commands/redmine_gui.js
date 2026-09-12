@@ -89,8 +89,10 @@ const redmineLogout = () => {
 const confirmSudoModeIfPresent = () => {
     cy.get('body').then(($body) => {
         if ($body.find('input#sudo_password').length) {
-            cy.get('input#sudo_password').type(Cypress.env('AdminPassword'))
-            cy.get('input[type="submit"]').filter(':visible').click()
+            cy.env(['AdminPassword']).then(({AdminPassword}) => {
+                cy.get('input#sudo_password').type(AdminPassword)
+                cy.get('input[type="submit"]').filter(':visible').click()
+            })
         }
     })
 }

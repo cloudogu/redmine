@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v7.0.0-4] - 2026-09-12
+### Changed
+- [#215] Update base image to v3.24.1-3
+
+### Security
+- [#215] Fix [CVE-2026-56854](https://avd.aquasec.com/nvd/cve-2026-56854)
+
 ## [v7.0.0-3] - 2026-09-10
 ### Added
 - [#214] Add option to install redmine mcp plugin
