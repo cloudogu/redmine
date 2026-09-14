@@ -78,7 +78,7 @@ const redmineRemoveAdminRights = (username) => {
  * Logs the user out of the ces via the logout button/anchor.
  */
 const redmineLogout = () => {
-    cy.get('#account .dropdown-trigger').click()
+    cy.get('#account .dropdown-content').invoke('removeClass', 'hidden')
     cy.get('a[href="/redmine/logout"]').click()
 }
 
