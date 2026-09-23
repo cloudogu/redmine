@@ -5,6 +5,8 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v5.1.13-1] - 2026-09-23
 ### Changed
 - Das Dogu bietet nun [Redmine v5.1.13](https://www.redmine.org/projects/redmine/wiki/Changelog_5_1#5113-2026-06-15) an.
 
