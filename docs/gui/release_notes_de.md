@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v7.0.0-5] - 2026-10-21
+### Added
+- Die Unterstützung für Persönliche Zugriffsschlüssel (PATs) wurde aktiviert.
+
 ## [v7.0.0-4] - 2026-09-12
 ### Security
 - Sicherheitslücke [CVE-2026-56854](https://nvd.nist.gov/vuln/detail/CVE-2026-56854) geschlossen

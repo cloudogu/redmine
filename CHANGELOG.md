@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v7.0.0-5] - 2026-10-21
+### Added
+- Support for Personal Access Tokens
+
 ## [v7.0.0-4] - 2026-09-12
 ### Changed
 - [#215] Update base image to v3.24.1-3

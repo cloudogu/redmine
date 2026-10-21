@@ -6,6 +6,10 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v7.0.0-5] - 2026-10-21
+### Added
+- The support for personal access tokens (PATs) was enabled.
+
 ## [v7.0.0-4] - 2026-09-12
 ### Security
 - Fixed vulnerability [CVE-2026-56854](https://nvd.nist.gov/vuln/detail/CVE-2026-56854)
