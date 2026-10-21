@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Added
+- The support for personal access tokens (PATs) was enabled.
 
 ## [v7.0.0-4] - 2026-09-12
 ### Security

@@ -1,6 +1,6 @@
 {
   "Name": "official/redmine",
-  "Version": "7.0.0-4",
+  "Version": "7.0.0-5",
   "DisplayName": "Redmine",
   "Description": "Redmine is a flexible project management web application",
   "Category": "Development Apps",
@@ -9,7 +9,8 @@
     "pm",
     "projectmanagement",
     "issue",
-    "task"
+    "task",
+    "pat"
   ],
   "Logo": "https://cloudogu.com/images/dogus/redmine.png",
   "Url": "http://www.redmine.org",

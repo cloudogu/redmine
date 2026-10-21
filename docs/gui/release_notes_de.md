@@ -5,6 +5,8 @@ Im Folgenden finden Sie die Release Notes für das Redmine-Dogu.
 Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https://docs.cloudogu.com/de/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+### Added
+- Die Unterstützung für Persönliche Zugriffsschlüssel (PATs) wurde aktiviert.
 
 ## [v7.0.0-4] - 2026-09-12
 ### Security
