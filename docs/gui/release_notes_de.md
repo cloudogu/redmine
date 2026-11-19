@@ -6,6 +6,10 @@ Technische Details zu einem Release finden Sie im zugehörigen [Changelog](https
 
 ## [Unreleased]
 
+## [v6.1.3-3] - 2026-11-19
+### Security
+- Sicherheitslücke [GHSA-34m4-m9fh-gqp5](https://github.com/advisories/GHSA-34m4-m9fh-gqp5) (ruby2shell) in Ruby geschlossen
+
 ## [v6.1.3-2] - 2026-07-24
 ### Fixed
 * Redmine ist nun wieder in Air-Gap-Umgebungen nutzbar.

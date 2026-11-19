@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v6.1.3-3] - 2026-11-19
+### Changed
+- [#221] Update base image to v3.24.4-1
+
+### Security
+- [#221] Fix [GHSA-34m4-m9fh-gqp5](https://github.com/advisories/GHSA-34m4-m9fh-gqp5) (ruby2shell)
+
 ## [v6.1.3-2] - 2026-07-24
 ### Fixed
 - [#207] Redmine is now installable in air-gapped environments again
