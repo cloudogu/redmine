@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v7.0.0-6] - 2026-11-23
+### Changed
+- [#221] Update base image to v3.24.4-1
+
+### Security
+- [#221] Fix [GHSA-34m4-m9fh-gqp5](https://github.com/advisories/GHSA-34m4-m9fh-gqp5) (ruby2shell)
+
+
 ## [v7.0.0-5] - 2026-10-21
 ### Added
 - Support for Personal Access Tokens

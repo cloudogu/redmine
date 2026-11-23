@@ -6,6 +6,11 @@ Technical details on a release can be found in the corresponding [Changelog](htt
 
 ## [Unreleased]
 
+## [v7.0.0-6] - 2026-11-23
+### Security
+- Fix vulnerability [GHSA-34m4-m9fh-gqp5](https://github.com/advisories/GHSA-34m4-m9fh-gqp5) (ruby2shell) in Ruby
+
+
 ## [v7.0.0-5] - 2026-10-21
 ### Added
 - The support for personal access tokens (PATs) was enabled.
