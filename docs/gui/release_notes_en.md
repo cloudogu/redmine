@@ -5,6 +5,8 @@ Below you will find the release notes for the Redmine Dogu.
 Technical details on a release can be found in the corresponding [Changelog](https://docs.cloudogu.com/en/docs/dogus/redmine/CHANGELOG/).
 
 ## [Unreleased]
+
+## [v7.0.0-6] - 2026-11-23
 ### Security
 - Fix vulnerability [GHSA-34m4-m9fh-gqp5](https://github.com/advisories/GHSA-34m4-m9fh-gqp5) (ruby2shell) in Ruby
 
